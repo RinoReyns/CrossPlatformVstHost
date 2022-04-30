@@ -1,6 +1,6 @@
 ---
 
-name: C/C++ CI
+name: Build Vst Host
 
 on:
   push:
