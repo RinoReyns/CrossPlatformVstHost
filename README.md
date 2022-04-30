@@ -1,1 +1,1 @@
-# CrossPlatformVstHost
+# Cross-Platform Vst Host
