@@ -1,0 +1,9 @@
+[submodule "VstHost_VisualC++/vst3sdk"]
+	path = VstHost_VisualC++/vst3sdk
+	url = https://github.com/steinbergmedia/vst3sdk.git
+[submodule "VstHost_VisualC++/modules/Common/json"]
+	path = VstHost_VisualC++/modules/Common/json
+	url = https://github.com/nlohmann/json.git
+[submodule "VstHost_VisualC++/modules/UnitTests/googletest"]
+	path = VstHost_VisualC++/modules/UnitTests/googletest
+	url = https://github.com/google/googletest.git

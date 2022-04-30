@@ -1,0 +1,9 @@
+build
+*.wav
+ForIntegration
+*.json
+.idea
+*.vst3
+*.log
+__pycache__/
+*.dll
