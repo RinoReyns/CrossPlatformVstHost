@@ -15,7 +15,6 @@ INITIALIZE_EASYLOGGINGPP
 // 7) Add readMe.md - add info about every component that was incorporated
 // 8) Integrate better wave reader https://github.com/adamstark/AudioFile
 
-
 VstHostTool::VstHostTool()
 {
     arg_parser_.reset(new ArgParser());

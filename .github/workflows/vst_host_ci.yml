@@ -1,12 +1,12 @@
 ---
 
-name: BuildVstHost
+name: Build Vst Host
 
 on:
   push:
-    branches: [master]
+    branches: [ main ]
   pull_request:
-    branches: [master]
+    branches: [ main ]
 
 env:
   BUILD_TYPE: Release
