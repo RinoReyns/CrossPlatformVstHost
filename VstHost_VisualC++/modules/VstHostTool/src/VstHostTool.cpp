@@ -6,14 +6,7 @@
 INITIALIZE_EASYLOGGINGPP
 
 // TODO:
-// 1) allow to use multiple plugins and remember about configs for plugins
-// 2) Clean up code for vst host
-// 3) Read audio from audio endpoint and use it in code
-// 4) Add queue to read from capture and process with vst
-// 5) Add support for linux (starting point for andorid), mac os, arm, android
-// 6) Clean up UT for python
-// 7) Add readMe.md - add info about every component that was incorporated
-// 8) Integrate better wave reader https://github.com/adamstark/AudioFile
+// Integrate better wave reader - check https://github.com/adamstark/AudioFile
 
 VstHostTool::VstHostTool()
 {

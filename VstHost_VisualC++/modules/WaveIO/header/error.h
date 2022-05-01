@@ -3,7 +3,6 @@
 
 namespace wave 
 {
-
 	enum Error 
 	{
 		kNoError = 0,
