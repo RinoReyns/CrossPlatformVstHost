@@ -88,7 +88,7 @@ jobs:
       - name: Run Python Unit Tests
         run: |
           cp -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
-          cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/AudioHostLib.so ${{github.workspace}}/VstHost_Python/UnitTests/
+          cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/libAudioHostLib.so ${{github.workspace}}/VstHost_Python/UnitTests/
           python -m unittest discover ${{github.workspace}}/VstHost_Python/UnitTests "test_*.py"
 
       - name: Clean Up After Build

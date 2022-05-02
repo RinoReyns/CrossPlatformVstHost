@@ -56,12 +56,14 @@ if(SMTG_WIN)
 
 else()
     add_custom_command(TARGET ${target} POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
+                       COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
                                                         ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
                                                         ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/data
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
-                                                        ${PROJECT_BINARY_DIR}/data                                 
+                                                        ${PROJECT_BINARY_DIR}/data
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../../lib/${SUFFIX_CONFIG_TYPE}/libAudioHostLib.so
+                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/                                          
     )
 
     add_custom_command(TARGET ${target_offline_tools} POST_BUILD
@@ -72,7 +74,9 @@ else()
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
                                                         ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/data
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
-                                                        ${PROJECT_BINARY_DIR}/data                                 
+                                                        ${PROJECT_BINARY_DIR}/data    
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../../lib/${SUFFIX_CONFIG_TYPE}/libAudioHostLib.so
+                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/                        
     )
 
 

@@ -15,7 +15,7 @@ class TestCApi(unittest.TestCase):
         self.dump_params_config = "plugin_params.json"
         self.vst_host_lib
         if platform == "linux" or platform == "linux2":
-           self.vst_host_lib = "AudioHostLib.so"
+           self.vst_host_lib = "libAudioHostLib.so"
            self.vst_plugin_path = "adelay.vst3/Contents/x86_64-linux/adelay.so"
         elif platform == "darwin":
            sys.exit("MacOs is not supported.")
