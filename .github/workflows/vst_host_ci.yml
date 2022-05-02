@@ -16,7 +16,6 @@ jobs:
   build_windows_config:
 
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v2
         with:
