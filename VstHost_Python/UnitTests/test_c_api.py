@@ -13,7 +13,6 @@ class TestCApi(unittest.TestCase):
         self.vst_lib_instance = None
         self.output_wave_path = "output.wav"
         self.dump_params_config = "plugin_params.json"
-        self.vst_host_lib
         if platform == "linux" or platform == "linux2":
            self.vst_host_lib = "libAudioHostLib.so"
            self.vst_plugin_path = "adelay.vst3/Contents/x86_64-linux/adelay.so"
