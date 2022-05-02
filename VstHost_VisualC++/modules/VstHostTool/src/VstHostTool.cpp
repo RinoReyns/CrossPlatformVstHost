@@ -1,7 +1,10 @@
 #include "VstHostTool.h"
 #include "audiohost.h"
 #include "easylogging++.h"
+
+#ifdef _WIN32
 #include "AudioCapture.h"
+#endif
 
 INITIALIZE_EASYLOGGINGPP
 

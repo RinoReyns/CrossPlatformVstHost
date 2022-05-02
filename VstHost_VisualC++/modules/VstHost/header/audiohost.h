@@ -6,7 +6,12 @@
 #include "processdata.h"
 #include "plugprovider.h"
 #include "json.hpp"
-#include "AudioHostLib_Export.h"
+
+#ifdef _WIN32
+    #include "AudioHostLib_Export.h"
+#else
+    #include "audiohostlib_export.h"
+#endif
 
 #include "enums.h"
 #include "easylogging++.h"
@@ -47,21 +52,21 @@ class AudioProcessingVstHost
 
 extern "C" {
 
-    __declspec(dllexport) AudioProcessingVstHost* CApiInitialize()
+    AUDIOHOSTLIB_EXPORT AudioProcessingVstHost* CApiInitialize()
     {
         AudioProcessingVstHost* dc = new AudioProcessingVstHost();
         return dc;
     }
 
-    __declspec(dllexport) int CApiSetVerbosity(AudioProcessingVstHost* vst_host,
-                                               uint8_t value)
+    AUDIOHOSTLIB_EXPORT int CApiSetVerbosity(AudioProcessingVstHost* vst_host,
+                                             uint8_t value)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         vst_host->SetVerbosity(value);
         return VST_ERROR_STATUS::SUCCESS;
     }
 
-    __declspec(dllexport) int CApiCreatePluginInstance(AudioProcessingVstHost* vst_host,
+    AUDIOHOSTLIB_EXPORT int CApiCreatePluginInstance(AudioProcessingVstHost* vst_host,
                                                        const char* plugin_path)
     {
         RETURN_ERROR_IF_NULL(vst_host);
@@ -70,8 +75,8 @@ extern "C" {
         return vst_host->CreatePluginInstance(plugin_path_srt);
     }
 
-    __declspec(dllexport) int CApiGetPluginParameters(AudioProcessingVstHost* vst_host,
-                                                      const char* plugin_config)
+    AUDIOHOSTLIB_EXPORT int CApiGetPluginParameters(AudioProcessingVstHost* vst_host,
+                                                    const char* plugin_config)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         RETURN_ERROR_IF_NULL(plugin_config);
@@ -79,8 +84,8 @@ extern "C" {
         return vst_host->GetPluginParameters(plugin_config_srt);
     }
 
-    __declspec(dllexport) int CApiSetPluginParameters(AudioProcessingVstHost* vst_host,
-                                                      const char* plugin_config)
+    AUDIOHOSTLIB_EXPORT int CApiSetPluginParameters(AudioProcessingVstHost* vst_host,
+                                                    const char* plugin_config)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         RETURN_ERROR_IF_NULL(plugin_config);
@@ -88,9 +93,9 @@ extern "C" {
         return vst_host->SetPluginParameters(plugin_config_srt);
     }
 
-    __declspec(dllexport) int CApiProcessWaveFileWithSinglePlugin(AudioProcessingVstHost* vst_host,
-                                                                  const char* input_wave_path,
-                                                                  const char* output_wave_path)
+    AUDIOHOSTLIB_EXPORT int CApiProcessWaveFileWithSinglePlugin(AudioProcessingVstHost* vst_host,
+                                                                const char* input_wave_path,
+                                                                const char* output_wave_path)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         RETURN_ERROR_IF_NULL(input_wave_path);
@@ -100,7 +105,7 @@ extern "C" {
         return vst_host->ProcessWaveFileWithSinglePlugin(input_wave_path_srt, output_wave_path_srt);
     }
 
-    __declspec(dllexport) int CApiDeleteInstance(AudioProcessingVstHost* vst_host)
+    AUDIOHOSTLIB_EXPORT int CApiDeleteInstance(AudioProcessingVstHost* vst_host)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         vst_host->Terminate();
