@@ -97,7 +97,7 @@ jobs:
           rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
           rm -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3
           rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/VstHost.log
-          rm -r -fo ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
+          rm -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
 
       #- name: Archive Build Artifacts
       #  uses: actions/upload-artifact@v1
