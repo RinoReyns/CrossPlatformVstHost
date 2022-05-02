@@ -93,8 +93,8 @@ jobs:
 
       - name: Clean Up After Build
         run: |
-          rm ./${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
-          rm ./${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
+          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
+          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
           rm -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3
           rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/VstHost.log
           rm -r -fo ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
