@@ -1,11 +1,13 @@
 #include "audiohost.h"
+
+#include "stringconvert.h"
 #include "file.h"
 #include <cstdio>
 #include <iostream>
 #include "arg_parser.h"
 #include "easylogging++.h"
 #include <iostream>
-#include "AudioCapture.h"
+
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -44,14 +46,12 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(const std::s
     
     Steinberg::Vst::ParameterInfo info;
     Steinberg::Vst::ParamValue value;
-    std::wstring param_name_wstring;
     Steinberg::int32 index = 0;
     
     for (int32_t i = 0; i < editController->getParameterCount(); i++)
     {
         editController->getParameterInfo(i, info);
-        param_name_wstring = info.title;
-        std::string param_name(param_name_wstring.begin(), param_name_wstring.end());
+        std::string param_name = VST3::StringConvert::convert(info.title);
         auto single_param_map = plugin_config_json.find(param_name);
         if (single_param_map != plugin_config_json.end())
         {
@@ -92,16 +92,14 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::GetPluginParameters(const std::s
     }
 
     Steinberg::Vst::ParameterInfo info;
-    std::wstring param_name_wstring;
     nlohmann::json plugin_config_json;
 
     for (int32_t i = 0; i < editController->getParameterCount(); i++)
     {
         editController->getParameterInfo(i, info);
-        param_name_wstring = info.title;
-        std::string param_name(param_name_wstring.begin(), param_name_wstring.end());
+        std::string param_name = VST3::StringConvert::convert(info.title);
         plugin_config_json[param_name] = editController->getParamNormalized(info.id);
-    }
+   }
 
     return DumpJson(plugin_config_json, plugin_config);
 }
@@ -241,7 +239,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFileWithSinglePlugin(
     // audio processing data flow: 
     // https://developer.steinberg.help/display/VST/Audio+Processor+Call+Sequence
     Steinberg::OPtr<Steinberg::Vst::IComponent> component = plugProvider->getComponent();
-    Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor> processor = component;
+    Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor> processor(component);
 
     if (!processor)
     {

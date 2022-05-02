@@ -43,9 +43,12 @@ target_include_directories(${target}
                                   ${CMAKE_CURRENT_SOURCE_DIR}/source/media
                                   ${SDK_ROOT}/public.sdk/source/vst/hosting
                                   ${SDK_ROOT}/pluginterfaces/vst
+                                  ${SDK_ROOT}/public.sdk/source/vst/utility/
                                   ${PROJECT_BINARY_DIR}/modules/VstHost
                                   ${PROJECT_SOURCE_DIR})
-target_link_libraries(${target} PRIVATE base sdk ArgParser WaveIO Logger Common sdk_hosting AudioCapture)
+                 
+target_link_libraries(${target} PRIVATE base sdk ArgParser WaveIO Logger Common sdk_hosting)
 
 include (GenerateExportHeader)
 generate_export_header(AudioHostLib)
+

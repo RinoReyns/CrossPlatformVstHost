@@ -15,6 +15,14 @@ is why this repository was created. I know that it will take a lot of work but i
     - Implemented:
       - [x] CMake based project
       - [x] Use submodules
+      - [x] Arg Parser
+      - [X] Json Reader 
+    - TODO:
+      - [ ] Add more advanced python-based Vst Host Lib utilization
+      - [ ] Clean up UT for python
+      - [ ] Integrate better wave 
+      - [ ] Clean up code in vst host lib
+      - [ ] Allow to use multiple plugins and configs for them (WIP)
       
 1. Windows OS
 
@@ -26,25 +34,20 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] VST Host Library with C api that allows to use it in e.g. Python
       - [x] Basic python unit test for c api
       - [x] Basic code for Audio Endpoint Reader
-      - [x] Arg Parser
-      - [X] Json Reader 
     - TODO:
-      - [ ] Clean up code in vst host lib
-      - [ ] Allow to use multiple plugins and configs for them
       - [ ] Clean up audio endpoint reader and utilize it in code (add queue, use it for processing with vst plugin etc)
-      - [ ] Add more advanced python-based Vst Host Lib utilization
-      - [ ] Clean up UT for python
-      - [ ] Integrate better wave reader
 
 1. Linux
 
+    - Implemented:
+      - [x] VST Host library in C++
+      - [x] VST Host C++ Offline Tool
+      - [x] Unit Test for library and offline tool
+      - [x] CI
+      - [x] VST Host Library with C api that allows to use it in e.g. Python
+      - [x] Basic python unit test for c api
     - TODO:
-      - [ ] Add build for basic code 
       - [ ] Add endpoint reader
-      - [ ] Enable UT
-      - [ ] Add python UT
-      - [ ] Add platform specific offline tool
-      - [ ] Add CI
 
 1. Android
 
