@@ -4,9 +4,9 @@ name: Build Vst Host
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   BUILD_TYPE: Release
@@ -14,7 +14,7 @@ env:
 jobs:
 
   build_windows_configuration:
-        
+
     runs-on: windows-latest
 
     steps:
@@ -38,7 +38,7 @@ jobs:
           cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests.exe
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests.exe
-      
+
       - name: Run Python Unit Tests
         run: |
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}\VstHost_Python\UnitTests\
@@ -60,7 +60,7 @@ jobs:
       #    path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
 
     build_windows_configuration:
-    
+
       runs-on: ubuntu-latest
 
       steps:
