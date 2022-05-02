@@ -1,7 +1,8 @@
 #include "gtest/gtest.h"
 
+#include "JsonUtils.h"
 #include "audiohost.h"
-#include "Common.h"
+#include "UnitTestsCommon.h"
 #include "file.h"
 #include "enums.h"
 
@@ -55,18 +56,6 @@ namespace AudioHostLibUnitTest
                     status = VST_ERROR_STATUS::SUCCESS;
                 }
                 EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-            }
-
-            int LoadJson(std::string plugin_config_path, nlohmann::json* json_config)
-            {
-                std::ifstream file(plugin_config_path);
-                if (!file.is_open())
-                {
-                    return VST_ERROR_STATUS::OPEN_FILE_ERROR;
-                }
-                file >> *json_config;
-                file.close();
-                return VST_ERROR_STATUS::SUCCESS;
             }
 
             int LoadWave(std::string wave_path, std::vector<float>* data)
@@ -162,10 +151,10 @@ namespace AudioHostLibUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
        
         nlohmann::json ref_plugin_config_json;
-        status = LoadJson(LOAD_JSON_FILE_PATH, &ref_plugin_config_json);
+        status = JsonUtils::LoadJson(LOAD_JSON_FILE_PATH, &ref_plugin_config_json);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         nlohmann::json dumped_plugin_config_json;
-        status = LoadJson(DUMP_JSON_FILE_PATH, &dumped_plugin_config_json);
+        status = JsonUtils::LoadJson(DUMP_JSON_FILE_PATH, &dumped_plugin_config_json);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         RemoveDumpedJsonConfig();
         for (nlohmann::json::iterator it = ref_plugin_config_json.begin(); it != ref_plugin_config_json.end(); ++it) 
@@ -190,10 +179,10 @@ namespace AudioHostLibUnitTest
         vst_host_c_api_ = nullptr;
 
         nlohmann::json ref_plugin_config_json;
-        status = LoadJson(LOAD_JSON_FILE_PATH, &ref_plugin_config_json);
+        status = JsonUtils::LoadJson(LOAD_JSON_FILE_PATH, &ref_plugin_config_json);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         nlohmann::json dumped_plugin_config_json;
-        status = LoadJson(DUMP_JSON_FILE_PATH, &dumped_plugin_config_json);
+        status = JsonUtils::LoadJson(DUMP_JSON_FILE_PATH, &dumped_plugin_config_json);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         RemoveDumpedJsonConfig();
         for (nlohmann::json::iterator it = ref_plugin_config_json.begin(); it != ref_plugin_config_json.end(); ++it)

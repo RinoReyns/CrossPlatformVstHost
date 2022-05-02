@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef UNIT_TESTS_COMMON_H
+#define UNIT_TESTS_COMMON_H
 
 #include <string>
 
@@ -11,4 +11,4 @@ const std::string LOAD_JSON_FILE_PATH           = "data\\adelay_config.json";
 const std::string REF_OUTPUT_DEFAULT_CONFIG     = "data\\sine_440_output_ref.wav";
 const std::string REF_OUTPUT_WITH_SET_DELAY     = "data\\sine_440_output_ref_0.4_delay.wav";
 
-#endif //COMMON_H
+#endif //UNIT_TESTS_COMMON_H

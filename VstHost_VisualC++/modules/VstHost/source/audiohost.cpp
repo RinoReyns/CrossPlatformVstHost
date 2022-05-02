@@ -1,10 +1,10 @@
-#include "audiohost.h"
-#include "file.h"
 #include <cstdio>
 #include <iostream>
+
+#include "audiohost.h"
+#include "JsonUtils.h"
+#include "file.h"
 #include "arg_parser.h"
-#include "easylogging++.h"
-#include <iostream>
 #include "AudioCapture.h"
 
 INITIALIZE_EASYLOGGINGPP
@@ -35,7 +35,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(const std::s
     nlohmann::json plugin_config_json;
     VST_ERROR_STATUS status = VST_ERROR_STATUS::SUCCESS;
     
-    status = LoadJson(plugin_config, &plugin_config_json);
+    status = JsonUtils::LoadJson(plugin_config, &plugin_config_json);
     if (status != VST_ERROR_STATUS::SUCCESS)
     {
         LOG(ERROR) << "Loding json file with plugin params failed." << std::endl;
@@ -103,7 +103,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::GetPluginParameters(const std::s
         plugin_config_json[param_name] = editController->getParamNormalized(info.id);
     }
 
-    return DumpJson(plugin_config_json, plugin_config);
+    return JsonUtils::DumpJson(plugin_config_json, plugin_config);
 }
 
 static void assignBusBuffers(const AudioProcessingVstHost::Buffers& buffers, 
@@ -147,37 +147,6 @@ static void assignBusBuffers(const AudioProcessingVstHost::Buffers& buffers,
             }
         }
     }
-}
-
-VST_ERROR_STATUS AudioProcessingVstHost::DumpJson(nlohmann::json json_config, 
-                                                  std::string path_to_save)
-{
-    std::ofstream file(path_to_save);
-    if (!file.is_open())
-    {
-        LOG(ERROR) << "File for dumping json file couldn't be opened." << std::endl;
-        return VST_ERROR_STATUS::OPEN_FILE_ERROR;
-    }
-
-    file << std::setw(4) << json_config << std::endl;
-    file.close();
-
-    return VST_ERROR_STATUS::SUCCESS;
-}
-
-VST_ERROR_STATUS AudioProcessingVstHost::LoadJson(std::string plugin_config_path, 
-                                                  nlohmann::json* json_config)
-{
-    std::ifstream file(plugin_config_path);
-    if (!file.is_open())
-    {
-        LOG(ERROR) << "Json file with plugin config couldn't be opened." << std::endl;
-        return VST_ERROR_STATUS::OPEN_FILE_ERROR;   
-    }
-
-    file >> *json_config;
-    file.close();
-    return VST_ERROR_STATUS::SUCCESS;
 }
 
 int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::CreatePluginInstance(const std::string& plugin_path)

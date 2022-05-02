@@ -57,7 +57,7 @@ int VstHostTool::Run()
    /* HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (SUCCEEDED(stat))
     {
-        std::unique_ptr<AudioCapture> audio_capture(new AudioCapture(arg_parser->GetPluginVerbosity()));
+        std::unique_ptr<AudioCapture> audio_capture(new AudioCapture(arg_parser_->GetPluginVerbosity()));
         audio_capture->RecordAudioStream();
         CoUninitialize();
         return 0;

@@ -5,7 +5,6 @@
 #include "parameterchanges.h"
 #include "processdata.h"
 #include "plugprovider.h"
-#include "json.hpp"
 #include "AudioHostLib_Export.h"
 
 #include "enums.h"
@@ -33,8 +32,6 @@ class AudioProcessingVstHost
         };
 
     private:
-        VST_ERROR_STATUS DumpJson(nlohmann::json json_config, std::string path_to_save);
-        VST_ERROR_STATUS LoadJson(std::string plugin_config_path, nlohmann::json* json_config);
         VST3::Hosting::Module::Ptr module {nullptr};
         std::unique_ptr<Steinberg::Vst::PlugProvider> plugProvider {nullptr};
         Steinberg::Vst::ProcessContext processContext;

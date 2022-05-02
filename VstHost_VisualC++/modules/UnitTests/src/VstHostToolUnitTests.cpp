@@ -5,7 +5,7 @@
 #include "VstHostTool.h"
 #include "file.h"
 #include "enums.h"
-#include "Common.h"
+#include "UnitTestsCommon.h"
 #include "json.hpp"
 
 namespace VstHostToolUnitTest

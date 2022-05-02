@@ -1,7 +1,7 @@
 # Cross-Platform Vst Host
 
 ## General Idea
-Since I found that there are not many easy-to-use command-line based VST Host, and some of them are no longer supported,
+Since I found that there are not many easy-to-use command-line based VST Hosts, and some of them are no longer supported,
  I always wanted to create my own cmd VST Host. Unfortunately, I also found that samples provided in VST 3 SDK are way 
 to complicated for me to use, so I decided to created my own easy-to-use repository. Thus, the main goal of this project
  is to learn how to work with VST 3 SDK, how to create custom VST Host and handler VST 3 Plugins. During the work on 
@@ -15,6 +15,8 @@ is why this repository was created. I know that it will take a lot of work but i
     - Implemented:
       - [x] CMake based project
       - [x] Use submodules
+    - TODO:
+      - [ ] Add manual
       
 1. Windows OS
 
@@ -70,6 +72,7 @@ is why this repository was created. I know that it will take a lot of work but i
 1. [VST 3 SDK](https://github.com/steinbergmedia/vst3sdk)
 1. [Google Test](https://github.com/google/googletest)
 1. [Logger](https://github.com/amrayn/easyloggingpp)
+1. [Arg Parser](https://github.com/p-ranav/argparse)
 1. [Wave Reader](https://github.com/audionamix/wave)
 1. [C ++ Json Handler](https://github.com/nlohmann/json)
 1. [Windows Endpoint Reader](https://github.com/mofo7777/Stackoverflow/tree/master/WasapiCapture)
