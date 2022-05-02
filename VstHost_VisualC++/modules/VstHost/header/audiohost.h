@@ -111,6 +111,7 @@ extern "C" {
             return -1;
         }
     }
+
 }
 
 #endif // AUDIO_PROCESSING_VST_HOST

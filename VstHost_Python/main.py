@@ -1,7 +1,7 @@
 import ctypes
 
 if __name__ == "__main__":
-    vst_host_instance = ctypes.CDLL("C:\\Users\\RinoReyns\\Desktop\\Projekty\\VstHost\\VstHost_VisualC++\\build\\bin\\Debug\\AudioHostLib.dll")
+    vst_host_instance = ctypes.CDLL("C:\\Users\\RinoReyns\\Desktop\\Projekty\\CrossPlatformVstHost\\build\\bin\\Debug\\AudioHostLib.dll")
 
     vst_host_instance.CApiInitialize.restype = ctypes.c_void_p
 
@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     vst_host_instance.CApiSetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
     status = vst_host_instance.CApiSetPluginParameters(vst_instance,
-                                                       ctypes.c_char_p(b'pretty_test.json'))
+                                                       ctypes.c_char_p(b'adelay_config.json'))
 
     vst_host_instance.CApiGetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
     status = vst_host_instance.CApiGetPluginParameters(vst_instance,
@@ -24,7 +24,7 @@ if __name__ == "__main__":
                                                                       ctypes.c_char_p,
                                                                       ctypes.c_char_p]
     status = vst_host_instance.CApiProcessWaveFileWithSinglePlugin(vst_instance,
-                                                                   ctypes.c_char_p(b'out_trim.wav'),
+                                                                   ctypes.c_char_p(b'sine_440.wav'),
                                                                    ctypes.c_char_p(b'test.wav'))
 
     vst_host_instance.CApiDeleteInstance.argtypes = [ctypes.c_void_p]

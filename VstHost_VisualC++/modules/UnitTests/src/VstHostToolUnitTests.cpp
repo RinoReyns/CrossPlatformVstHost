@@ -156,9 +156,6 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, RunToolWithProcessingConfig)
     {
-
-        // TODO:
-        // create json on the fly and remove it
         nlohmann::json plugin_config_json;
         plugin_config_json["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
         plugin_config_json["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;

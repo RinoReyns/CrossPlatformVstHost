@@ -42,6 +42,7 @@ target_include_directories(${target}
                            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header 
                                   ${CMAKE_CURRENT_SOURCE_DIR}/source/media
                                   ${SDK_ROOT}/public.sdk/source/vst/hosting
+                                  ${SDK_ROOT}/public.sdk/source/vst/utility
                                   ${SDK_ROOT}/pluginterfaces/vst
                                   ${PROJECT_BINARY_DIR}/modules/VstHost
                                   ${PROJECT_SOURCE_DIR})

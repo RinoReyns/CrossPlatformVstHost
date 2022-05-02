@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "audiohost.h"
+#include "stringconvert.h"
 #include "JsonUtils.h"
 #include "file.h"
 #include "arg_parser.h"
@@ -44,14 +45,12 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(const std::s
     
     Steinberg::Vst::ParameterInfo info;
     Steinberg::Vst::ParamValue value;
-    std::wstring param_name_wstring;
     Steinberg::int32 index = 0;
     
     for (int32_t i = 0; i < editController->getParameterCount(); i++)
     {
         editController->getParameterInfo(i, info);
-        param_name_wstring = info.title;
-        std::string param_name(param_name_wstring.begin(), param_name_wstring.end());
+        std::string param_name = VST3::StringConvert::convert(info.title);
         auto single_param_map = plugin_config_json.find(param_name);
         if (single_param_map != plugin_config_json.end())
         {
