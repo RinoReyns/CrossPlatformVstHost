@@ -4,6 +4,7 @@ import os
 from sys import platform
 import sys
 
+
 class TestCApi(unittest.TestCase):
 
     def setUp(self):
@@ -15,7 +16,7 @@ class TestCApi(unittest.TestCase):
         self.dump_params_config = "plugin_params.json"
         if platform == "linux" or platform == "linux2":
            self.vst_host_lib = "libAudioHostLib.so"
-           self.vst_plugin_path = "adelay.vst3/Contents/x86_64-linux/adelay.so"
+           self.vst_plugin_path = "adelay.vst3"
         elif platform == "darwin":
            sys.exit("MacOs is not supported.")
         elif platform == "win32":
