@@ -82,8 +82,8 @@ jobs:
       - name: Run C++ Unit Tests
         run: |
           cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
-          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests.exe
-          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests.exe
+          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
+          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
 
       - name: Run Python Unit Tests
         run: |
