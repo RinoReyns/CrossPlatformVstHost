@@ -12,7 +12,6 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-
   build_windows_config:
 
     runs-on: windows-latest
