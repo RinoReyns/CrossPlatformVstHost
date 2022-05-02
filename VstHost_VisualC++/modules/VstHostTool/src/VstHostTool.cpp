@@ -22,7 +22,7 @@ int VstHostTool::PrepareArgs(int argc, char* argv[])
     }
     catch (const std::exception&)
     {
-        return VST_ERROR_STATUS::PARS_ARGS_ERROR;
+        return VST_ERROR_STATUS::ARG_PARSER_ERROR;
     }
 }
 
@@ -37,7 +37,7 @@ int VstHostTool::Run()
     if (parser_arguments_.size() == 0)
     {
         LOG(ERROR) << "Empty args.";
-        return VST_ERROR_STATUS::PARS_ARGS_ERROR;
+        return VST_ERROR_STATUS::ARG_PARSER_ERROR;
     }
     
     int status = arg_parser_->ParsParameters(parser_arguments_);

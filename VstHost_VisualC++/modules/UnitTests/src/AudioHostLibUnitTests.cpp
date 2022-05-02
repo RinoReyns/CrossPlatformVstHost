@@ -145,13 +145,13 @@ namespace AudioHostLibUnitTest
     {
         int status = vst_host_lib_->CreatePluginInstance(VST_PLUGIN_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        status = vst_host_lib_->SetPluginParameters(LOAD_JSON_FILE_PATH);
+        status = vst_host_lib_->SetPluginParameters(CONFIG_FOR_ADELAY_PLUGIN);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         status = vst_host_lib_->GetPluginParameters(DUMP_JSON_FILE_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
        
         nlohmann::json ref_plugin_config_json;
-        status = JsonUtils::LoadJson(LOAD_JSON_FILE_PATH, &ref_plugin_config_json);
+        status = JsonUtils::LoadJson(CONFIG_FOR_ADELAY_PLUGIN, &ref_plugin_config_json);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         nlohmann::json dumped_plugin_config_json;
         status = JsonUtils::LoadJson(DUMP_JSON_FILE_PATH, &dumped_plugin_config_json);
@@ -170,7 +170,7 @@ namespace AudioHostLibUnitTest
         EXPECT_TRUE(vst_host_c_api_ != nullptr);
         int status = CApiCreatePluginInstance(vst_host_c_api_, VST_PLUGIN_PATH.c_str());
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        status = CApiSetPluginParameters(vst_host_c_api_, LOAD_JSON_FILE_PATH.c_str());
+        status = CApiSetPluginParameters(vst_host_c_api_, CONFIG_FOR_ADELAY_PLUGIN.c_str());
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         status = CApiGetPluginParameters(vst_host_c_api_, DUMP_JSON_FILE_PATH.c_str());
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
@@ -179,7 +179,7 @@ namespace AudioHostLibUnitTest
         vst_host_c_api_ = nullptr;
 
         nlohmann::json ref_plugin_config_json;
-        status = JsonUtils::LoadJson(LOAD_JSON_FILE_PATH, &ref_plugin_config_json);
+        status = JsonUtils::LoadJson(CONFIG_FOR_ADELAY_PLUGIN, &ref_plugin_config_json);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         nlohmann::json dumped_plugin_config_json;
         status = JsonUtils::LoadJson(DUMP_JSON_FILE_PATH, &dumped_plugin_config_json);

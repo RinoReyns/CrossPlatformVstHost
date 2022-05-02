@@ -1,7 +1,9 @@
 #include "JsonUtils.h"
 
+#include <fstream>
+
 VST_ERROR_STATUS JsonUtils::DumpJson(nlohmann::json json_config,
-    std::string path_to_save)
+                                     std::string path_to_save)
 {
     std::ofstream file(path_to_save);
     if (!file.is_open())
@@ -16,7 +18,7 @@ VST_ERROR_STATUS JsonUtils::DumpJson(nlohmann::json json_config,
 }
 
 VST_ERROR_STATUS JsonUtils::LoadJson(std::string plugin_config_path,
-    nlohmann::json* json_config)
+                                     nlohmann::json* json_config)
 {
     std::ifstream file(plugin_config_path);
     if (!file.is_open())

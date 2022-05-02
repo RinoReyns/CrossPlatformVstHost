@@ -20,14 +20,17 @@ public:
 
 private:
     int CheckIfPathExists(std::string);
+    int CheckPluginParams();
+    int CheckOutputWave();
         
     std::unique_ptr<argparse::ArgumentParser> arg_parser_;
-    std::string plugin_path_      = "";
-    std::string input_wave_path_  = "";
-    std::string output_wave_path_ = "";
-    std::string plugin_config_    = "";
-    uint8_t verbosity_            = 0;
-    bool dump_plugin_params_      = false;
+    std::string plugin_path_        = "";
+    std::string input_wave_path_    = "";
+    std::string output_wave_path_   = "";
+    std::string plugin_config_      = "";
+    std::string processing_config_  = "";
+    uint8_t verbosity_              = 0;
+    bool dump_plugin_params_        =  false;
 };
 
 #endif //ARG_PARSER_H

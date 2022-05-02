@@ -5,12 +5,13 @@
 
 ArgParser::ArgParser()
 {
-    // MIT arg parser https://github.com/p-ranav/argparse
     arg_parser_.reset(new argparse::ArgumentParser("audiohost"));
     arg_parser_->add_argument("-vst_plugin")
-        .required()
         .help("vst plugin that will be used for processing");
-
+    
+    arg_parser_->add_argument("-processing_config")
+        .help("Json file that defines plugins' order and configs for them.");
+    
     arg_parser_->add_argument("-input_wave")
         .help("Input wave that will be processed");
 
@@ -26,7 +27,6 @@ ArgParser::ArgParser()
         .default_value(0);
 
     arg_parser_->add_argument("-plugin_config")
-        .required()
         .help("Path to the json file with VST Plugin parameters that needs to be set or in which params will be dumped.");
     
     arg_parser_->add_argument("-dump_plugin_params")
@@ -58,50 +58,32 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     
     // TODO:
     // create private set for each parameter
+    int status = CheckPluginParams();
+    RETURN_ERROR_IF_NOT_SUCCESS(status);
 
-    // plugin_path_
-    int status = CheckIfPathExists(arg_parser_->get<std::string>("-vst_plugin"));
-    if (status != VST_ERROR_STATUS::SUCCESS)
-    {
-        return status;
-    }
-    plugin_path_ = arg_parser_->get<std::string>("-vst_plugin");
-
-    // dump_pugin_params
+    // dump_plugin_params
     dump_plugin_params_ = arg_parser_->get<bool>("-dump_plugin_params");
     
     if (!dump_plugin_params_)
     {
         // input_wave_path_
         status = CheckIfPathExists(arg_parser_->get<std::string>("-input_wave"));
-        if (status != VST_ERROR_STATUS::SUCCESS)
-        {
-            return status;
-        }
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
 
         input_wave_path_ = arg_parser_->get<std::string>("-input_wave");
         
-        try
-        {
-            output_wave_path_ = arg_parser_->get<std::string>("-output_wave_path");
-            if (output_wave_path_.empty())
-            {
-                LOG(ERROR) << "-output_wave_path can't be empty.";
-                return VST_ERROR_STATUS::EMPTY_ARG;
-            }
-        }
-        catch (const std::exception&)
-        {
-            LOG(ERROR) << "-output_wave_path can't be empty.";
-            return VST_ERROR_STATUS::EMPTY_ARG;
-        }
+        status = CheckOutputWave();
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
 
-        status = CheckIfPathExists(arg_parser_->get<std::string>("-plugin_config"));
-        if (status != VST_ERROR_STATUS::SUCCESS && dump_plugin_params_ == false)
+        if (!arg_parser_->present("-processing_config"))
         {
-            return status;
+            status = CheckIfPathExists(arg_parser_->get<std::string>("-plugin_config"));
+            if (status != VST_ERROR_STATUS::SUCCESS && dump_plugin_params_ == false)
+            {
+                return status;
+            }
+            plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
         }
-        plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
     }
     else
     {
@@ -132,6 +114,66 @@ int ArgParser::CheckIfPathExists(std::string path)
         status = VST_ERROR_STATUS::PATH_NOT_EXISTS;
     }
     return status;
+}
+
+int ArgParser::CheckPluginParams()
+{
+    int status = VST_ERROR_STATUS::ARG_PARSER_ERROR;
+    if (arg_parser_->present("-vst_plugin") && arg_parser_->present("-processing_config"))
+    {
+        LOG(ERROR) << "Unsupported configuration. You need to set either -processing_config or -vst_plugin parameter. You can't use both.";
+        return VST_ERROR_STATUS::UNSUPPORTED_CONFIGURATION;
+    }
+
+    if (arg_parser_->present("-plugin_config") && arg_parser_->present("-processing_config"))
+    {
+        LOG(ERROR) << "Unsupported configuration. You need to set either -processing_config or -plugin_config parameter. You can't use both.";
+        return VST_ERROR_STATUS::UNSUPPORTED_CONFIGURATION;
+    }
+
+    if (arg_parser_->present("-vst_plugin")) 
+    {
+        status = CheckIfPathExists(arg_parser_->get<std::string>("-vst_plugin"));
+        if (status == VST_ERROR_STATUS::SUCCESS)
+        {
+            plugin_path_ = arg_parser_->get<std::string>("-vst_plugin");
+        }
+    }
+
+    if (status != VST_ERROR_STATUS::SUCCESS && arg_parser_->present("-processing_config"))
+    {
+        status = CheckIfPathExists(arg_parser_->get<std::string>("-processing_config"));
+        if (status == VST_ERROR_STATUS::SUCCESS)
+        {
+            processing_config_ = arg_parser_->get<std::string>("-processing_config");
+            return status;
+        }
+    }
+
+    if (status == VST_ERROR_STATUS::SUCCESS && arg_parser_->present("-processing_config"))
+    {
+        status = VST_ERROR_STATUS::ARG_PARSER_ERROR;
+        LOG(ERROR) << "Empty parameters. You need to set either -processing_config or -vst_plugin parameters.";
+    }
+    
+    return status;
+}
+
+int ArgParser::CheckOutputWave()
+{
+    if (!arg_parser_->present("-output_wave_path"))
+    {
+        LOG(ERROR) << "-output_wave_path can't be empty.";
+        return VST_ERROR_STATUS::EMPTY_ARG;
+    }
+
+    output_wave_path_ = arg_parser_->get<std::string>("-output_wave_path");
+    if (output_wave_path_.empty())
+    {
+        LOG(ERROR) << "-output_wave_path can't be empty.";
+        return VST_ERROR_STATUS::EMPTY_ARG;
+    }
+    return VST_ERROR_STATUS::SUCCESS;
 }
 
 std::string ArgParser::GetPluginPath()

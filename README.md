@@ -68,7 +68,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Add CI
 
 
-## External Repositories Utilized in Project 
+## Credits 
 1. [VST 3 SDK](https://github.com/steinbergmedia/vst3sdk)
 1. [Google Test](https://github.com/google/googletest)
 1. [Logger](https://github.com/amrayn/easyloggingpp)
@@ -76,3 +76,9 @@ is why this repository was created. I know that it will take a lot of work but i
 1. [Wave Reader](https://github.com/audionamix/wave)
 1. [C ++ Json Handler](https://github.com/nlohmann/json)
 1. [Windows Endpoint Reader](https://github.com/mofo7777/Stackoverflow/tree/master/WasapiCapture)
+
+VST is a trademark held by Steinberg Media Technologies, GMBH.
+
+## License
+This project is licensed under the terms of the GNU GPLv3 license. Moreover, it is a derivative work of the original 
+VST 3 SDK. However, I don't not redistribute any of the original source code.

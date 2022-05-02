@@ -2,6 +2,7 @@
 #define ENUMS_H
 
 #define RETURN_ERROR_IF_NULL(value) {if(!value) return VST_ERROR_STATUS::NULL_POINTER;}
+#define RETURN_ERROR_IF_NOT_SUCCESS(value) {if(value != VST_ERROR_STATUS::SUCCESS) return value;}
 
 enum VST_ERROR_STATUS
 {
@@ -17,10 +18,11 @@ enum VST_ERROR_STATUS
     PLUGIN_PROCESSING_FAILED            = 9,
     JSON_CONFIG_ERROR                   = 10,
     NULL_POINTER                        = 11,
-    PARS_ARGS_ERROR                     = 12,
+    ARG_PARSER_ERROR                    = 12,
     EMPTY_ARG                           = 13,
+    UNSUPPORTED_CONFIGURATION           = 14,
 
-    MAX_STATUS_VALUE                    = EMPTY_ARG
+    MAX_STATUS_VALUE                    = UNSUPPORTED_CONFIGURATION
 };
 
 namespace LogLevelType
