@@ -1,7 +1,10 @@
 #include "VstHostTool.h"
 #include "audiohost.h"
 #include "easylogging++.h"
+
+#ifdef _WIN32
 #include "AudioCapture.h"
+#endif
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -50,7 +53,6 @@ int VstHostTool::Run()
 
     LOG(INFO) << "------------------------------ Audio Host Started ------------------------------";
     std::unique_ptr<AudioProcessingVstHost> vst_host = std::make_unique<AudioProcessingVstHost>();
-    VST3::Optional<VST3::UID> uid;
 
     // TODO:
     // clean up
@@ -64,8 +66,8 @@ int VstHostTool::Run()
     }*/
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
-    status = vst_host->CreatePluginInstance(arg_parser_->GetPluginPath(), std::move(uid));
 
+    status = vst_host->CreatePluginInstance(arg_parser_->GetPluginPath());
     if (status == VST_ERROR_STATUS::SUCCESS)
     {
         if (arg_parser_->GetDumpPluginParams())

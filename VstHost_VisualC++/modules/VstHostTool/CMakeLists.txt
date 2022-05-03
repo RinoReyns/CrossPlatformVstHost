@@ -17,10 +17,19 @@ set(SOURCES
 )
 
 add_library(${target}Lib ${LIB_SOURCE})
-target_link_libraries (${target}Lib PUBLIC AudioHostLib
-                       PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioCapture)
-
 add_executable(${target} ${SOURCES})
-target_link_libraries (${target} PUBLIC ${target}Lib
-                       PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioCapture)
+
+if(SMTG_WIN)
+    target_link_libraries (${target}Lib PUBLIC AudioHostLib
+                           PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioCapture)
+    target_link_libraries (${target} PUBLIC ${target}Lib
+                           PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioCapture)
+else()
+
+    target_link_libraries (${target}Lib PUBLIC AudioHostLib
+                           PRIVATE base sdk ArgParser Logger Common sdk_hosting)
+    target_link_libraries (${target} PUBLIC ${target}Lib
+                           PRIVATE base sdk ArgParser Logger Common)
+
+endif(SMTG_WIN)
                        

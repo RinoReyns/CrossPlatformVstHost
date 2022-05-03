@@ -1,7 +1,3 @@
-if(ANDROID)
-    return()
-endif(ANDROID)
-
 if (MSVC)
     add_compile_options(/W4 /WX)
     add_link_options(/WX)

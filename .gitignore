@@ -7,3 +7,4 @@ ForIntegration
 *.log
 __pycache__/
 *.dll
+.DS_Store

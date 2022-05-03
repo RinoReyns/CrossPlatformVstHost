@@ -16,6 +16,8 @@ if(SMTG_MAC)
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${InfoPlistFile}
     )
+    set_property (TARGET ${target} APPEND_STRING PROPERTY 
+              COMPILE_FLAGS "-fobjc-arc")
 elseif(SMTG_LINUX)
     set(audiohost_sources
         ${audiohost_sources}
@@ -38,15 +40,23 @@ add_library(${target} SHARED ${audiohost_sources})
 add_compile_definitions(${target} PUBLIC ${target})
 
 target_compile_features(${target} PUBLIC cxx_std_17)
-target_include_directories(${target} 
+
+if(SMTG_MAC)
+    target_compile_options(${target} PUBLIC "-fobjc-arc")
+endif()
+
+target_include_directories(${target}
                            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header 
                                   ${CMAKE_CURRENT_SOURCE_DIR}/source/media
                                   ${SDK_ROOT}/public.sdk/source/vst/hosting
                                   ${SDK_ROOT}/public.sdk/source/vst/utility
                                   ${SDK_ROOT}/pluginterfaces/vst
+                                  ${SDK_ROOT}/public.sdk/source/vst/utility/
                                   ${PROJECT_BINARY_DIR}/modules/VstHost
                                   ${PROJECT_SOURCE_DIR})
-target_link_libraries(${target} PRIVATE base sdk ArgParser WaveIO Logger Common sdk_hosting AudioCapture)
+                 
+target_link_libraries(${target} PRIVATE base sdk ArgParser WaveIO Logger Common sdk_hosting)
 
 include (GenerateExportHeader)
 generate_export_header(AudioHostLib)
+
