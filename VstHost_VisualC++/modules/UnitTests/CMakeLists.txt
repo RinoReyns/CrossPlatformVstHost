@@ -56,7 +56,7 @@ if(SMTG_WIN)
 elseif(UNIX AND NOT APPLE)
     add_custom_command(TARGET ${target} POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
-                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/
+                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
                                                         ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/data
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
@@ -67,7 +67,7 @@ elseif(UNIX AND NOT APPLE)
 
     add_custom_command(TARGET ${target_offline_tools} POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
-                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}
+                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
                                                          ${PROJECT_BINARY_DIR}/adelay.vst3 
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
