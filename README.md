@@ -20,7 +20,7 @@ is why this repository was created. I know that it will take a lot of work but i
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Clean up UT for python
-      - [ ] Integrate better wave 
+      - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
       - [ ] Allow to use multiple plugins and configs for them (WIP)
       
@@ -60,13 +60,15 @@ is why this repository was created. I know that it will take a lot of work but i
 
 1. Mac OS
 
-    - TODO:
-      - [ ] Add build for basic code 
+    - Implemented:
+      - [x] VST Host library in C++
+      - [x] VST Host C++ Offline Tool
+      - [x] Unit Test for library and offline tool
+      - [x] CI
+      - [x] VST Host Library with C api that allows to use it in e.g. Python
+      - [x] Basic python unit test for c api
+    - TODO: 
       - [ ] Add endpoint reader
-      - [ ] Enable UT
-      - [ ] Add python UT
-      - [ ] Add platform specific offline tool
-      - [ ] Add CI
 
 
 ## External Repositories Utilized in Project 

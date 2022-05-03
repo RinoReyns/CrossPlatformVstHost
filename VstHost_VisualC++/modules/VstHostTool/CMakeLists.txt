@@ -29,7 +29,7 @@ else()
     target_link_libraries (${target}Lib PUBLIC AudioHostLib
                            PRIVATE base sdk ArgParser Logger Common sdk_hosting)
     target_link_libraries (${target} PUBLIC ${target}Lib
-                           PRIVATE base sdk ArgParser Logger Common sdk_hosting)
+                           PRIVATE base sdk ArgParser Logger Common)
 
 endif(SMTG_WIN)
                        
