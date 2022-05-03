@@ -20,7 +20,7 @@ namespace wave
 		  header.num_channel      = 1;
 		  header.sample_rate      = 44100;
 		  header.bits_per_sample  = 16;
-		  header.byte_per_block   = (header.bits_per_sample * header.num_channel) / 8;
+		  header.byte_per_block   = static_cast<uint16_t>((header.bits_per_sample * header.num_channel) / 8);
 		  header.byte_rate        = header.byte_per_block * header.sample_rate;
 		  return header;
 	}

@@ -47,7 +47,7 @@ class File::Impl {
     header.fmt.byte_per_block = static_cast<uint16_t>(bytes_per_sample * channel_number);
     header.fmt.byte_rate = sample_rate * header.fmt.byte_per_block;
     // data header
-    header.data.sub_chunk_2_size = static_cast<uint32_t> (data_size * bytes_per_sample);
+    header.data.sub_chunk_2_size = static_cast<uint32_t> (data_size * static_cast<uint64_t>(bytes_per_sample));
 
     ostream.write(reinterpret_cast<char*>(&header), sizeof(WAVEHeader));
     if (ostream.fail()) {
@@ -77,7 +77,7 @@ class File::Impl {
     istream.seekg(0, std::ios::end);
     auto file_size = istream.tellg();
     // If not enough data
-    if (file_size < sizeof(WAVEHeader)) {
+    if (static_cast<long unsigned int>(file_size) < sizeof(WAVEHeader)) {
       return kInvalidFormat;
     }
     istream.seekg(0, std::ios::beg);

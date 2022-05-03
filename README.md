@@ -17,6 +17,13 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] Use submodules
       - [x] Arg Parser
       - [X] Json Reader 
+      - [x] Treat Warnings as Errors
+      - [x] VST Host library in C++
+      - [x] VST Host Offline Tool in C++
+      - [x] Unit Test for library and offline tool in C++
+      - [x] CI
+      - [x] VST Host Library with C api that allows to use it in e.g. Python
+      - [x] Basic python unit test for c api
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Clean up UT for python
@@ -27,25 +34,12 @@ is why this repository was created. I know that it will take a lot of work but i
 1. Windows OS
 
     - Implemented:
-      - [x] VST Host library in C++
-      - [x] VST Host C++ Offline Tool
-      - [x] Unit Test for library and offline tool
-      - [x] CI
-      - [x] VST Host Library with C api that allows to use it in e.g. Python
-      - [x] Basic python unit test for c api
       - [x] Basic code for Audio Endpoint Reader
     - TODO:
       - [ ] Clean up audio endpoint reader and utilize it in code (add queue, use it for processing with vst plugin etc)
 
 1. Linux
 
-    - Implemented:
-      - [x] VST Host library in C++
-      - [x] VST Host C++ Offline Tool
-      - [x] Unit Test for library and offline tool
-      - [x] CI
-      - [x] VST Host Library with C api that allows to use it in e.g. Python
-      - [x] Basic python unit test for c api
     - TODO:
       - [ ] Add endpoint reader
 
@@ -60,13 +54,6 @@ is why this repository was created. I know that it will take a lot of work but i
 
 1. Mac OS
 
-    - Implemented:
-      - [x] VST Host library in C++
-      - [x] VST Host C++ Offline Tool
-      - [x] Unit Test for library and offline tool
-      - [x] CI
-      - [x] VST Host Library with C api that allows to use it in e.g. Python
-      - [x] Basic python unit test for c api
     - TODO: 
       - [ ] Add endpoint reader
 

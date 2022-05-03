@@ -86,6 +86,7 @@
 // Linux
 #if (defined(__linux) || defined(__linux__))
 #  define ELPP_OS_LINUX 1
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #else
 #  define ELPP_OS_LINUX 0
 #endif

@@ -29,7 +29,6 @@ add_executable(${target_offline_tools} ${OfflineToolsUnitTest})
 target_link_libraries(${target_offline_tools} gtest gtest_main VstHostToolLib WaveIO Logger Common ArgParser base sdk)
 add_test(NAME ${target_offline_tools} COMMAND ${target_offline_tools})
 
-
 set(SUFFIX_CONFIG_TYPE $<IF:$<CONFIG:Debug>,Debug,Release>)
 
 
@@ -57,7 +56,7 @@ if(SMTG_WIN)
 elseif(UNIX AND NOT APPLE)
     add_custom_command(TARGET ${target} POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
-                           ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3
+                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3 
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
                                                         ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/data
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
@@ -79,9 +78,9 @@ elseif(UNIX AND NOT APPLE)
                                                         ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/                        
     )
 else()
-        add_custom_command(TARGET ${target} POST_BUILD
+    add_custom_command(TARGET ${target} POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3
-                           ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3
+                                                        ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
                                                         ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/data
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
@@ -92,7 +91,7 @@ else()
 
     add_custom_command(TARGET ${target_offline_tools} POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3
-                           ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3
+                                                 ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/adelay.vst3
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3
                                                          ${PROJECT_BINARY_DIR}/adelay.vst3
                        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data

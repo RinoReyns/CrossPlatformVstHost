@@ -1,6 +1,8 @@
 #include "header_list.h"
 
-namespace wave {
+
+namespace wave 
+{
 
 HeaderList::Iterator::Iterator(std::ifstream* stream, uint64_t position)
     : stream_(stream), position_(position) {}
