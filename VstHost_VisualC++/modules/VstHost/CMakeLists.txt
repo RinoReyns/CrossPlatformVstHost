@@ -40,8 +40,12 @@ add_library(${target} SHARED ${audiohost_sources})
 add_compile_definitions(${target} PUBLIC ${target})
 
 target_compile_features(${target} PUBLIC cxx_std_17)
-target_compile_options(${target} PUBLIC "-fobjc-arc")
-target_include_directories(${target} 
+
+if(SMTG_MAC)
+    target_compile_options(${target} PUBLIC "-fobjc-arc")
+endif()
+
+target_include_directories(${target}
                            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header 
                                   ${CMAKE_CURRENT_SOURCE_DIR}/source/media
                                   ${SDK_ROOT}/public.sdk/source/vst/hosting

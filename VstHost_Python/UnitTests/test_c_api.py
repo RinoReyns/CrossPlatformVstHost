@@ -18,7 +18,8 @@ class TestCApi(unittest.TestCase):
            self.vst_host_lib = "libAudioHostLib.so"
            self.vst_plugin_path = "adelay.vst3"
         elif platform == "darwin":
-           sys.exit("MacOs is not supported.")
+           self.vst_host_lib = "libAudioHostLib.dylib"
+           self.vst_plugin_path = "adelay.vst3"
         elif platform == "win32":
            self.vst_host_lib = "AudioHostLib.dll"
            self.vst_plugin_path = "adelay.vst3"
