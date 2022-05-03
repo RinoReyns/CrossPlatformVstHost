@@ -16,6 +16,8 @@ if(SMTG_MAC)
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${InfoPlistFile}
     )
+    set_property (TARGET ${target} APPEND_STRING PROPERTY 
+              COMPILE_FLAGS "-fobjc-arc")
 elseif(SMTG_LINUX)
     set(audiohost_sources
         ${audiohost_sources}
@@ -38,6 +40,7 @@ add_library(${target} SHARED ${audiohost_sources})
 add_compile_definitions(${target} PUBLIC ${target})
 
 target_compile_features(${target} PUBLIC cxx_std_17)
+target_compile_options(${target} PUBLIC "-fobjc-arc")
 target_include_directories(${target} 
                            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header 
                                   ${CMAKE_CURRENT_SOURCE_DIR}/source/media

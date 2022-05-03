@@ -4,6 +4,12 @@ cmake_minimum_required (VERSION 3.4.3)
 # Includes
 #-------------------------------------------------------------------------------
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk/cmake/modules")
+
+if(APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.15" CACHE STRING "macOS deployment target")
+    message(STATUS "[CrossPlatformVstHost] macOS Deployment Target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
+endif()
+
 include(SMTG_VST3_SDK)
 include(SMTG_CustomModuleTarget)
 
@@ -25,6 +31,7 @@ if (MSVC)
     set(SMTG_USE_STDATOMIC_H OFF CACHE BOOL "" FORCE)
 endif()
 
+
 include_directories(${SDK_ROOT})
 
 message(STATUS "CMAKE_SOURCE_DIR is set to: ${CMAKE_SOURCE_DIR}")
@@ -35,7 +42,6 @@ add_subdirectory(vst3sdk/base)
 add_subdirectory(vst3sdk/public.sdk)
 add_subdirectory(vst3sdk/public.sdk/samples/vst/adelay)
 add_subdirectory(modules)
-
 
 set_target_properties(gtest PROPERTIES ${UNIT_TESTS_FOLDER})
 set_target_properties(gtest_main PROPERTIES ${UNIT_TESTS_FOLDER})
