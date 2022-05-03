@@ -8,3 +8,4 @@ ForIntegration
 __pycache__/
 *.dll
 .DS_Store
+*.so
