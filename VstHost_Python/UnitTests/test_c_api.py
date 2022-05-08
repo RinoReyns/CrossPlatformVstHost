@@ -2,7 +2,6 @@ import unittest
 import ctypes
 import os
 from sys import platform
-import sys
 
 
 class TestCApi(unittest.TestCase):
@@ -12,6 +11,7 @@ class TestCApi(unittest.TestCase):
         self.ut_data = os.path.join(self.dir_path, "..", "..", "VstHost_VisualC++", "modules", "UnitTests", "data")
         self.class_pointer = None
         self.vst_lib_instance = None
+        self._plugin_name = "plugin_1".encode("ascii")
         self.output_wave_path = "output.wav"
         self.dump_params_config = "plugin_params.json"
         if platform == "linux" or platform == "linux2":
@@ -32,6 +32,9 @@ class TestCApi(unittest.TestCase):
         if os.path.exists(self.dump_params_config):
             os.remove(self.dump_params_config)
 
+    # TODO:
+    # create multiple plugins and check performance
+
     def test_run_basic_flow(self):
         # TODO:
         # clean up
@@ -45,26 +48,29 @@ class TestCApi(unittest.TestCase):
         self.vst_lib_instance.CApiSetVerbosity.argtypes = [ctypes.c_void_p, ctypes.c_int]
         self.vst_lib_instance.CApiSetVerbosity(self.class_pointer, 1)
 
-        self.vst_lib_instance.CApiCreatePluginInstance.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        self.vst_lib_instance.CApiCreatePluginInstance.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
         status = self.vst_lib_instance.CApiCreatePluginInstance(
             self.class_pointer,
-            ctypes.c_char_p(os.path.join(self.dir_path, self.vst_plugin_path).encode("ascii")))
+            ctypes.c_char_p(os.path.join(self.dir_path, self.vst_plugin_path).encode("ascii")),
+            self._plugin_name)
         self.assertEqual(status, 0)
-        self.vst_lib_instance.CApiSetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-        print(os.path.join(self.ut_data, "adelay_config.json"))
+        self.vst_lib_instance.CApiSetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
+
         status = self.vst_lib_instance.CApiSetPluginParameters(
             self.class_pointer,
-            ctypes.c_char_p(os.path.join(self.ut_data, "adelay_config.json").encode('ascii')))
+            ctypes.c_char_p(os.path.join(self.ut_data, "adelay_config.json").encode('ascii')),
+            self._plugin_name)
         self.assertEqual(status, 0)
-        self.vst_lib_instance.CApiGetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        self.vst_lib_instance.CApiGetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
         status = self.vst_lib_instance.CApiGetPluginParameters(
             self.class_pointer,
-            ctypes.c_char_p(self.dump_params_config.encode("ascii")))
+            ctypes.c_char_p(self.dump_params_config.encode("ascii")),
+            self._plugin_name)
         self.assertEqual(status, 0)
-        self.vst_lib_instance.CApiProcessWaveFileWithSinglePlugin.argtypes = [ctypes.c_void_p,
-                                                                              ctypes.c_char_p,
-                                                                              ctypes.c_char_p]
-        status = self.vst_lib_instance.CApiProcessWaveFileWithSinglePlugin(
+        self.vst_lib_instance.CApiProcessWaveFile.argtypes = [ctypes.c_void_p,
+                                                              ctypes.c_char_p,
+                                                              ctypes.c_char_p]
+        status = self.vst_lib_instance.CApiProcessWaveFile(
             self.class_pointer,
             ctypes.c_char_p(os.path.join(self.ut_data, "sine_440.wav").encode('ascii')),
             ctypes.c_char_p(self.output_wave_path.encode("ascii")))

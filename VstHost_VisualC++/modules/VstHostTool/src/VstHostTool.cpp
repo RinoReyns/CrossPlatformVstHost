@@ -25,7 +25,7 @@ int VstHostTool::PrepareArgs(int argc, char* argv[])
     }
     catch (const std::exception&)
     {
-        return VST_ERROR_STATUS::PARS_ARGS_ERROR;
+        return VST_ERROR_STATUS::ARG_PARSER_ERROR;
     }
 }
 
@@ -40,7 +40,7 @@ int VstHostTool::Run()
     if (parser_arguments_.size() == 0)
     {
         LOG(ERROR) << "Empty args.";
-        return VST_ERROR_STATUS::PARS_ARGS_ERROR;
+        return VST_ERROR_STATUS::ARG_PARSER_ERROR;
     }
     
     int status = arg_parser_->ParsParameters(parser_arguments_);
@@ -59,7 +59,7 @@ int VstHostTool::Run()
    /* HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (SUCCEEDED(stat))
     {
-        std::unique_ptr<AudioCapture> audio_capture(new AudioCapture(arg_parser->GetPluginVerbosity()));
+        std::unique_ptr<AudioCapture> audio_capture(new AudioCapture(arg_parser_->GetPluginVerbosity()));
         audio_capture->RecordAudioStream();
         CoUninitialize();
         return 0;
@@ -67,20 +67,20 @@ int VstHostTool::Run()
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
 
-    status = vst_host->CreatePluginInstance(arg_parser_->GetPluginPath());
+    status = vst_host->CreateMutliplePluginInstance(arg_parser_->GetProcessingConfig());
     if (status == VST_ERROR_STATUS::SUCCESS)
     {
         if (arg_parser_->GetDumpPluginParams())
         {
-            status = vst_host->GetPluginParameters(arg_parser_->GetPluginConfig());
+            status = vst_host->GetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
         }
         else
         {
-            status = vst_host->SetPluginParameters(arg_parser_->GetPluginConfig());
+            status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
             if (status == VST_ERROR_STATUS::SUCCESS)
             {
-                status = vst_host->ProcessWaveFileWithSinglePlugin(arg_parser_->GetInputWavePath(),
-                                                                   arg_parser_->GetOutputWavePath());
+                status = vst_host->ProcessWaveFile(arg_parser_->GetInputWavePath(),
+                                                   arg_parser_->GetOutputWavePath());
             }
         }
     }

@@ -5,7 +5,6 @@
 #include "parameterchanges.h"
 #include "processdata.h"
 #include "plugprovider.h"
-#include "json.hpp"
 
 #ifdef _WIN32
     #include "AudioHostLib_Export.h"
@@ -23,13 +22,18 @@ class AudioProcessingVstHost
     public:
         AUDIOHOSTLIB_EXPORT AudioProcessingVstHost() = default;
         AUDIOHOSTLIB_EXPORT ~AudioProcessingVstHost();
-        int AUDIOHOSTLIB_EXPORT ProcessWaveFileWithSinglePlugin(const std::string& input_wave_path,
+        int AUDIOHOSTLIB_EXPORT ProcessWaveFile(const std::string& input_wave_path,
                                                                 const std::string& output_wave_path);
         int AUDIOHOSTLIB_EXPORT CreatePluginInstance(const std::string& plugin_path,
+                                                     const std::string& plugin_id,
                                                      VST3::Optional<VST3::UID> effectID);
-        int AUDIOHOSTLIB_EXPORT CreatePluginInstance(const std::string& plugin_path);
-        int AUDIOHOSTLIB_EXPORT SetPluginParameters(const std::string& plugin_config);
-        int AUDIOHOSTLIB_EXPORT GetPluginParameters(const std::string& plugin_config);
+        int AUDIOHOSTLIB_EXPORT CreatePluginInstance(const std::string& plugin_path,
+                                                     const std::string& plugin_id);
+        int AUDIOHOSTLIB_EXPORT CreateMutliplePluginInstance(const config_type processing_config);
+        int AUDIOHOSTLIB_EXPORT SetPluginParameters(std::string plugin_id, const std::string& plugin_config);
+        int AUDIOHOSTLIB_EXPORT SetMutliplePluginParameters(const config_type processing_config);
+        int AUDIOHOSTLIB_EXPORT GetPluginParameters(std::string plugin_id, const std::string& plugin_config);
+        int AUDIOHOSTLIB_EXPORT GetMutliplePluginParameters(const config_type processing_config);
         void AUDIOHOSTLIB_EXPORT Terminate();
         void AUDIOHOSTLIB_EXPORT SetVerbosity(uint8_t value);
         struct Buffers
@@ -40,15 +44,14 @@ class AudioProcessingVstHost
         };
 
     private:
-        VST_ERROR_STATUS DumpJson(nlohmann::json json_config, std::string path_to_save);
-        VST_ERROR_STATUS LoadJson(std::string plugin_config_path, nlohmann::json* json_config);
-        VST3::Hosting::Module::Ptr module {nullptr};
-        std::unique_ptr<Steinberg::Vst::PlugProvider> plugProvider {nullptr};
+        std::map<std::string, VST3::Hosting::Module::Ptr> module;
+        std::map<std::string, std::unique_ptr<Steinberg::Vst::PlugProvider>> plugProvider;
         Steinberg::Vst::ProcessContext processContext;
         Steinberg::Vst::ParameterChanges inputParameterChanges;
         Steinberg::Vst::HostProcessData processData;
         uint8_t verbose_         = 0;
         std::string plugin_path_ = "";
+        config_type plugins_config_;
 };
 
 
@@ -68,43 +71,55 @@ extern "C" {
         return VST_ERROR_STATUS::SUCCESS;
     }
 
-    C_API_PREFIX int CApiCreatePluginInstance(AudioProcessingVstHost* vst_host,
-                                              const char* plugin_path)
+    C_API_PREFIX int CApiCreatePluginInstance(
+        AudioProcessingVstHost* vst_host,
+        const char* plugin_path,
+        const char* plugin_id)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         RETURN_ERROR_IF_NULL(plugin_path);
-        std::string plugin_path_srt(plugin_path);
-        return vst_host->CreatePluginInstance(plugin_path_srt);
+        RETURN_ERROR_IF_NULL(plugin_id);
+        std::string plugin_path_(plugin_path);
+        std::string plugin_id_(plugin_id);
+        return vst_host->CreatePluginInstance(plugin_path_, plugin_id_);
     }
 
-    C_API_PREFIX int CApiGetPluginParameters(AudioProcessingVstHost* vst_host,
-                                             const char* plugin_config)
+    C_API_PREFIX int CApiGetPluginParameters(
+        AudioProcessingVstHost* vst_host,
+        const char* plugin_config,
+        const char* plugin_id)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         RETURN_ERROR_IF_NULL(plugin_config);
-        std::string plugin_config_srt(plugin_config);
-        return vst_host->GetPluginParameters(plugin_config_srt);
+        RETURN_ERROR_IF_NULL(plugin_id);
+        std::string plugin_config_(plugin_config);
+        std::string plugin_id_(plugin_id);
+        return vst_host->GetPluginParameters(plugin_id_, plugin_config_);
     }
 
-    C_API_PREFIX int CApiSetPluginParameters(AudioProcessingVstHost* vst_host,
-                                             const char* plugin_config)
+    C_API_PREFIX int CApiSetPluginParameters(
+        AudioProcessingVstHost* vst_host,
+        const char* plugin_config,
+        const char* plugin_id)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         RETURN_ERROR_IF_NULL(plugin_config);
-        std::string plugin_config_srt(plugin_config);
-        return vst_host->SetPluginParameters(plugin_config_srt);
+        RETURN_ERROR_IF_NULL(plugin_id);
+        std::string plugin_config_(plugin_config);
+        std::string plugin_id_(plugin_id);
+        return vst_host->SetPluginParameters(plugin_id_, plugin_config_);
     }
 
-    C_API_PREFIX int CApiProcessWaveFileWithSinglePlugin(AudioProcessingVstHost* vst_host,
-                                                         const char* input_wave_path,
-                                                         const char* output_wave_path)
+    C_API_PREFIX int CApiProcessWaveFile(AudioProcessingVstHost* vst_host,
+                                         const char* input_wave_path,
+                                         const char* output_wave_path)
     {
         RETURN_ERROR_IF_NULL(vst_host);
         RETURN_ERROR_IF_NULL(input_wave_path);
         RETURN_ERROR_IF_NULL(output_wave_path);
         std::string input_wave_path_srt(input_wave_path);
         std::string output_wave_path_srt(output_wave_path);
-        return vst_host->ProcessWaveFileWithSinglePlugin(input_wave_path_srt, output_wave_path_srt);
+        return vst_host->ProcessWaveFile(input_wave_path_srt, output_wave_path_srt);
     }
 
     C_API_PREFIX int CApiDeleteInstance(AudioProcessingVstHost* vst_host)
@@ -121,6 +136,7 @@ extern "C" {
             return -1;
         }
     }
+
 }
 
 #endif // AUDIO_PROCESSING_VST_HOST

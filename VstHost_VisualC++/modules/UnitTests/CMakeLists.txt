@@ -14,11 +14,11 @@ include_directories(${gtest_SOURCE_DIR}/include
                     ${PROJECT_SOURCE_DIR}/../VstHostTool/header)
 
 set(UnitTests_sources
-    header/Common.h
+    header/UnitTestsCommon.h
     src/AudioHostLibUnitTests.cpp)
 
 set (OfflineToolsUnitTest
-     header/Common.h
+     header/UnitTestsCommon.h
      src/VstHostToolUnitTests.cpp)
 
 add_executable(${target} ${UnitTests_sources})
