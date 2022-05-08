@@ -78,7 +78,7 @@ jobs:
           ${{ steps.install-ndk.outputs.ndk-path }}/ndk-build --version
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
           echo $ANDROID_NDK_PATH
-          cmake -H. -B android_build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DANDROID_PLATFORM=android-19 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
+          cmake "${{github.workspace}}\VstHost_VisualC++" -B android_build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0 -DANDROID_PLATFORM=android-19 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
           cd android_build
           ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
 
