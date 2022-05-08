@@ -75,7 +75,6 @@ jobs:
       - name: Check Android NDK
 
         run: |
-          ndk-build --version
           ${{ steps.install-ndk.outputs.ndk-path }}/ndk-build --version
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
           echo $ANDROID_NDK_PATH
