@@ -67,20 +67,20 @@ int VstHostTool::Run()
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
 
-    status = vst_host->CreatePluginInstance(arg_parser_->GetPluginPath());
+    status = vst_host->CreateMutliplePluginInstance(arg_parser_->GetProcessingConfig());
     if (status == VST_ERROR_STATUS::SUCCESS)
     {
         if (arg_parser_->GetDumpPluginParams())
         {
-            status = vst_host->GetPluginParameters(arg_parser_->GetPluginConfig());
+            status = vst_host->GetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
         }
         else
         {
-            status = vst_host->SetPluginParameters(arg_parser_->GetPluginConfig());
+            status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
             if (status == VST_ERROR_STATUS::SUCCESS)
             {
-                status = vst_host->ProcessWaveFileWithSinglePlugin(arg_parser_->GetInputWavePath(),
-                                                                   arg_parser_->GetOutputWavePath());
+                status = vst_host->ProcessWaveFile(arg_parser_->GetInputWavePath(),
+                                                   arg_parser_->GetOutputWavePath());
             }
         }
     }

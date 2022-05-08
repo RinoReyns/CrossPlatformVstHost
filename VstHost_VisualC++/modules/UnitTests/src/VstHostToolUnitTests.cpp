@@ -160,7 +160,7 @@ namespace VstHostToolUnitTest
         plugin_config_json["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
         plugin_config_json["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
         plugin_config_json["plugin_2"]["plugin"] = VST_PLUGIN_PATH;
-        plugin_config_json["plugin_2"]["config"] = "";
+        plugin_config_json["plugin_2"]["config"] = CONFIG_FOR_ADELAY_PLUGIN_2;
         
         int status = JsonUtils::DumpJson(plugin_config_json, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
@@ -187,7 +187,44 @@ namespace VstHostToolUnitTest
         // TOOD:
         // create new reference for mutliplugin processing
         std::vector<float> ref;
-        status = LoadWave(REF_OUTPUT_WITH_SET_DELAY, &ref);
+        status = LoadWave(REF_OUTPUT_WITH_TWO_PLUGINS, &ref);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        EXPECT_EQ(output, ref);
+    }
+
+
+    TEST_F(VstHostToolTest, RunToolWithProcessingConfigWithOneEmptyConfig)
+    {
+        nlohmann::json plugin_config_json;
+        plugin_config_json["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
+        plugin_config_json["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
+        plugin_config_json["plugin_2"]["plugin"] = VST_PLUGIN_PATH;
+        plugin_config_json["plugin_2"]["config"] = "";
+
+        int status = JsonUtils::DumpJson(plugin_config_json, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+        std::vector<std::string> arg_params = {
+           "OfflineToolsUnitTests.exe",
+           "-processing_config",
+           PROCESSING_CONFIG_PATH,
+           "-input_wave",
+           INPUT_WAVE_PATH,
+           "-output_wave_path",
+           OUTPUT_WAVE_PATH,
+        };
+
+        status = vst_host_tool_->PrepareArgs(arg_params);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        status = vst_host_tool_->Run();
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+        std::vector<float> output;
+        status = LoadWave(OUTPUT_WAVE_PATH, &output);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+        std::vector<float> ref;
+        status = LoadWave(REF_OUTPUT_WITH_TWO_PLUGINS_2, &ref);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         EXPECT_EQ(output, ref);
     }

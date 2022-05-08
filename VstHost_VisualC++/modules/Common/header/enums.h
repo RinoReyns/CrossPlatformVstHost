@@ -1,8 +1,15 @@
 #ifndef ENUMS_H
 #define ENUMS_H
+#include <map>
+#include <string>
 
 #define RETURN_ERROR_IF_NULL(value) {if(!value) return VST_ERROR_STATUS::NULL_POINTER;}
 #define RETURN_ERROR_IF_NOT_SUCCESS(value) {if(value != VST_ERROR_STATUS::SUCCESS) return value;}
+
+constexpr auto PLUGINS_STRING = "plugin";
+constexpr auto CONFIG_STRING  = "config";
+
+typedef std::map<std::string, std::map<std::string, std::string>> config_type;
 
 enum VST_ERROR_STATUS
 {
@@ -22,8 +29,10 @@ enum VST_ERROR_STATUS
     EMPTY_ARG                           = 13,
     UNSUPPORTED_CONFIGURATION           = 14,
     MISSING_ID                          = 15,
+    INSTANCE_ALREADY_EXISTS             = 16,
+    NO_PLUGIN_INITIALIZED               = 17,
 
-    MAX_STATUS_VALUE                    = MISSING_ID
+    MAX_STATUS_VALUE                    = NO_PLUGIN_INITIALIZED
 };
 
 namespace LogLevelType

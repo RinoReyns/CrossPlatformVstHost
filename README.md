@@ -24,13 +24,16 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] CI
       - [x] VST Host Library with C api that allows to use it in e.g. Python
       - [x] Basic python unit test for c api
+      - [x] Allow to use multiple plugins and configs for them
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Clean up UT for python
       - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
-      - [ ] Allow to use multiple plugins and configs for them (WIP)
-      
+      - [ ] Generate Documentation
+      - [ ] Add document with useful links
+      - [ ] Create one data structure for all parameters related with multiple plugins
+
 1. Windows OS
 
     - Implemented:

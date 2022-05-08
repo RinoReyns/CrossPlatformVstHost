@@ -1,7 +1,8 @@
 #include <filesystem>
 
 #include "arg_parser.h"
-#include "enums.h"
+#include "JsonUtils.h"
+
 
 ArgParser::ArgParser()
 {
@@ -83,6 +84,10 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
                 return status;
             }
             plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
+            std::map<std::string, std::string> plugin_params = { {PLUGINS_STRING, plugin_path_}, 
+                                                                 {CONFIG_STRING, plugin_config_}
+                                                               };
+            processing_config_.insert(std::make_pair("plugin_1", plugin_params));
         }
     }
     else
@@ -93,6 +98,12 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
             LOG(ERROR) << "-plugin_config can't be empty.";
             return VST_ERROR_STATUS::JSON_CONFIG_ERROR;
         }
+
+        plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
+        std::map<std::string, std::string> plugin_params = { {PLUGINS_STRING, plugin_path_},
+                                                             {CONFIG_STRING, plugin_config_}
+        };
+        processing_config_.insert(std::make_pair("plugin_1", plugin_params));
     }
 
     // verbosity_
@@ -145,7 +156,18 @@ int ArgParser::CheckPluginParams()
         status = CheckIfPathExists(arg_parser_->get<std::string>("-processing_config"));
         if (status == VST_ERROR_STATUS::SUCCESS)
         {
-            processing_config_ = arg_parser_->get<std::string>("-processing_config");
+            status = JsonUtils::JsonFileToMap(arg_parser_->get<std::string>("-processing_config"),
+                                              &processing_config_,
+                                              expected_keys_in_json_);
+            if (status == VST_ERROR_STATUS::MISSING_ID)
+            {
+                const char* const delim = ", ";
+                std::ostringstream imploded;
+                std::copy(expected_keys_in_json_.begin(), expected_keys_in_json_.end(),
+                    std::ostream_iterator<std::string>(imploded, delim));
+                LOG(ERROR) << "Missing ID in: '" << arg_parser_->get<std::string>("-processing_config") << 
+                            "'. Please make sure that each param has following values: " << imploded.str();
+            }
             return status;
         }
     }
@@ -204,4 +226,9 @@ std::string ArgParser::GetPluginConfig()
 bool ArgParser::GetDumpPluginParams()
 {
     return dump_plugin_params_;
+}
+
+config_type ArgParser::GetProcessingConfig()
+{
+    return processing_config_;
 }

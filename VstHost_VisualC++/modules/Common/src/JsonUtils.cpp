@@ -35,7 +35,7 @@ VST_ERROR_STATUS JsonUtils::LoadJson(std::string plugin_config_path,
 
 VST_ERROR_STATUS JsonUtils::JsonFileToMap(
     std::string plugin_config_path,
-    std::map<std::string, std::map<std::string, std::string>> *params_map,
+    config_type *params_map,
     std::vector<std::string> expected_ids)
 {
     nlohmann::json plugin_config_json;
