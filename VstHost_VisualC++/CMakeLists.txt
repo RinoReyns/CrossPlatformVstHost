@@ -12,11 +12,16 @@ endif()
 
 include(SMTG_VST3_SDK)
 include(SMTG_CustomModuleTarget)
+SET(ANDROID_BUILD False CACHE BOOL "Determin if build is dedicated for andorid.")
 
+if (${ANDROID_BUILD})
+    message("-- Android Build: ${ANDROID_BUILD}")
+    include(cmake/andorid_toolchain.cmake)
+endif()
 #-------------------------------------------------------------------------------
 # Project
 #-------------------------------------------------------------------------------
-project(VstHost)
+project(VstHost C CXX)
 smtg_setup_platform_toolset()
 
 set(SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk")

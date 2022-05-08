@@ -16,8 +16,7 @@ if(SMTG_MAC)
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${InfoPlistFile}
     )
-    set_property (TARGET ${target} APPEND_STRING PROPERTY 
-              COMPILE_FLAGS "-fobjc-arc")
+    set_property (TARGET ${target} APPEND_STRING PROPERTY COMPILE_FLAGS "-fobjc-arc")
 elseif(SMTG_LINUX)
     set(audiohost_sources
         ${audiohost_sources}

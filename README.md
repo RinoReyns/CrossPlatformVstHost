@@ -33,6 +33,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Generate Documentation
       - [ ] Add document with useful links
       - [ ] Create one data structure for all parameters related with multiple plugins
+      - [ ] Build solution for ARM
 
 1. Windows OS
 
@@ -49,11 +50,11 @@ is why this repository was created. I know that it will take a lot of work but i
 1. Android
 
     - TODO:
-      - [ ] Add build for basic code 
       - [ ] Add endpoint reader
       - [ ] Enable UT
       - [ ] Add platform specific offline tool
       - [ ] Add CI
+      - [ ] Add documentation how to setup env to build code
 
 1. Mac OS
 
