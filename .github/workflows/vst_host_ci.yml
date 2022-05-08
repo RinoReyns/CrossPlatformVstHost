@@ -66,14 +66,16 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: ./
+      - uses: nttld/setup-ndk@v1
         id: install-ndk
         with:
           ndk-version: r24
+          add-to-path: false
 
       - name: Check Android NDK
 
         run: |
+          ./build.sh
           ndk-build --version
           ${{ steps.install-ndk.outputs.ndk-path }}/ndk-build --version
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
