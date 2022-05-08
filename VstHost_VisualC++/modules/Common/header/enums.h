@@ -21,8 +21,9 @@ enum VST_ERROR_STATUS
     ARG_PARSER_ERROR                    = 12,
     EMPTY_ARG                           = 13,
     UNSUPPORTED_CONFIGURATION           = 14,
+    MISSING_ID                          = 15,
 
-    MAX_STATUS_VALUE                    = UNSUPPORTED_CONFIGURATION
+    MAX_STATUS_VALUE                    = MISSING_ID
 };
 
 namespace LogLevelType

@@ -1,6 +1,7 @@
 #include "JsonUtils.h"
 
 #include <fstream>
+#include <iostream>
 
 VST_ERROR_STATUS JsonUtils::DumpJson(nlohmann::json json_config,
                                      std::string path_to_save)
@@ -20,6 +21,7 @@ VST_ERROR_STATUS JsonUtils::DumpJson(nlohmann::json json_config,
 VST_ERROR_STATUS JsonUtils::LoadJson(std::string plugin_config_path,
                                      nlohmann::json* json_config)
 {
+    RETURN_ERROR_IF_NULL(json_config);
     std::ifstream file(plugin_config_path);
     if (!file.is_open())
     {
@@ -28,5 +30,35 @@ VST_ERROR_STATUS JsonUtils::LoadJson(std::string plugin_config_path,
 
     file >> *json_config;
     file.close();
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+VST_ERROR_STATUS JsonUtils::JsonFileToMap(
+    std::string plugin_config_path,
+    std::map<std::string, std::map<std::string, std::string>> *params_map,
+    std::vector<std::string> expected_ids)
+{
+    nlohmann::json plugin_config_json;
+    VST_ERROR_STATUS status = JsonUtils::LoadJson(plugin_config_path, &plugin_config_json);
+    RETURN_ERROR_IF_NOT_SUCCESS(status);
+    for (auto& [plugin_id, plugin_values] : plugin_config_json.items()) 
+    {
+        std::map<std::string, std::string> single_plugin_params;
+        // map params
+        for (auto& single_param : plugin_values.items()) 
+        {
+            single_plugin_params.insert(std::make_pair(single_param.key(), single_param.value()));
+        }
+        
+        // check if map has expected values
+        for (auto& expected_id : expected_ids)
+        {
+            if (single_plugin_params.find(expected_id) == single_plugin_params.end())
+            {
+                return VST_ERROR_STATUS::MISSING_ID;
+            }
+        }
+        params_map->insert(std::make_pair(plugin_id, single_plugin_params));
+    }
     return VST_ERROR_STATUS::SUCCESS;
 }

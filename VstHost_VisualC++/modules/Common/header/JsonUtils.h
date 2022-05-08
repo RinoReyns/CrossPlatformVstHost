@@ -9,6 +9,9 @@ class JsonUtils
     public:
         static VST_ERROR_STATUS DumpJson(nlohmann::json json_config, std::string path_to_save);
         static VST_ERROR_STATUS LoadJson(std::string plugin_config_path, nlohmann::json* json_config);
+        static VST_ERROR_STATUS JsonFileToMap(std::string plugin_config_path, 
+                                              std::map<std::string, std::map<std::string, std::string>> * prams_map,
+                                              std::vector<std::string> expected_ids);
 };
 
 #endif //JSON_UTILS_H
