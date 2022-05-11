@@ -170,11 +170,9 @@ jobs:
 
       - name: Configure CMake and Build
 
-        run: |-
+        run: |
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
           echo $ANDROID_NDK_PATH
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_${{ matrix.android_typ }}
-           -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0
-            -DANDROID_PLATFORM=android-19 -D ANDROID_ABI=${{ matrix.android_typ }} -DANDROID_BUILD=True
+          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_${{ matrix.android_typ }} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0 -DANDROID_PLATFORM=android-19 -D ANDROID_ABI=${{ matrix.android_typ }} -DANDROID_BUILD=True
           cd build_${{ matrix.android_typ }}
           ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
