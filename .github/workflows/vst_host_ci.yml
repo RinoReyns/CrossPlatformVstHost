@@ -51,12 +51,12 @@ jobs:
           rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/VstHost.log
           rm -r -fo ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
 
-      #- name: Archive Build Artifacts
-      #  uses: actions/upload-artifact@v1
-      #  with:
-      #    name: windows_x64
-      #    path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
-      
+      # - name: Archive Build Artifacts
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: windows_x64
+      #     path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
+
   build_linux_configuration:
 
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      
+
       - name: Configure CMake
         run: |
           mkdir build
@@ -97,45 +97,45 @@ jobs:
           rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/VstHost.log
           rm -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
 
-      #- name: Archive Build Artifacts
-      #  uses: actions/upload-artifact@v1
-      #  with:
-      #    name: linux_x64
-      #    path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
+      # - name: Archive Build Artifacts
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: linux_x64
+      #     path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
 
 
   build_mac_os_configuration:
-      
+
     runs-on: macos-latest
-          
+
     steps:
       - uses: actions/checkout@v2
-        with: 
+        with:
           submodules: recursive
-          
+
       - name: Configure CMake
         run: |
           mkdir build
           cd build
           cmake -G Xcode ${{github.workspace}}/VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=0
           cd ..
-          
+
       - name: Build C++ Code
         run: |
           cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 8 --resolve-package-references on
-          
+
       - name: Run C++ Unit Tests
         run: |
           cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
-          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests  
+          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
-      
+
       - name: Run Python Unit Tests
         run: |
           cp -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/libAudioHostLib.dylib ${{github.workspace}}/VstHost_Python/UnitTests/
           python -m unittest discover ${{github.workspace}}/VstHost_Python/UnitTests "test_*.py"
-  
+
       - name: Clean Up After Build
         run: |
           rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
@@ -143,11 +143,36 @@ jobs:
           rm -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3
           rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/VstHost.log
           rm -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
-          
-      #- name: Archive Build Artifacts
-      #  uses: actions/upload-artifact@v1
-      #  with:
-      #    name: mac_os
-      #    path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
-          
 
+      # - name: Archive Build Artifacts
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: mac_os
+      #     path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
+
+  build_android_configuration:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        android_typ: [armeabi-v7a, arm64-v8a, x86, x86_64]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - uses: nttld/setup-ndk@v1
+        id: install-ndk
+        with:
+          ndk-version: r24
+          add-to-path: false
+
+      - name: Configure CMake and Build
+
+        run: |
+          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+          echo $ANDROID_NDK_PATH
+          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_${{ matrix.android_typ }} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0 -DANDROID_PLATFORM=android-19 -D ANDROID_ABI=${{ matrix.android_typ }} -DANDROID_BUILD=True
+          cd build_${{ matrix.android_typ }}
+          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
