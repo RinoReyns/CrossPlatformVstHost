@@ -58,4 +58,11 @@ target_link_libraries(${target} PRIVATE base sdk ArgParser WaveIO Logger Common 
 
 include (GenerateExportHeader)
 generate_export_header(AudioHostLib)
-
+if (${ANDROID_BUILD})
+    add_custom_command(TARGET ${target} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libAudioHostLib.so
+                                                        ${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libAudioHostLib.so
+                       COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/header/audiohost.h
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/include/audiohost.h"
+        )
+endif()

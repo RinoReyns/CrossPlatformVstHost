@@ -31,11 +31,11 @@ set(public_sdk_SOURCE_DIR ${SDK_ROOT}/public.sdk)
 set(VST_SDK TRUE)
 set(SMTG_CREATE_PLUGIN_LINK FALSE)
 set(SDK_IDE_PLUGIN_EXAMPLES_FOLDER FOLDER "PlugInExamples")
+set(SUFFIX_CONFIG_TYPE $<IF:$<CONFIG:Debug>,Debug,Release>)
 
 if (MSVC)
     set(SMTG_USE_STDATOMIC_H OFF CACHE BOOL "" FORCE)
 endif()
-
 
 include_directories(${SDK_ROOT})
 
@@ -48,10 +48,12 @@ add_subdirectory(vst3sdk/public.sdk)
 add_subdirectory(vst3sdk/public.sdk/samples/vst/adelay)
 add_subdirectory(modules)
 
-set_target_properties(gtest PROPERTIES ${UNIT_TESTS_FOLDER})
-set_target_properties(gtest_main PROPERTIES ${UNIT_TESTS_FOLDER})
-set_target_properties(ApiUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
-set_target_properties(OfflineToolsUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
+if (NOT ${ANDROID_BUILD})
+    set_target_properties(gtest PROPERTIES ${UNIT_TESTS_FOLDER})
+    set_target_properties(gtest_main PROPERTIES ${UNIT_TESTS_FOLDER})
+    set_target_properties(ApiUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
+    set_target_properties(OfflineToolsUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
+endif()
 
 set_target_properties(sdk PROPERTIES ${SDK_IDE_LIBS_FOLDER})
 set_target_properties(sdk_common PROPERTIES ${SDK_IDE_LIBS_FOLDER})

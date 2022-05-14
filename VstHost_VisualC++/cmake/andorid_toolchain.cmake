@@ -1,3 +1,7 @@
+if ("$ENV{ANDROID_NDK_PATH}" STREQUAL "")
+    message(FATAL_ERROR "Environmental variable 'ANDROID_NDK_PATH' is empty. Please set it and rerun build.")
+endif()
+
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 message ($ENV{ANDROID_NDK_PATH})
@@ -8,11 +12,11 @@ if(NOT CMAKE_TOOLCHAIN_FILE)
     set(ANDROID_ABI "armeabi-v7a")
   endif()
   if(NOT ANDROID_PLATFORM)
-    set(ANDROID_PLATFORM "android-19")
+    set(ANDROID_PLATFORM "android-28")
   endif()
   set(CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_DIRECTORY}/android.toolchain.cmake")
 endif()
 
-if(WIN32 AND NOT CMAKE_MAKE_PROGRAM)
-  set(CMAKE_MAKE_PROGRAM "$ENV{ANDROID_NDK_PATH}/prebuilt/linux-x86_64/bin/make" CACHE INTERNAL "" FORCE)
+IF (WIN32)
+        set(CMAKE_MAKE_PROGRAM "$ENV{ANDROID_NDK_PATH}\\prebuilt\\windows-x86_64\\bin\\make.exe" CACHE INTERNAL "" FORCE)
 endif()
