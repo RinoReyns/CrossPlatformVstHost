@@ -152,7 +152,7 @@ jobs:
 
   build_android_configuration:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -214,6 +214,7 @@ jobs:
            cd VstHost_Android
            chmod +x gradlew
            ./gradlew init
+           /${{github.workspace}}/VstHost_Android/gradlew connectedCheck
            ls -la
 
       - name: run tests
@@ -222,4 +223,4 @@ jobs:
           api-level: 28
           arch: x86_64
           profile: Nexus 6
-          script: /${{github.workspace}}/VstHost_Android/gradlew connectedCheck
+          script: ${{github.workspace}}/VstHost_Android/gradlew connectedCheck
