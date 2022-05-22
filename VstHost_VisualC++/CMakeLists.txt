@@ -17,6 +17,7 @@ SET(ANDROID_BUILD False CACHE BOOL "Determin if build is dedicated for andorid."
 if (${ANDROID_BUILD})
     message("-- Android Build: ${ANDROID_BUILD}")
     include(cmake/andorid_toolchain.cmake)
+
 endif()
 #-------------------------------------------------------------------------------
 # Project

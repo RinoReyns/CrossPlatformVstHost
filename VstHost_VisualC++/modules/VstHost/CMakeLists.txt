@@ -63,5 +63,16 @@ if (${ANDROID_BUILD})
                                                         ${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libAudioHostLib.so
                        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/header/audiohost.h
                                                         "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/include/audiohost.h"
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/modules/VstHost/audiohostlib_export.h
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/include/audiohostlib_export.h"
+        )
+        
+    add_custom_command(TARGET ${target} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libpluginterfaces.a
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libpluginterfaces.a"
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libsdk.a
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libsdk.a"
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libsdk_hosting.a
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libsdk_hosting.a"
         )
 endif()
