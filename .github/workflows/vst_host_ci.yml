@@ -164,6 +164,10 @@ jobs:
         with:
           ndk-version: r24
           add-to-path: false
+     
+     - uses: einaregilsson/build-number@v3
+        with:
+          token: ${{secrets.github_token}}
 
       - name: Configure CMake and Build C++ .so for armeabi-v7a
 
@@ -201,3 +205,29 @@ jobs:
           ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
           cd ..
           ls -la
+          
+      - name: Generate Release APK
+        run: |
+          cd VstHost_Android
+          touch app/version.properties
+          echo "VERSION_CODE=$BUILD_NUMBER" > app/version.properties
+          chmod +x gradlew
+          ./gradlew assembleRelease
+      # 3
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1
+        # ID used to access action output
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      
+      - name: Rename Final Apk
+        id: SetApkName
+        run: |
+          RELEASE_APK_PATH="$(echo ${{steps.sign_app.outputs.signedReleaseFile}} |sed -e 's/-signed.apk/.apk/')" 
+          mv ${{ steps.sign_app.outputs.signedReleaseFile }} ${RELEASE_APK_PATH}
+          echo "::set-output name=release-app-path::$RELEASE_APK_PATH"
