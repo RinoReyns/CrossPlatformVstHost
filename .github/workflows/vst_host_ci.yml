@@ -222,8 +222,4 @@ jobs:
           api-level: 28
           arch: x86_64
           profile: Nexus 6
-<<<<<<< HEAD
-          script: /${{github.workspace}}/VstHost_Android/gradlew connectedCheck
-=======
           script: ${{github.workspace}}/VstHost_Android/gradlew connectedCheck
->>>>>>> afe2d483763c2cc2d3ba39325cd0264df5bf0643
