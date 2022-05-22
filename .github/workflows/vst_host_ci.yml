@@ -213,7 +213,7 @@ jobs:
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
            chmod +x gradlew
-           gradlew init
+           ./gradlew init
            ls -la
 
       - name: run tests
