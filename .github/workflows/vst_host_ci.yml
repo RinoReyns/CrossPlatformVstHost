@@ -165,10 +165,14 @@ jobs:
           ndk-version: r24
           add-to-path: false
 
-      - uses: einaregilsson/build-number@v3
+      - name: Generate build number
+        uses: einaregilsson/build-number@v3
         with:
-          token: ${{secrets.github_token}}
+          token: ${{secrets.github_token}}     
 
+      - name: Print new build number
+        run: echo "Build number is $BUILD_NUMBER"
+      
       - name: Configure CMake and Build C++ .so for armeabi-v7a
 
         run: |
