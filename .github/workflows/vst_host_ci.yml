@@ -213,6 +213,7 @@ jobs:
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
            chmod +x gradlew
+           gradlew init
            ls -la
 
       - name: run tests
@@ -221,6 +222,4 @@ jobs:
           api-level: 28
           arch: x86_64
           profile: Nexus 6
-          run: |
-             /${{github.workspace}}/VstHost_Android/gradlew init
-             /${{github.workspace}}/VstHost_Android/gradlew connectedCheck
+          script: /${{github.workspace}}/VstHost_Android/gradlew connectedCheck
