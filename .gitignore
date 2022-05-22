@@ -9,3 +9,12 @@ __pycache__/
 *.dll
 .DS_Store
 *.so
+
+*.iml
+.gradle
+/local.properties
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+AndroidPack

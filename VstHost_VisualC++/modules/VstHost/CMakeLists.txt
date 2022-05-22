@@ -50,7 +50,6 @@ target_include_directories(${target}
                                   ${SDK_ROOT}/public.sdk/source/vst/hosting
                                   ${SDK_ROOT}/public.sdk/source/vst/utility
                                   ${SDK_ROOT}/pluginterfaces/vst
-                                  ${SDK_ROOT}/public.sdk/source/vst/utility/
                                   ${PROJECT_BINARY_DIR}/modules/VstHost
                                   ${PROJECT_SOURCE_DIR})
                  
