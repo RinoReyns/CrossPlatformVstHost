@@ -202,28 +202,15 @@ jobs:
           cd ..
           ls -la
 
-      - name: Generate Release APK
-        run: |
-          cd VstHost_Android
-          touch app/version.properties
-          echo "VERSION_CODE=1.0.0" > app/version.properties
-          chmod +x gradlew
-          ./gradlew assembleRelease
+      - name: prepare set
+        run :|
+           pwd
+           cd VstHost_Android
+           pwd
+           ./gradlew tasks
 
-      - name: Sign APK
-        uses: r0adkll/sign-android-release@v1
-        # ID used to access action output
-        id: sign_app
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-
-      - name: Rename Final Apk
-        id: SetApkName
-        run: |
-          RELEASE_APK_PATH="$(echo ${{steps.sign_app.outputs.signedReleaseFile}} |sed -e 's/-signed.apk/.apk/')" 
-          mv ${{ steps.sign_app.outputs.signedReleaseFile }} ${RELEASE_APK_PATH}
-          echo "::set-output name=release-app-path::$RELEASE_APK_PATH"
+          api-level: 2
+          script: ./gradlew connectedCheck
