@@ -212,6 +212,8 @@ jobs:
            cp -rv build_x86_64/VST3/Release VstHost_Android/app/src/main/assets/
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
+           chmod +x gradlew
+           ls -la
 
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
