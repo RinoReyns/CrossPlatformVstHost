@@ -216,10 +216,10 @@ jobs:
         run: |
            mkdir ${{github.workspace}}/VstHost_Android/AndroidPack
            ls -la
-           cp -rv build_armeabi-v7a/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
-           cp -rv build_arm64-v8a/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
-           cp -rv build_x86/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
-           cp -rv build_x86_64/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
+           cp -rv build_armeabi-v7a/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/
+           cp -rv build_arm64-v8a/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/
+           cp -rv build_x86/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/
+           cp -rv build_x86_64/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/
            cp -rv build_x86_64/VST3/Release ${{github.workspace}}/VstHost_Android/app/src/main/assets/
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
