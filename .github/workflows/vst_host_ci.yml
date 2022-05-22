@@ -167,7 +167,9 @@ jobs:
         with:
           ndk-version: r24
           add-to-path: false
-
+      strategy:
+        matrix:
+          android_typ: [armeabi-v7a, arm64-v8a, x86, x86_64]      
       - name: Configure CMake and Build
 
         run: |
