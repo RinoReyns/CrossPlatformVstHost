@@ -203,7 +203,7 @@ jobs:
           ls -la
 
       - name: prepare set
-        run :|
+        run: |
            pwd
            cd VstHost_Android
            pwd
