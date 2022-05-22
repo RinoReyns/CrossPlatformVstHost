@@ -165,52 +165,53 @@ jobs:
           ndk-version: r24
           add-to-path: false
       
-      - name: Configure CMake and Build C++ .so for armeabi-v7a
+      # - name: Configure CMake and Build C++ .so for armeabi-v7a
 
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_armeabi-v7a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
-          cd build_armeabi-v7a
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
+        # run: |
+          # export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+          # cmake "${{github.workspace}}\VstHost_VisualC++" -B build_armeabi-v7a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
+          # cd build_armeabi-v7a
+          # ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+          # cd ..
 
-      - name: Configure CMake and Build C++ .so for arm64-v8a
+      # - name: Configure CMake and Build C++ .so for arm64-v8a
 
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_arm64-v8a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=arm64-v8a -DANDROID_BUILD=True
-          cd build_arm64-v8a
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
+        # run: |
+          # export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+          # cmake "${{github.workspace}}\VstHost_VisualC++" -B build_arm64-v8a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=arm64-v8a -DANDROID_BUILD=True
+          # cd build_arm64-v8a
+          # ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+          # cd ..
 
-      - name: Configure CMake and Build C++ .so for x86
+      # - name: Configure CMake and Build C++ .so for x86
 
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86 -DANDROID_BUILD=True
-          cd build_x86
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
+        # run: |
+          # export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+          # cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86 -DANDROID_BUILD=True
+          # cd build_x86
+          # ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+          # cd ..
 
-      - name: Configure CMake and Build C++ .so for x86_64
+      # - name: Configure CMake and Build C++ .so for x86_64
 
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86_64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86_64 -DANDROID_BUILD=True
-          cd build_x86_64
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
-          ls -la
+        # run: |
+          # export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+          # cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86_64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86_64 -DANDROID_BUILD=True
+          # cd build_x86_64
+          # ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+          # cd ..
+          # ls -la
 
       - name: prepare set
         run: |
            pwd
            cd VstHost_Android
            pwd
+           chmod +x gradlew
            ./gradlew tasks
 
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 2
+          api-level: 28
           script: ./gradlew connectedCheck
