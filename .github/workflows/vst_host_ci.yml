@@ -214,14 +214,16 @@ jobs:
 
       - name: Prepare Setup for Android Build
         run: |
-           mkdir VstHost_Android/AndroidPack
-           cp -rv build_armeabi-v7a/bin/Release/AndroidPack/ VstHost_Android/AndroidPack/
-           cp -rv build_arm64-v8a/bin/Release/AndroidPack/ VstHost_Android/AndroidPack/
-           cp -rv build_x86/bin/Release/AndroidPack/ VstHost_Android/AndroidPack/
-           cp -rv build_x86_64/bin/Release/AndroidPack/ VstHost_Android/AndroidPack/
-           cp -rv build_x86_64/VST3/Release VstHost_Android/app/src/main/assets/
-           cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav VstHost_Android/app/src/main/assets/   
+           mkdir ${{github.workspace}}/VstHost_Android/AndroidPack
+           ls -la
+           cp -rv build_armeabi-v7a/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
+           cp -rv build_arm64-v8a/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
+           cp -rv build_x86/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
+           cp -rv build_x86_64/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/AndroidPack/
+           cp -rv build_x86_64/VST3/Release ${{github.workspace}}/VstHost_Android/app/src/main/assets/
+           cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
+           ls -la ${{github.workspace}}/VstHost_Android/AndroidPack/lib
            ls -la ${{github.workspace}}/VstHost_Android/AndroidPack/lib/arm64-v8a/
            chmod +x gradlew
            ./gradlew init
