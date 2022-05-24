@@ -209,7 +209,7 @@ jobs:
            cp -rv build_arm64-v8a/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
            cp -rv build_x86/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
            cp -rv build_x86_64/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
-           cp -rv build_x86_64/VST3/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}/VstHost_Android/app/src/main/assets
+           cp -rv build_x86_64/VST3/${{env.BUILD_TYPE}} ${{github.workspace}}/VstHost_Android/app/src/main/assets
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
            chmod +x gradlew
