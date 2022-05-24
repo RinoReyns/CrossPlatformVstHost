@@ -209,7 +209,7 @@ jobs:
            cp -rv build_arm64-v8a/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/
            cp -rv build_x86/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/
            cp -rv build_x86_64/bin/Release/AndroidPack/ ${{github.workspace}}/VstHost_Android/
-           cp -rv build_x86_64/VST3/Release ${{github.workspace}}/VstHost_Android/app/src/main/assets/
+           cp -rv build_x86_64/VST3/Release/adelay.vst3 ${{github.workspace}}/VstHost_Android/app/src/main/assets/
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
            chmod +x gradlew
@@ -222,6 +222,5 @@ jobs:
           profile: Nexus 6
           working-directory: ${{github.workspace}}/VstHost_Android
           script: |
-            pwd
-            ls -la
+            ls -la ${{github.workspace}}/VstHost_Android/app/src/main/assets/
             ./gradlew connectedCheck
