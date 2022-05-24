@@ -223,8 +223,7 @@ jobs:
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/   
            cd VstHost_Android
            chmod +x gradlew
-           ./gradlew init
-           ./gradlew assembleDebug
+           ls -la ${{github.workspace}}/VstHost_Android
            echo ${{github.workspace}}
            
       - name: run tests
