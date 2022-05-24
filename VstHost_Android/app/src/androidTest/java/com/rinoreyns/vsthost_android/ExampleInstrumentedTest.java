@@ -119,9 +119,15 @@ public class ExampleInstrumentedTest {
             e.printStackTrace();
         }
 
-        int test = intFromJNI( copy_dest_folder );
-        assertEquals(0, test);
-        android.util.Log.d("tag" , "Test");
+        File file1 = new File(copy_dest_folder + "/adelay.vst3");
+        if (file1.exists())
+        {
+            int test = intFromJNI(copy_dest_folder);
+            assertEquals(0, test);
+        }
+        else
+        {
+            fail("Folder with plugin dosen't");
+        }
     }
-
 }

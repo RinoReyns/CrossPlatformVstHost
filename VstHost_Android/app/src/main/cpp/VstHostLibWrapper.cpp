@@ -58,7 +58,9 @@ extern "C"
     }
 
     JNIEXPORT jint JNICALL
-    Java_com_rinoreyns_vsthost_1android_ExampleInstrumentedTest_intFromJNI(JNIEnv *env, jobject thiz, jstring path) {
+    Java_com_rinoreyns_vsthost_1android_ExampleInstrumentedTest_intFromJNI(JNIEnv *env,
+                                                                           jobject thiz,
+                                                                           jstring path) {
         std::unique_ptr<AudioProcessingVstHost> test(new AudioProcessingVstHost());
         jboolean isCopy;
 
