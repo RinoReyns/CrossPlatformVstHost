@@ -225,12 +225,13 @@ jobs:
            chmod +x gradlew
            ./gradlew init
            ./gradlew assembleDebug
-
-      # - name: run tests
-        # uses: reactivecircus/android-emulator-runner@v2
-        # with:
-          # api-level: 28
-          # arch: x86_64
-          # profile: Nexus 6
-          # script: /${{github.workspace}}/VstHost_Android/gradlew connectedCheck
+           echo ${{github.workspace}}
+           
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 28
+          arch: x86_64
+          profile: Nexus 6
+          script: ${{github.workspace}}/VstHost_Android/gradlew connectedCheck
 
