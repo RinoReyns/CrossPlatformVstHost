@@ -223,8 +223,5 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           script: |
-            pwd
-            ls -la ${{github.workspace}}
-            ls -la ${{github.workspace}}/VstHost_Android
+            cd ${{github.workspace}}/VstHost_Android
             ./gradlew connectedCheck
-
