@@ -220,8 +220,8 @@ jobs:
           api-level: 28
           arch: x86_64
           profile: Nexus 6
+          working-directory: ${{github.workspace}}/VstHost_Android
           script: |
-            cd ${{github.workspace}}/VstHost_Android
+            pwd
             ls -la
-            gradlew connectedCheck
             ./gradlew connectedCheck
