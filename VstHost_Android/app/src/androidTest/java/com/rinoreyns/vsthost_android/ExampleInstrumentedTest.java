@@ -37,15 +37,18 @@ public class ExampleInstrumentedTest {
         }
     }
     public static String [] platforms_prefixes  =
-            {
-                    "armeabi-v7a-android",
-                    "arm64-v8a-android",
-                    "x86-android",
-                    "x86_64-android"
-            };
+    {
+            "armeabi-v7a-android",
+            "arm64-v8a-android",
+            "x86-android",
+            "x86_64-android"
+    };
+
     public native int intFromJNI(String plugin_path);
     public native String getPlatformId();
 
+    // TODO:
+    // create common class for copping assets
     private void getAssetAppFolder(String dir, String suffix) throws Exception{
         File f = new File(dir);
         if (!f.exists() || !f.isDirectory())
@@ -111,11 +114,7 @@ public class ExampleInstrumentedTest {
     @Test
     public void SetSimpleFlowForLib()
     {
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        String copy_dest_folder = context.getExternalCacheDir() + "/Devices";
-        copy_dest_folder = "/data/data/com.rinoreyns.vsthost_android/Devices";
-        File file = new File(copy_dest_folder);
-
+        String copy_dest_folder = "/data/data/com.rinoreyns.vsthost_android/Devices";
         try
         {
             getAssetAppFolder(copy_dest_folder, "");
@@ -124,6 +123,7 @@ public class ExampleInstrumentedTest {
             e.printStackTrace();
         }
 
+        File file = new File(copy_dest_folder);
         File file1 = new File(copy_dest_folder + "/adelay.vst3");
 
         if (file.exists()) {
@@ -136,8 +136,8 @@ public class ExampleInstrumentedTest {
 
         if (file1.exists())
         {
-            int test = intFromJNI(copy_dest_folder);
-            assertEquals(0, test);
+            int status = intFromJNI(copy_dest_folder);
+            assertEquals(0, status);
         }
         else
         {

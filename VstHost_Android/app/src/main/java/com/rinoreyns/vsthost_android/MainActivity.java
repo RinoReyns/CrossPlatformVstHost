@@ -109,8 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 {
                     is = am.open(strf);
                 }
-
-
                 copyToDisk(dir, strf, is);
             }
             catch(Exception ex)
