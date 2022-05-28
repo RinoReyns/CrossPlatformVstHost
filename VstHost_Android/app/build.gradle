@@ -39,6 +39,11 @@ android {
             path 'src/main/cpp/CMakeLists.txt'
         }
     }
+    sourceSets {
+        androidTest {
+            assets.srcDirs = ['src/main/assets']
+        }
+    }
 }
 
 dependencies {

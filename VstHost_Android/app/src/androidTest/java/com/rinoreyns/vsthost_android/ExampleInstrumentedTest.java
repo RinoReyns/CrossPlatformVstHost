@@ -1,17 +1,16 @@
 package com.rinoreyns.vsthost_android;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.util.Log;
 
-import androidx.lifecycle.Lifecycle;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.*;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -49,7 +48,8 @@ public class ExampleInstrumentedTest {
         File f = new File(dir);
         if (!f.exists() || !f.isDirectory())
             f.mkdirs();
-
+        if (!f.exists() || !f.isDirectory())
+            f.mkdirs();
         AssetManager am = InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets();
         String [] aplist = am.list(suffix);
 
@@ -95,14 +95,22 @@ public class ExampleInstrumentedTest {
         bufferOut.close();
         is.close();
         fout.close();
+        File file1 = new File(dir+"/" +name);
+        if (!file1.exists())
+        {
+            fail("copy failed " + dir + "/" +name);
+        }
     }
 
     @Test
     public void SetSimpleFlowForLib()
     {
-        String copy_dest_folder = InstrumentationRegistry.getInstrumentation().getTargetContext().getFilesDir().toString() + "/Devices";
+//        String copy_dest_folder = InstrumentationRegistry.getInstrumentation().getTargetContext().getFilesDir().toString();
+//        copy_dest_folder = copy_dest_folder.replace("_android", "_android.test");
+//
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String copy_dest_folder = context.getExternalCacheDir() + "/Devices";
         File file = new File(copy_dest_folder);
-
         if (file.exists()) {
             String deleteCmd = "rm -r " + copy_dest_folder;
             Runtime runtime = Runtime.getRuntime();
@@ -127,7 +135,7 @@ public class ExampleInstrumentedTest {
         }
         else
         {
-            fail("Folder with plugin dosen't");
+            fail("Folder with plugin dosen't exists.");
         }
     }
 }

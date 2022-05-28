@@ -69,6 +69,10 @@ extern "C"
         int status = 0;
         try {
             status = test->CreatePluginInstance(str + "/adelay.vst3", "plugin_1");
+            if (status != 0)
+            {
+                return status;
+            }
             status = test->ProcessWaveFile(str + "/sine_440.wav", str + "out.wav");
             test->Terminate();
             // TODO:
@@ -90,7 +94,4 @@ extern "C"
         }
         return static_cast<jint>(status);
     }
-
-
 }
-
