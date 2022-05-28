@@ -70,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
         String copy_dest_folder = getFilesDir().toString() + "/Devices";
         File file = new File(copy_dest_folder);
 
-        if (file.exists()) {
-            String deleteCmd = "rm -r " + copy_dest_folder;
-            Runtime runtime = Runtime.getRuntime();
-            try {
-                runtime.exec(deleteCmd);
-            } catch (IOException e) { }
-        }
+//        if (file.exists()) {
+//            String deleteCmd = "rm -r " + copy_dest_folder;
+//            Runtime runtime = Runtime.getRuntime();
+//            try {
+//                runtime.exec(deleteCmd);
+//            } catch (IOException e) { }
+//        }
 
         try
         {
@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         {
             e.printStackTrace();
         }
-
         int test = intFromJNI( copy_dest_folder );
         System.out.println(test);
     }
@@ -101,7 +100,17 @@ public class MainActivity extends AppCompatActivity {
         for(String strf:aplist){
             try
             {
-                InputStream is = am.open(strf);
+                InputStream is;
+                if (strf.contains(".so"))
+                {
+                    is = am.open(suffix+ "/" + strf);
+                }
+                else
+                {
+                    is = am.open(strf);
+                }
+
+
                 copyToDisk(dir, strf, is);
             }
             catch(Exception ex)

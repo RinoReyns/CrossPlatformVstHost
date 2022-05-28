@@ -5,6 +5,8 @@ import static org.junit.Assert.fail;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.os.Environment;
+import android.util.Log;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -48,15 +50,24 @@ public class ExampleInstrumentedTest {
         File f = new File(dir);
         if (!f.exists() || !f.isDirectory())
             f.mkdirs();
-        if (!f.exists() || !f.isDirectory())
-            f.mkdirs();
+
         AssetManager am = InstrumentationRegistry.getInstrumentation().getTargetContext().getAssets();
         String [] aplist = am.list(suffix);
 
         for(String strf:aplist){
             try
             {
-                InputStream is = am.open(strf);
+                InputStream is;
+                if (strf.contains(".so"))
+                {
+                    is = am.open(suffix+ "/" + strf);
+                }
+                else
+                {
+                    is = am.open(strf);
+                }
+
+
                 copyToDisk(dir, strf, is);
             }
             catch(Exception ex)
@@ -95,29 +106,15 @@ public class ExampleInstrumentedTest {
         bufferOut.close();
         is.close();
         fout.close();
-        File file1 = new File(dir+"/" +name);
-        if (!file1.exists())
-        {
-            fail("copy failed " + dir + "/" +name);
-        }
     }
 
     @Test
     public void SetSimpleFlowForLib()
     {
-//        String copy_dest_folder = InstrumentationRegistry.getInstrumentation().getTargetContext().getFilesDir().toString();
-//        copy_dest_folder = copy_dest_folder.replace("_android", "_android.test");
-//
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         String copy_dest_folder = context.getExternalCacheDir() + "/Devices";
+        copy_dest_folder = "/data/data/com.rinoreyns.vsthost_android/Devices";
         File file = new File(copy_dest_folder);
-        if (file.exists()) {
-            String deleteCmd = "rm -r " + copy_dest_folder;
-            Runtime runtime = Runtime.getRuntime();
-            try {
-                runtime.exec(deleteCmd);
-            } catch (IOException e) { }
-        }
 
         try
         {
@@ -128,6 +125,15 @@ public class ExampleInstrumentedTest {
         }
 
         File file1 = new File(copy_dest_folder + "/adelay.vst3");
+
+        if (file.exists()) {
+            String deleteCmd = "chmod 777 -R " + copy_dest_folder + "/adelay.vst3";
+            Runtime runtime = Runtime.getRuntime();
+            try {
+                runtime.exec(deleteCmd);
+            } catch (IOException e) { }
+        }
+
         if (file1.exists())
         {
             int test = intFromJNI(copy_dest_folder);
