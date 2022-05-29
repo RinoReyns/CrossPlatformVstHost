@@ -45,13 +45,13 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(std::string 
 {
     // edit controler data flow: 
     // https://developer.steinberg.help/display/VST/Edit+Controller+Call+Sequence
-    if (!plugProvider[plugin_id])
+    if (!vst_plugins_[plugin_id].plugProvider_)
     {
         LOG(ERROR) << "Plugin instance was not created.";
         return VST_ERROR_STATUS::NULL_POINTER;
     }
 
-    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = plugProvider[plugin_id]->getController();
+    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = vst_plugins_[plugin_id].plugProvider_->getController();
 
     if (!editController)
     {
@@ -112,9 +112,10 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::GetMutliplePluginParameters(cons
         }
         status = this->GetPluginParameters(key, single_plugin_params->second);
         RETURN_ERROR_IF_NOT_SUCCESS(status);
+        vst_plugins_[key].plugin_path_   = processing_config.at(key).at(PLUGINS_STRING);
+        vst_plugins_[key].plugin_config_ = processing_config.at(key).at(CONFIG_STRING);
     }
 
-    plugins_config_ = processing_config;
     return status;
 }
 
@@ -122,12 +123,12 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::GetPluginParameters(std::string 
 {
     // edit controler data flow: 
     // https://developer.steinberg.help/display/VST/Edit+Controller+Call+Sequence
-    if (!plugProvider[plugin_id])
+    if (!vst_plugins_[plugin_id].plugProvider_)
     {
         LOG(ERROR) << "Plugin instance was not created.";
         return VST_ERROR_STATUS::NULL_POINTER;
     }
-    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = plugProvider[plugin_id]->getController();
+    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = vst_plugins_[plugin_id].plugProvider_->getController();
 
     if (!editController)
     {
@@ -191,11 +192,9 @@ static void assignBusBuffers(const AudioProcessingVstHost::Buffers& buffers,
     }
 }
 
-int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::CreateMutliplePluginInstance(
-    const config_type processing_config)
+int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::CreateMutliplePluginInstance(const config_type processing_config)
 {
     int status = VST_ERROR_STATUS::VST_HOST_ERROR;
-    plugins_config_ = processing_config;
     for (auto& [key, value] : processing_config)
     { 
         auto single_plugin_params = value.find(PLUGINS_STRING);
@@ -206,6 +205,7 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::CreateMutliplePluginInstance(
         }
         status = this->CreatePluginInstance(single_plugin_params->second, key);
         RETURN_ERROR_IF_NOT_SUCCESS(status);
+        vst_plugins_[key].plugin_config_ = processing_config.at(key).at(CONFIG_STRING);
     }
     return status;
 }
@@ -222,27 +222,25 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
                                                                      VST3::Optional<VST3::UID> effectID)
 {
     std::string error;
-    if (module.find(plugin_id) != module.end())
+
+    if ((vst_plugins_.find(plugin_id) != vst_plugins_.end()) && (vst_plugins_[plugin_id].module_ != nullptr))
     {
         return VST_ERROR_STATUS::INSTANCE_ALREADY_EXISTS;
     }
 
-    if (plugins_config_.find(plugin_id) == plugins_config_.end())
+    if (vst_plugins_.find(plugin_id) == vst_plugins_.end())
     {
-        if (plugins_config_[plugin_id].find(PLUGINS_STRING) == plugins_config_[plugin_id].end())
-        {
-            plugins_config_[plugin_id][PLUGINS_STRING] = plugin_path;
-        }
+        vst_plugins_[plugin_id].plugin_path_ = plugin_path;
     }
 
-    module[plugin_id] = VST3::Hosting::Module::create(plugin_path, error);
-    if (module[plugin_id] == nullptr)
+    vst_plugins_[plugin_id].module_ = VST3::Hosting::Module::create(plugin_path, error);
+    if (vst_plugins_[plugin_id].module_ == nullptr)
     {
         LOG(ERROR) << "Couldn't create Module for file:" + plugin_path + "\nError: " + error;
         return VST_ERROR_STATUS::CREATE_HOSTING_MODULE_ERROR;
     }
 
-    auto factory = module[plugin_id]->getFactory();
+    auto factory = vst_plugins_[plugin_id].module_->getFactory();
     for (auto& classInfo : factory.classInfos())
     {
         // TODO:
@@ -257,16 +255,15 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
                     continue;
                 }
             }
-            plugProvider[plugin_id] = std::unique_ptr<Steinberg::Vst::PlugProvider>(new Steinberg::Vst::PlugProvider(factory, classInfo, true));
+            vst_plugins_[plugin_id].plugProvider_ = std::unique_ptr<Steinberg::Vst::PlugProvider>(new Steinberg::Vst::PlugProvider(factory, classInfo, true));
             break;
         }
     }
     return VST_ERROR_STATUS::SUCCESS;
 }
 
-AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(
-    const std::string& input_wave_path,
-    const std::string& output_wave_path)
+AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::string& input_wave_path,
+                                                                const std::string& output_wave_path)
 {
     std::string input_wave_path_  = input_wave_path;
     
@@ -276,23 +273,23 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(
         return VST_ERROR_STATUS::PATH_NOT_EXISTS;
     }
 
-    if (plugProvider.size() == 0)
+    if (vst_plugins_.size() == 0)
     {
         return VST_ERROR_STATUS::NO_PLUGIN_INITIALIZED;
     }
         
-    for (auto& [plugin_id, _] : plugProvider)
+    for (auto& [plugin_id, _] : vst_plugins_)
     {
 
-        if (!plugProvider[plugin_id])
+        if (!vst_plugins_[plugin_id].plugProvider_)
         {
-            LOG(ERROR) << "Plugin " + plugins_config_[plugin_id].at(PLUGINS_STRING) + " was not initialized.";
+            LOG(ERROR) << "Plugin " + vst_plugins_[plugin_id].plugin_path_ + " was not initialized.";
             return VST_ERROR_STATUS::CREATE_PLUGIN_PROVIDER_ERROR;
         }
 
         // audio processing data flow: 
         // https://developer.steinberg.help/display/VST/Audio+Processor+Call+Sequence
-        Steinberg::OPtr<Steinberg::Vst::IComponent> component = plugProvider[plugin_id]->getComponent();
+        Steinberg::OPtr<Steinberg::Vst::IComponent> component = vst_plugins_[plugin_id].plugProvider_->getComponent();
         Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor> processor(component);
 
         if (!processor)
@@ -411,16 +408,10 @@ AUDIOHOSTLIB_EXPORT void AudioProcessingVstHost::SetVerbosity(uint8_t value)
 
 AUDIOHOSTLIB_EXPORT void AudioProcessingVstHost::Terminate()
 {
-    // rest both 'plugProvider' and 'module' separatly to make sure that e.g. to prevent a case that one 
-    // of the object will not have some id.
-    for (const auto& element : plugProvider) 
+    for (const auto& element : vst_plugins_)
     {
-        plugProvider[element.first].reset();
-    }
-
-    for (const auto& element : module)
-    {
-        module[element.first].reset();
+        vst_plugins_[element.first].plugProvider_.reset();
+        vst_plugins_[element.first].module_.reset();
     }
     Steinberg::Vst::PluginContextFactory::instance().setPluginContext(nullptr);
 }

@@ -32,7 +32,6 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
       - [ ] Generate Documentation
-      - [ ] Create one data structure for all parameters related with multiple plugins
       - [ ] Build solution for ARM
       - [ ] Add documentation how to setup env to build code
 

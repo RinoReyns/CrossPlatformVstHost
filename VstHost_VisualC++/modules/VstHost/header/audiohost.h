@@ -5,6 +5,8 @@
 #include "parameterchanges.h"
 #include "processdata.h"
 #include "plugprovider.h"
+#include "enums.h"
+#include "easylogging++.h"
 
 #ifdef _WIN32
     #include "AudioHostLib_Export.h"
@@ -13,9 +15,6 @@
     #include "audiohostlib_export.h"
     #define C_API_PREFIX AUDIOHOSTLIB_EXPORT
 #endif
-
-#include "enums.h"
-#include "easylogging++.h"
 
 class AudioProcessingVstHost 
 {
@@ -36,6 +35,8 @@ class AudioProcessingVstHost
         int AUDIOHOSTLIB_EXPORT GetMutliplePluginParameters(const config_type processing_config);
         void AUDIOHOSTLIB_EXPORT Terminate();
         void AUDIOHOSTLIB_EXPORT SetVerbosity(uint8_t value);
+        // TODO:
+        // remove this buffer
         struct Buffers
         {
             int32_t numInputs;
@@ -43,15 +44,20 @@ class AudioProcessingVstHost
             int32_t numSamples;
         };
 
+        struct VstPluginParameters
+        {
+            VST3::Hosting::Module::Ptr module_;
+            std::unique_ptr<Steinberg::Vst::PlugProvider> plugProvider_;
+            std::string plugin_path_;
+            std::string plugin_config_;
+        };
+
     private:
-        std::map<std::string, VST3::Hosting::Module::Ptr> module;
-        std::map<std::string, std::unique_ptr<Steinberg::Vst::PlugProvider>> plugProvider;
+        std::map <std::string, AudioProcessingVstHost::VstPluginParameters> vst_plugins_;
         Steinberg::Vst::ProcessContext processContext;
         Steinberg::Vst::ParameterChanges inputParameterChanges;
         Steinberg::Vst::HostProcessData processData;
         uint8_t verbose_         = 0;
-        std::string plugin_path_ = "";
-        config_type plugins_config_;
 };
 
 
