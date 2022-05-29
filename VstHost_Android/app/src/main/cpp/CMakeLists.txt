@@ -20,7 +20,10 @@ add_subdirectory(${SDK_ROOT}/public.sdk  build/public.sdk)
 set(package_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../../../AndroidPack)
 add_library(lib_AudioHostLib SHARED IMPORTED)
 set_target_properties(lib_AudioHostLib PROPERTIES IMPORTED_LOCATION
-                      ${package_dir}/lib/${ANDROID_ABI}/libAudioHostLib.so)
+                     ${package_dir}/lib/${ANDROID_ABI}/libAudioHostLib.so)
+
+add_library(lib_libWaveIO STATIC IMPORTED)
+set_target_properties(lib_libWaveIO PROPERTIES IMPORTED_LOCATION ${package_dir}/lib/${ANDROID_ABI}/libWaveIO.a)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
@@ -37,4 +40,5 @@ target_link_libraries(VstHostLibWrapper
                       lib_AudioHostLib
                       sdk
                       sdk_hosting
+                      lib_libWaveIO
                       )
