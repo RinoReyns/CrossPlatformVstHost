@@ -48,6 +48,8 @@ class AudioProcessingVstHost
         {
             VST3::Hosting::Module::Ptr module_;
             std::unique_ptr<Steinberg::Vst::PlugProvider> plugProvider_;
+            std::string plugin_path_;
+            std::string plugin_config_;
         };
 
     private:
@@ -56,9 +58,6 @@ class AudioProcessingVstHost
         Steinberg::Vst::ParameterChanges inputParameterChanges;
         Steinberg::Vst::HostProcessData processData;
         uint8_t verbose_         = 0;
-        // TODO:
-        // rearange plugins_config_
-        config_type plugins_config_;
 };
 
 

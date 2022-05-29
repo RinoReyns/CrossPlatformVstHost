@@ -112,9 +112,10 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::GetMutliplePluginParameters(cons
         }
         status = this->GetPluginParameters(key, single_plugin_params->second);
         RETURN_ERROR_IF_NOT_SUCCESS(status);
+        vst_plugins_[key].plugin_path_   = processing_config.at(key).at(PLUGINS_STRING);
+        vst_plugins_[key].plugin_config_ = processing_config.at(key).at(CONFIG_STRING);
     }
 
-    plugins_config_ = processing_config;
     return status;
 }
 
@@ -194,7 +195,6 @@ static void assignBusBuffers(const AudioProcessingVstHost::Buffers& buffers,
 int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::CreateMutliplePluginInstance(const config_type processing_config)
 {
     int status = VST_ERROR_STATUS::VST_HOST_ERROR;
-    plugins_config_ = processing_config;
     for (auto& [key, value] : processing_config)
     { 
         auto single_plugin_params = value.find(PLUGINS_STRING);
@@ -205,6 +205,7 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::CreateMutliplePluginInstance(con
         }
         status = this->CreatePluginInstance(single_plugin_params->second, key);
         RETURN_ERROR_IF_NOT_SUCCESS(status);
+        vst_plugins_[key].plugin_config_ = processing_config.at(key).at(CONFIG_STRING);
     }
     return status;
 }
@@ -227,12 +228,9 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
         return VST_ERROR_STATUS::INSTANCE_ALREADY_EXISTS;
     }
 
-    if (plugins_config_.find(plugin_id) == plugins_config_.end())
+    if (vst_plugins_.find(plugin_id) == vst_plugins_.end())
     {
-        if (plugins_config_[plugin_id].find(PLUGINS_STRING) == plugins_config_[plugin_id].end())
-        {
-            plugins_config_[plugin_id][PLUGINS_STRING] = plugin_path;
-        }
+        vst_plugins_[plugin_id].plugin_path_ = plugin_path;
     }
 
     vst_plugins_[plugin_id].module_ = VST3::Hosting::Module::create(plugin_path, error);
@@ -264,9 +262,8 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
     return VST_ERROR_STATUS::SUCCESS;
 }
 
-AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(
-    const std::string& input_wave_path,
-    const std::string& output_wave_path)
+AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::string& input_wave_path,
+                                                                const std::string& output_wave_path)
 {
     std::string input_wave_path_  = input_wave_path;
     
@@ -286,7 +283,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(
 
         if (!vst_plugins_[plugin_id].plugProvider_)
         {
-            LOG(ERROR) << "Plugin " + plugins_config_[plugin_id].at(PLUGINS_STRING) + " was not initialized.";
+            LOG(ERROR) << "Plugin " + vst_plugins_[plugin_id].plugin_path_ + " was not initialized.";
             return VST_ERROR_STATUS::CREATE_PLUGIN_PROVIDER_ERROR;
         }
 
