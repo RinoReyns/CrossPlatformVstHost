@@ -21,19 +21,20 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] VST Host library in C++
       - [x] VST Host Offline Tool in C++
       - [x] Unit Test for library and offline tool in C++
-      - [x] CI
+      - [x] CI for each configuration
       - [x] VST Host Library with C api that allows to use it in e.g. Python
       - [x] Basic python unit test for c api
       - [x] Allow to use multiple plugins and configs for them
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Clean up UT for python
+      - [ ] Add more UT for python and Android
       - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
       - [ ] Generate Documentation
-      - [ ] Add document with useful links
       - [ ] Create one data structure for all parameters related with multiple plugins
       - [ ] Build solution for ARM
+      - [ ] Add documentation how to setup env to build code
 
 1. Windows OS
 
@@ -51,10 +52,7 @@ is why this repository was created. I know that it will take a lot of work but i
 
     - TODO:
       - [ ] Add endpoint reader
-      - [ ] Enable UT
       - [ ] Add platform specific offline tool
-      - [ ] Add CI
-      - [ ] Add documentation how to setup env to build code
 
 1. Mac OS
 
@@ -62,7 +60,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Add endpoint reader
 
 
-## Credits 
+## Credits (repositories used in project)
 1. [VST 3 SDK](https://github.com/steinbergmedia/vst3sdk)
 1. [Google Test](https://github.com/google/googletest)
 1. [Logger](https://github.com/amrayn/easyloggingpp)
@@ -76,3 +74,11 @@ VST is a trademark held by Steinberg Media Technologies, GMBH.
 ## License
 This project is licensed under the terms of the GNU GPLv3 license. Moreover, it is a derivative work of the original 
 VST 3 SDK. However, I don't not redistribute any of the original source code.
+
+## Useful links
+1. [How to read data from audio endpoint (Windows, Linux, MacOS)?](https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/cognitive-services/Speech-Service/how-to-select-audio-input-devices.md)
+1. [Audio Capture on Windows](https://graphics.stanford.edu/~mdfisher/Code/Engine/AudioCapture.cpp)
+1. [Treat warnings as errors on linux](https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code)
+1. [More info about treating warnings as errors](https://www.foonathan.net/2018/10/cmake-warnings/)
+1. [How to build c++ code for Android?](https://stackoverflow.com/questions/67729247/build-cmake-library-without-android-studio-by-command-line-or-gui/67729248#67729248)
+1. [How to use c++ .so on Android?](https://github.com/android/ndk-samples/tree/master/hello-libs)

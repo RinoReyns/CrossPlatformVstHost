@@ -50,7 +50,6 @@ target_include_directories(${target}
                                   ${SDK_ROOT}/public.sdk/source/vst/hosting
                                   ${SDK_ROOT}/public.sdk/source/vst/utility
                                   ${SDK_ROOT}/pluginterfaces/vst
-                                  ${SDK_ROOT}/public.sdk/source/vst/utility/
                                   ${PROJECT_BINARY_DIR}/modules/VstHost
                                   ${PROJECT_SOURCE_DIR})
                  
@@ -58,4 +57,22 @@ target_link_libraries(${target} PRIVATE base sdk ArgParser WaveIO Logger Common 
 
 include (GenerateExportHeader)
 generate_export_header(AudioHostLib)
-
+if (${ANDROID_BUILD})
+    add_custom_command(TARGET ${target} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libAudioHostLib.so
+                                                        ${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libAudioHostLib.so
+                       COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/header/audiohost.h
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/include/audiohost.h"
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/modules/VstHost/audiohostlib_export.h
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/include/audiohostlib_export.h"
+        )
+        
+    add_custom_command(TARGET ${target} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libpluginterfaces.a
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libpluginterfaces.a"
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libsdk.a
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libsdk.a"
+                       COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/lib/${SUFFIX_CONFIG_TYPE}/libsdk_hosting.a
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/lib/${ANDROID_ABI}/libsdk_hosting.a"
+        )
+endif()
