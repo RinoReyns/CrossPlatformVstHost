@@ -66,10 +66,9 @@ jobs:
         with:
           submodules: recursive
 
-      - uses: mattnotmitt/doxygen-action@v1.9.2
-        with:
-          working-directory: '${{github.workspace}}'
-          doxyfile-path: 'VstHost_VisualC++/doc/Doxyfile'
+      - name: Install doxygen
+        run: | 
+          sudo apt-get install -y doxygen
 
       - name: Configure CMake
         run: |
