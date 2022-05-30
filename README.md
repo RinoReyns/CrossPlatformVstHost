@@ -25,13 +25,13 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] VST Host Library with C api that allows to use it in e.g. Python
       - [x] Basic python unit test for c api
       - [x] Allow to use multiple plugins and configs for them
+      - [x] Generate Documentation
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Clean up UT for python
       - [ ] Add more UT for python and Android
       - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
-      - [ ] Generate Documentation
       - [ ] Build solution for ARM
       - [ ] Add documentation how to setup env to build code
 

@@ -47,7 +47,7 @@ class AudioProcessingVstHost
         struct VstPluginParameters
         {
             VST3::Hosting::Module::Ptr module_;
-            std::unique_ptr<Steinberg::Vst::PlugProvider> plugProvider_;
+            std::unique_ptr<Steinberg::Vst::PlugProvider> plug_provider_;
             std::string plugin_path_;
             std::string plugin_config_;
         };

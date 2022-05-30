@@ -223,7 +223,7 @@ Error File::Read(std::vector<float>* output) {
   return Read(internal::NoDecrypt, output);
 }
 
-Error File::Read(void (*decrypt)(char*, size_t), std::vector<float>* output) {
+Error File::Read(void (*decrypt)(char* data, size_t size), std::vector<float>* output) {
   return Read(frame_number(), decrypt, output);
 }
 
@@ -231,8 +231,8 @@ Error File::Read(uint64_t frame_number, std::vector<float>* output) {
   return Read(frame_number, internal::NoDecrypt, output);
 }
 
-Error File::Read(uint64_t frame_number, void (*decrypt)(char*, size_t),
-                 std::vector<float>* output) {
+Error File::Read(uint64_t frame_number, void(*decrypt)(char* data, size_t size), std::vector<float>* output)
+{
   if (!impl_->istream.is_open()) {
     return kNotOpen;
   }
@@ -289,6 +289,7 @@ Error File::Read(uint64_t frame_number, void (*decrypt)(char*, size_t),
   }
   return kNoError;
 }
+
 
 Error File::Write(const std::vector<float>& data, bool clip) {
   return Write(data, internal::NoEncrypt, clip);

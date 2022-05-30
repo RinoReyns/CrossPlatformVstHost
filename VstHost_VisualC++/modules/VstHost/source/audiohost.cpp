@@ -45,13 +45,13 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(std::string 
 {
     // edit controler data flow: 
     // https://developer.steinberg.help/display/VST/Edit+Controller+Call+Sequence
-    if (!vst_plugins_[plugin_id].plugProvider_)
+    if (!vst_plugins_[plugin_id].plug_provider_)
     {
         LOG(ERROR) << "Plugin instance was not created.";
         return VST_ERROR_STATUS::NULL_POINTER;
     }
 
-    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = vst_plugins_[plugin_id].plugProvider_->getController();
+    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = vst_plugins_[plugin_id].plug_provider_->getController();
 
     if (!editController)
     {
@@ -123,12 +123,12 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::GetPluginParameters(std::string 
 {
     // edit controler data flow: 
     // https://developer.steinberg.help/display/VST/Edit+Controller+Call+Sequence
-    if (!vst_plugins_[plugin_id].plugProvider_)
+    if (!vst_plugins_[plugin_id].plug_provider_)
     {
         LOG(ERROR) << "Plugin instance was not created.";
         return VST_ERROR_STATUS::NULL_POINTER;
     }
-    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = vst_plugins_[plugin_id].plugProvider_->getController();
+    Steinberg::OPtr<Steinberg::Vst::IEditController> editController = vst_plugins_[plugin_id].plug_provider_->getController();
 
     if (!editController)
     {
@@ -255,7 +255,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
                     continue;
                 }
             }
-            vst_plugins_[plugin_id].plugProvider_ = std::unique_ptr<Steinberg::Vst::PlugProvider>(new Steinberg::Vst::PlugProvider(factory, classInfo, true));
+            vst_plugins_[plugin_id].plug_provider_ = std::unique_ptr<Steinberg::Vst::PlugProvider>(new Steinberg::Vst::PlugProvider(factory, classInfo, true));
             break;
         }
     }
@@ -281,7 +281,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
     for (auto& [plugin_id, _] : vst_plugins_)
     {
 
-        if (!vst_plugins_[plugin_id].plugProvider_)
+        if (!vst_plugins_[plugin_id].plug_provider_)
         {
             LOG(ERROR) << "Plugin " + vst_plugins_[plugin_id].plugin_path_ + " was not initialized.";
             return VST_ERROR_STATUS::CREATE_PLUGIN_PROVIDER_ERROR;
@@ -289,7 +289,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
 
         // audio processing data flow: 
         // https://developer.steinberg.help/display/VST/Audio+Processor+Call+Sequence
-        Steinberg::OPtr<Steinberg::Vst::IComponent> component = vst_plugins_[plugin_id].plugProvider_->getComponent();
+        Steinberg::OPtr<Steinberg::Vst::IComponent> component = vst_plugins_[plugin_id].plug_provider_->getComponent();
         Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor> processor(component);
 
         if (!processor)
@@ -301,8 +301,6 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
         // TODO:
         // create class for management of read/write wave
 
-        // read file's content
-        // https://github.com/audionamix/wave
         wave::File input_wave_file;
 
         // TODO:
@@ -362,7 +360,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
         processData.prepare(*component, input_wave_file.frame_number(), Steinberg::Vst::kSample32);
 
         processData.numSamples = input_wave_file.frame_number() * input_wave_file.channel_number();
-        buffs.numInputs = input_wave_file.channel_number();
+        buffs.numInputs  = input_wave_file.channel_number();
         buffs.numOutputs = input_wave_file.channel_number();
         buffs.numSamples = input_wave_file.frame_number();
 
@@ -410,7 +408,7 @@ AUDIOHOSTLIB_EXPORT void AudioProcessingVstHost::Terminate()
 {
     for (const auto& element : vst_plugins_)
     {
-        vst_plugins_[element.first].plugProvider_.reset();
+        vst_plugins_[element.first].plug_provider_.reset();
         vst_plugins_[element.first].module_.reset();
     }
     Steinberg::Vst::PluginContextFactory::instance().setPluginContext(nullptr);
