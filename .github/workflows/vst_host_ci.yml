@@ -66,6 +66,8 @@ jobs:
         with:
           submodules: recursive
 
+      - uses: mattnotmitt/doxygen-action@v1.9.2
+
       - name: Configure CMake
         run: |
           mkdir build
