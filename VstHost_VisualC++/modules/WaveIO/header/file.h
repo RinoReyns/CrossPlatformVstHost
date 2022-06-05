@@ -54,7 +54,6 @@ class File {
     */
     Error Read(void (*decrypt)(char* data, size_t size), std::vector<float>* output);
     
-
     /**
     * @brief Read and decrypt the entire content of file.
     * @note: File has to be opened in kOut mode or kNotOpen will be returned

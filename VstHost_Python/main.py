@@ -1,32 +1,32 @@
-import ctypes
+from Modules.VstHostLibWrapper import VstHostLibWrapper
+from Modules.Common import CheckStatus
+
 
 if __name__ == "__main__":
-    vst_host_instance = ctypes.CDLL("C:\\Users\\RinoReyns\\Desktop\\Projekty\\CrossPlatformVstHost\\build\\bin\\Debug\\AudioHostLib.dll")
+    # TODO:
+    # add arg parser
+    vst_host_ = VstHostLibWrapper()
+    status = vst_host_.LoadLibrary("AudioHostLib.dll")
+    CheckStatus(status)
 
-    vst_host_instance.CApiInitialize.restype = ctypes.c_void_p
+    status = vst_host_.CApiInitialize()
+    CheckStatus(status)
 
-    vst_instance = vst_host_instance.CApiInitialize()
-    vst_host_instance.CApiSetVerbosity.argtypes = [ctypes.c_void_p,  ctypes.c_int]
-    vst_host_instance.CApiSetVerbosity(vst_instance, 1)
+    status = vst_host_.CApiSetVerbosity(0)
+    CheckStatus(status)
 
-    vst_host_instance.CApiCreatePluginInstance.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    status = vst_host_instance.CApiCreatePluginInstance(vst_instance, ctypes.c_char_p(b'adelay.vst3'))
+    status = vst_host_.CApiCreatePluginInstance(b'adelay.vst3', b'plugin_1')
+    CheckStatus(status)
 
-    vst_host_instance.CApiSetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    status = vst_host_instance.CApiSetPluginParameters(vst_instance,
-                                                       ctypes.c_char_p(b'adelay_config.json'))
+    status = vst_host_.CApiSetPluginParameters(b'adelay_config.json', b'plugin_1')
+    CheckStatus(status)
 
-    vst_host_instance.CApiGetPluginParameters.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    status = vst_host_instance.CApiGetPluginParameters(vst_instance,
-                                                       ctypes.c_char_p(b'plugin_params_py.json'))
+    status = vst_host_.CApiGetPluginParameters(b'plugin_params_py.json', b'plugin_1')
+    CheckStatus(status)
 
-    vst_host_instance.CApiProcessWaveFileWithSinglePlugin.argtypes = [ctypes.c_void_p,
-                                                                      ctypes.c_char_p,
-                                                                      ctypes.c_char_p]
-    status = vst_host_instance.CApiProcessWaveFileWithSinglePlugin(vst_instance,
-                                                                   ctypes.c_char_p(b'sine_440.wav'),
-                                                                   ctypes.c_char_p(b'test.wav'))
+    status = vst_host_.CApiProcessWaveFile(b'sine_440.wav', b'test.wav')
+    CheckStatus(status)
 
-    vst_host_instance.CApiDeleteInstance.argtypes = [ctypes.c_void_p]
-    status = vst_host_instance.CApiDeleteInstance(vst_instance)
+    status = vst_host_.CApiDeleteInstance()
+    CheckStatus(status)
     print(status)
