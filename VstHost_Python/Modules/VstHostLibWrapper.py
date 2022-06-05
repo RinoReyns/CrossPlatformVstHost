@@ -75,7 +75,7 @@ class VstHostLibWrapper:
             status = self._MapFucntions()
             return status
         except Exception as e:
-            logging.error(f'Lib loading failed with status:\n{e}.')
+            logging.error(f"Lib loading failed with status:\n{e}.")
             return Status.LOAD_LIB_ERROR.value
 
     def CApiInitialize(self):

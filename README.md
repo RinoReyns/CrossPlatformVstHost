@@ -23,12 +23,11 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] Unit Test for library and offline tool in C++
       - [x] CI for each configuration
       - [x] VST Host Library with C api that allows to use it in e.g. Python
-      - [x] Basic python unit test for c api
+      - [x] Basic python and android unit test for c api
       - [x] Allow to use multiple plugins and configs for them
       - [x] Generate Documentation
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
-      - [ ] Clean up UT for python
       - [ ] Add more UT for python and Android
       - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
@@ -42,7 +41,7 @@ is why this repository was created. I know that it will take a lot of work but i
     - TODO:
       - [ ] Clean up audio endpoint reader and utilize it in code (add queue, use it for processing with vst plugin etc)
 
-1. Linux
+1. Linux & Mac OS
 
     - TODO:
       - [ ] Add endpoint reader
@@ -52,11 +51,6 @@ is why this repository was created. I know that it will take a lot of work but i
     - TODO:
       - [ ] Add endpoint reader
       - [ ] Add platform specific offline tool
-
-1. Mac OS
-
-    - TODO: 
-      - [ ] Add endpoint reader
 
 
 ## Credits (repositories used in project)
