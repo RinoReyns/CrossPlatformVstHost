@@ -7,7 +7,6 @@
 #include "file.h"
 #include "arg_parser.h"
 
-
 INITIALIZE_EASYLOGGINGPP
 
 AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::~AudioProcessingVstHost()
@@ -222,6 +221,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
                                                                      VST3::Optional<VST3::UID> effectID)
 {
     std::string error;
+    LOG(INFO) << "Loading plugin " + plugin_path + " in progress...";
 
     if ((vst_plugins_.find(plugin_id) != vst_plugins_.end()) && (vst_plugins_[plugin_id].module_ != nullptr))
     {
@@ -259,6 +259,8 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
             break;
         }
     }
+    LOG(INFO) << "Plugin " + plugin_path + "loadded sucessfully.";
+
     return VST_ERROR_STATUS::SUCCESS;
 }
 
@@ -374,8 +376,6 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
         }
 
         wave::File write_file;
-        // TODO:
-        // investigte why UT fail when output_wave_path not found
         if (write_file.Open(output_wave_path, wave::kOut))
         {
             LOG(ERROR) << "Opening of output wave file failed." << std::endl;

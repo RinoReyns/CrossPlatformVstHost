@@ -9,7 +9,6 @@
 #define MAX_LOOP_BEFORE_STOP	20
 #define DEVICE_OUTPUT_FORMAT    "Audio Device %d: %ws"
 
-
 const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
 const IID IID_IMMDeviceEnumerator	 = __uuidof(IMMDeviceEnumerator);
 const IID IID_IAudioClient			 = __uuidof(IAudioClient);
@@ -73,9 +72,8 @@ VST_ERROR_STATUS AudioCapture::ListAudioCaptureEndpoints(IMMDeviceEnumerator* pE
         {
             is_endpoint_chosen = true;
         }
-
     }
-    
+
     status = pDevices->Item(enpoint_id - 1, pCurrentDevice);
     pDevices->Release();
     return VST_ERROR_STATUS::SUCCESS;

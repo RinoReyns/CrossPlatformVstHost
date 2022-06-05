@@ -56,14 +56,16 @@ int VstHostTool::Run()
 
     // TODO:
     // clean up
-   /* HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    /*
+    HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (SUCCEEDED(stat))
     {
         std::unique_ptr<AudioCapture> audio_capture(new AudioCapture(arg_parser_->GetPluginVerbosity()));
         audio_capture->RecordAudioStream();
         CoUninitialize();
         return 0;
-    }*/
+    }
+    */
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
 

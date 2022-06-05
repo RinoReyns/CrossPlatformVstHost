@@ -1,0 +1,12 @@
+from enum import Enum
+
+
+class Status(Enum):
+    SUCCESS = 0
+    ERROR = 1
+    LOAD_LIB_ERROR = 2
+    LIB_ALREADY_LOADED = 3
+    FUNCTION_ALREADY_MAPED = 4
+    VST_HOST_INSTANCE_ALREADY_CREATED = 5
+    VST_HOST_INIT_ERROR = 6
+    WRONG_DATA_TYPE = 7
