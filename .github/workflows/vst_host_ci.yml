@@ -41,7 +41,9 @@ jobs:
         run: |
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}\VstHost_Python\UnitTests\
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/AudioHostLib.dll ${{github.workspace}}\VstHost_Python\UnitTests\
-          python -m unittest discover ${{github.workspace}}/VstHost_Python/UnitTests "test_*.py"
+          cd ${{github.workspace}}/VstHost_Python
+          python -m unittest discover UnitTests "test_*.py"
+          cd ${{github.workspace}
 
       - name: Clean Up After Build
         run: |
@@ -91,7 +93,9 @@ jobs:
         run: |
           cp -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/libAudioHostLib.so ${{github.workspace}}/VstHost_Python/UnitTests/
-          python -m unittest discover ${{github.workspace}}/VstHost_Python/UnitTests "test_*.py"
+          cd ${{github.workspace}}/VstHost_Python
+          python -m unittest discover UnitTests "test_*.py"
+          cd ${{github.workspace}
 
       - name: Clean Up After Build
         run: |
@@ -142,7 +146,9 @@ jobs:
         run: |
           cp -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/libAudioHostLib.dylib ${{github.workspace}}/VstHost_Python/UnitTests/
-          python -m unittest discover ${{github.workspace}}/VstHost_Python/UnitTests "test_*.py"
+          cd ${{github.workspace}}/VstHost_Python
+          python -m unittest discover UnitTests "test_*.py"
+          cd ${{github.workspace}
 
       - name: Clean Up After Build
         run: |

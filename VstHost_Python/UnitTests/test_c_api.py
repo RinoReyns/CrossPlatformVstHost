@@ -18,14 +18,14 @@ class TestCApi(unittest.TestCase):
         self._input_wave_path = os.path.join(self.ut_data, "sine_440.wav")
         self.dump_params_config = "plugin_params.json"
         if platform == "linux" or platform == "linux2":
-           self.vst_host_lib = "libAudioHostLib.so"
-           self.vst_plugin_path = "adelay.vst3"
+            self.vst_host_lib = "libAudioHostLib.so"
+            self.vst_plugin_path = "adelay.vst3"
         elif platform == "darwin":
-           self.vst_host_lib = "libAudioHostLib.dylib"
-           self.vst_plugin_path = "adelay.vst3"
+            self.vst_host_lib = "libAudioHostLib.dylib"
+            self.vst_plugin_path = "adelay.vst3"
         elif platform == "win32":
-           self.vst_host_lib = "AudioHostLib.dll"
-           self.vst_plugin_path = "adelay.vst3"
+            self.vst_host_lib = "AudioHostLib.dll"
+            self.vst_plugin_path = "adelay.vst3"
         self._vst_host = VstHostLibWrapper()
 
     def tearDown(self):
