@@ -43,7 +43,7 @@ jobs:
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/AudioHostLib.dll ${{github.workspace}}\VstHost_Python\UnitTests\
           cd ${{github.workspace}}/VstHost_Python
           python -m unittest discover UnitTests "test_*.py"
-          cd ${{github.workspace}
+          cd ${{github.workspace}}
 
       - name: Clean Up After Build
         run: |
@@ -95,7 +95,7 @@ jobs:
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/libAudioHostLib.so ${{github.workspace}}/VstHost_Python/UnitTests/
           cd ${{github.workspace}}/VstHost_Python
           python -m unittest discover UnitTests "test_*.py"
-          cd ${{github.workspace}
+          cd ${{github.workspace}}
 
       - name: Clean Up After Build
         run: |
@@ -148,7 +148,7 @@ jobs:
           cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/libAudioHostLib.dylib ${{github.workspace}}/VstHost_Python/UnitTests/
           cd ${{github.workspace}}/VstHost_Python
           python -m unittest discover UnitTests "test_*.py"
-          cd ${{github.workspace}
+          cd ${{github.workspace}}
 
       - name: Clean Up After Build
         run: |
