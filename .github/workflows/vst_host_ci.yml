@@ -80,6 +80,7 @@ jobs:
           python --version
           python -m pip install --upgrade pip
           pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
+          sudo apt-get install libsndfile1-dev
 
       - name: Install Doxygen
         run: |
@@ -205,7 +206,6 @@ jobs:
           add-to-path: false
 
       - name: Configure CMake and Build C++ .so for armeabi-v7a
-
         run: |
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
           cmake "${{github.workspace}}\VstHost_VisualC++" -B build_armeabi-v7a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
@@ -214,7 +214,6 @@ jobs:
           cd ..
 
       - name: Configure CMake and Build C++ .so for arm64-v8a
-
         run: |
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
           cmake "${{github.workspace}}\VstHost_VisualC++" -B build_arm64-v8a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=arm64-v8a -DANDROID_BUILD=True
@@ -223,7 +222,6 @@ jobs:
           cd ..
 
       - name: Configure CMake and Build C++ .so for x86
-
         run: |
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
           cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86 -DANDROID_BUILD=True
@@ -232,7 +230,6 @@ jobs:
           cd ..
 
       - name: Configure CMake and Build C++ .so for x86_64
-
         run: |
           export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
           cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86_64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86_64 -DANDROID_BUILD=True
