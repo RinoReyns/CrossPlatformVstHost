@@ -259,7 +259,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
             break;
         }
     }
-    LOG(INFO) << "Plugin " + plugin_path + "loadded sucessfully.";
+    LOG(INFO) << "Plugin " + plugin_path + " loadded sucessfully.";
 
     return VST_ERROR_STATUS::SUCCESS;
 }
