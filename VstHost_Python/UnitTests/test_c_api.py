@@ -39,7 +39,7 @@ class TestCApi(unittest.TestCase):
 
     def test_RunBasicFlow(self):
         # TODO:
-        # print UT header etc
+        # print UT header
         # load wave and compare with reference
         # Add flag "local" to don't copy dll's and vst plugin and use from "debug" build of c++ code instead
         vst_host_ = VstHostLibWrapper()
