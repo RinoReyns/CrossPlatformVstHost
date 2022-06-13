@@ -14,20 +14,22 @@ is why this repository was created. I know that it will take a lot of work but i
 
 1. Windows & Linux
     ```
+    git submodule update --init --recursive
     pip install -r VstHost_Python/requirements.txt
     mkdir build
     cd build
-    cmake VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=0
+    cmake ../VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=0
     cd ..
     cmake --build build --config Release -j 8
     ```
 2. Mac OS
     ```
+    git submodule update --init --recursive
     pip install -r VstHost_Python/requirements.txt
     brew install doxygen
     mkdir build
     cd build
-    cmake -G Xcode VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=0
+    cmake -G Xcode ../VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=0
     cd ..
     cmake --build build --config Release -j 8 --resolve-package-references on
     ```
