@@ -23,6 +23,7 @@ class ArgParser
         int CheckIfPathExists(std::string);
         int CheckPluginParams();
         int CheckOutputWave();
+        int CheckInputArgsFormat(std::vector<std::string> args);
         
         std::unique_ptr<argparse::ArgumentParser> arg_parser_;
         std::string plugin_path_        = "";
