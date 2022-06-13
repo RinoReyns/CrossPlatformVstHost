@@ -38,7 +38,7 @@ ArgParser::ArgParser()
 
 int ArgParser::CheckInputArgsFormat(std::vector<std::string> args)
 {
-    for (auto arg in args)
+    for (auto arg : args)
     {
         if (arg.find('=') != std::string::npos)
         {
