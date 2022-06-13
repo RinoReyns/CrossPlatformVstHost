@@ -29,6 +29,7 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::SetMutliplePluginParameters(cons
         if (!std::filesystem::exists(single_plugin_params->second))
         {
             LOG(WARNING) << "Missing config for plugin '" << key << "'";
+            return VST_ERROR_STATUS::MISSING_CONFIG_FOR_PLUGIN;
         }
         else
         {

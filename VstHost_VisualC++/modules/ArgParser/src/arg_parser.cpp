@@ -36,6 +36,21 @@ ArgParser::ArgParser()
         .help("Allows to dump parameters for given plugin.");
 }
 
+int ArgParser::CheckInputArgsFormat(std::vector<std::string> args)
+{
+    for (auto arg : args)
+    {
+        if (arg.find('=') != std::string::npos)
+        {
+            LOG(INFO) << "VST Host Tool doesn't accept parameter definition with '='. "
+                         "Please pass parameters in convetion without '=' e.g. '-vst_plugin plugin.vst3'.";
+            return VST_ERROR_STATUS::WRONG_PARAMETER_FORMAT;
+        }
+        std::cout << arg << std::endl;
+    }
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
 int ArgParser::ParsParameters(std::vector<std::string> args)
 {
     if (args.size() == 1)
@@ -46,6 +61,9 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         LOG(INFO) << "Run: " << program_name << ".exe -h ";
         return VST_ERROR_STATUS::VST_HOST_ERROR;
     }
+
+    int status = CheckInputArgsFormat(args);
+    RETURN_ERROR_IF_NOT_SUCCESS(status);
 
     try 
     {
@@ -59,7 +77,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     
     // TODO:
     // create private set for each parameter
-    int status = CheckPluginParams();
+    status = CheckPluginParams();
     RETURN_ERROR_IF_NOT_SUCCESS(status);
 
     // dump_plugin_params
@@ -83,7 +101,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
             {
                 return status;
             }
-            plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
+            plugin_config_ = arg_parser_->get<std::string>("-plugin_config");          
             std::map<std::string, std::string> plugin_params = { {PLUGINS_STRING, plugin_path_}, 
                                                                  {CONFIG_STRING, plugin_config_}
                                                                };

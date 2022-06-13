@@ -10,6 +10,35 @@ different operation systems like Windows, Linux, MacOS and Android and process a
 is why this repository was created. I know that it will take a lot of work but it will also be a good way to learn about
  everything that I'm interested in. My idea here was also to use as many available elements as it is possible.
 
+## How to Build
+
+1. Windows & Linux
+    ```
+    git submodule update --init --recursive
+    pip install -r VstHost_Python/requirements.txt
+    mkdir build
+    cd build
+    cmake ../VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=0
+    cd ..
+    cmake --build build --config Release -j 8
+    ```
+2. Mac OS
+    ```
+    git submodule update --init --recursive
+    pip install -r VstHost_Python/requirements.txt
+    brew install doxygen
+    mkdir build
+    cd build
+    cmake -G Xcode ../VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=0
+    cd ..
+    cmake --build build --config Release -j 8 --resolve-package-references on
+    ```
+
+3. Android
+    ```
+    TBD
+    ```
+
 ## Features list
 1. Platform Agnostic Features
     - Implemented:
@@ -32,7 +61,6 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
       - [ ] Build solution for ARM
-      - [ ] Add documentation how to setup env to build code
 
 1. Windows OS
 
