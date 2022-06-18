@@ -79,7 +79,7 @@ int VstHostTool::Run()
         else
         {
             status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
-            if (status == VST_ERROR_STATUS::SUCCESS)
+            if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
             {
                 status = vst_host->ProcessWaveFile(arg_parser_->GetInputWavePath(),
                                                    arg_parser_->GetOutputWavePath());
