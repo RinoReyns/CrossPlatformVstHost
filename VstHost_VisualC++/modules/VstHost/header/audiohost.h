@@ -16,6 +16,8 @@
     #define C_API_PREFIX AUDIOHOSTLIB_EXPORT
 #endif
 
+constexpr char VST_STRING[] = "VST ";
+
 class AudioProcessingVstHost 
 {
     public:
@@ -53,6 +55,8 @@ class AudioProcessingVstHost
         };
 
     private:
+        int CheckVstSdkCompatibility(std::string sdk_version);
+
         std::map <std::string, AudioProcessingVstHost::VstPluginParameters> vst_plugins_;
         Steinberg::Vst::ProcessContext processContext;
         Steinberg::Vst::ParameterChanges inputParameterChanges;

@@ -31,6 +31,7 @@ enum VST_ERROR_STATUS
     MISSING_ID                          = 15,
     INSTANCE_ALREADY_EXISTS             = 16,
     NO_PLUGIN_INITIALIZED               = 17,
+    NO_ELEMENT_FOUND                    = 18,
 
     MAX_STATUS_VALUE                    = NO_PLUGIN_INITIALIZED
 };
