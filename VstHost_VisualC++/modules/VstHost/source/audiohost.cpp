@@ -30,7 +30,6 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::SetMutliplePluginParameters(cons
         if (!std::filesystem::exists(single_plugin_params->second))
         {
             LOG(WARNING) << "Missing config for plugin '" << key << "'";
-            return VST_ERROR_STATUS::MISSING_CONFIG_FOR_PLUGIN;
         }
         else
         {
@@ -243,11 +242,12 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
     {
         // TODO:
         // if delay use info about that and test for different delays
-        int status = this->CheckVstSdkCompatibility(classInfo.sdkVersion());
-        RETURN_ERROR_IF_NOT_SUCCESS(status);
-       
+    
         if (classInfo.category() == kVstAudioEffectClass)
         {
+            int status = this->CheckVstSdkCompatibility(classInfo.sdkVersion());
+            RETURN_ERROR_IF_NOT_SUCCESS(status);
+
             if (effectID)
             {
                 if (*effectID != classInfo.ID())
