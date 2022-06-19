@@ -15,9 +15,8 @@ public:
     ~AudioCapture() = default;
     VST_ERROR_STATUS InitializeAudioStream();
     VST_ERROR_STATUS RecordAudioStream();
-
-public:
-    std::atomic<BOOL> run_recording_loop_ = FALSE;
+    BOOL GetRunRecordingLoop();
+    void SetRunRecordingLoop(BOOL status);
 
 private:
     void ReadEndpointFormat(BOOL* extensible_format_flag);
@@ -26,12 +25,13 @@ private:
     std::wstring getDeviceProperty(IPropertyStore* pStore, const PROPERTYKEY key);
 
 private:
-    uint8_t verbose_                    = 0;
-    IMMDevice * pDevice                 = NULL;
-    IMMDeviceEnumerator* pEnumerator    = NULL;
-    IAudioClient* pAudioClient          = NULL;
-    WAVEFORMATEX* pwfx                  = NULL;
-    IAudioCaptureClient* pCaptureClient = NULL;
+    std::atomic<BOOL> run_recording_loop_   = FALSE;
+    uint8_t verbose_                        = 0;
+    IMMDevice * pDevice                     = NULL;
+    IMMDeviceEnumerator* pEnumerator        = NULL;
+    IAudioClient* pAudioClient              = NULL;
+    WAVEFORMATEX* pwfx                      = NULL;
+    IAudioCaptureClient* pCaptureClient     = NULL;
 };
 
 #endif // AUDIO_CAPTURE_H

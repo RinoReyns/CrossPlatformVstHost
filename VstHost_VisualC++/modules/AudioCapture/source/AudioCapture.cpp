@@ -1,5 +1,6 @@
 #include "AudioCapture.h"
 #include "Functiondiscoverykeys_devpkey.h"
+
 #include "VstHostMacro.h"
 
 #undef max
@@ -7,7 +8,6 @@
 #define AUDIO_CAPTURE_FILE		L"Capture.wav"
 #define REFTIMES_PER_SEC		10000000
 #define REFTIMES_PER_MILLISEC	10000
-#define MAX_LOOP_BEFORE_STOP	20
 #define DEVICE_OUTPUT_FORMAT    "Audio Device %d: %ws"
 
 const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
@@ -167,8 +167,8 @@ VST_ERROR_STATUS AudioCapture::InitializeAudioStream()
 VST_ERROR_STATUS AudioCapture::RecordAudioStream()
 {
     HRESULT hr              = S_OK;
-    UINT32 uiFileLength	    = 0;
-    BOOL bExtensibleFormat	= FALSE;
+    UINT32 uiFileLength     = 0;
+    BOOL bExtensibleFormat  = FALSE;
     DWORD sleep_time;
     UINT32 bufferFrameCount;
     CMFWaveWriter WaveWriter;
@@ -189,7 +189,6 @@ VST_ERROR_STATUS AudioCapture::RecordAudioStream()
         UINT32 numFramesAvailable;
         BYTE* pData;
         DWORD flags;
-        int iLoop = 0;
 
         while (run_recording_loop_ == FALSE)
         {
@@ -229,11 +228,6 @@ VST_ERROR_STATUS AudioCapture::RecordAudioStream()
                 uiFileLength += numFramesAvailable;
                 RETURN_IF_AUDIO_CAPTURE_FAILED(pCaptureClient->ReleaseBuffer(numFramesAvailable));
                 RETURN_IF_AUDIO_CAPTURE_FAILED(pCaptureClient->GetNextPacketSize(&packetLength));
-            }
-
-            if (iLoop++ == MAX_LOOP_BEFORE_STOP)
-            {
-                run_recording_loop_ = TRUE;
             }
         }
     }
@@ -288,3 +282,14 @@ void AudioCapture::ReadEndpointFormat(BOOL* extensible_format_flag)
             break;
     }
 }
+
+BOOL AudioCapture::GetRunRecordingLoop()
+{
+    return this->run_recording_loop_;
+}
+
+void AudioCapture::SetRunRecordingLoop(BOOL status)
+{
+    this->run_recording_loop_ = status;
+}
+
