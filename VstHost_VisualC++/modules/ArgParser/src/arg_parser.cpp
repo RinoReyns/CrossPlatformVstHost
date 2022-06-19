@@ -2,6 +2,7 @@
 
 #include "arg_parser.h"
 #include "JsonUtils.h"
+#include "VstHostMacro.h"
 
 
 ArgParser::ArgParser()
@@ -34,6 +35,10 @@ ArgParser::ArgParser()
         .default_value(false)
         .implicit_value(true)
         .help("Allows to dump parameters for given plugin.");
+
+    arg_parser_->add_argument("-enable_audio_capture")
+        .default_value(false)
+        .implicit_value(true);
 }
 
 int ArgParser::CheckInputArgsFormat(std::vector<std::string> args)
@@ -132,6 +137,8 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     }
     verbosity_ = static_cast<uint8_t>(arg_parser_->get<int>("-verbosity"));
     
+    enable_audio_capture_ = arg_parser_->get<bool>("-enable_audio_capture");
+
     return status;
 }
 
@@ -249,4 +256,9 @@ bool ArgParser::GetDumpPluginParams()
 config_type ArgParser::GetProcessingConfig()
 {
     return processing_config_;
+}
+
+bool ArgParser::GetEnableAudioEndpoint()
+{
+    return enable_audio_capture_;
 }

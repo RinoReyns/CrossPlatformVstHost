@@ -1,10 +1,9 @@
 #ifndef ENUMS_H
 #define ENUMS_H
+
 #include <map>
 #include <string>
-
-#define RETURN_ERROR_IF_NULL(value) {if(!value) return VST_ERROR_STATUS::NULL_POINTER;}
-#define RETURN_ERROR_IF_NOT_SUCCESS(value) {if(value != VST_ERROR_STATUS::SUCCESS) return value;}
+#include "VstHostMacro.h"
 
 constexpr auto PLUGINS_STRING = "plugin";
 constexpr auto CONFIG_STRING  = "config";
@@ -34,8 +33,9 @@ enum VST_ERROR_STATUS
     NO_ELEMENT_FOUND                    = 18,
     WRONG_PARAMETER_FORMAT              = 19,
     MISSING_CONFIG_FOR_PLUGIN           = 20,
+    AUDIO_CAPTURE_ERROR                 = 21,
 
-    MAX_STATUS_VALUE                    = MISSING_CONFIG_FOR_PLUGIN
+    MAX_STATUS_VALUE                    = AUDIO_CAPTURE_ERROR
 };
 
 namespace LogLevelType

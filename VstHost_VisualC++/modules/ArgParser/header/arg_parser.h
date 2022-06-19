@@ -18,6 +18,7 @@ class ArgParser
         std::string GetPluginConfig();
         bool GetDumpPluginParams();
         config_type GetProcessingConfig();
+        bool GetEnableAudioEndpoint();
 
     private:
         int CheckIfPathExists(std::string);
@@ -31,7 +32,8 @@ class ArgParser
         std::string output_wave_path_   = "";
         std::string plugin_config_      = "";
         uint8_t verbosity_              = 0;
-        bool dump_plugin_params_        =  false;
+        bool dump_plugin_params_        = false;
+        bool enable_audio_capture_      = false;
 
         std::vector<std::string> expected_keys_in_json_ = {PLUGINS_STRING, CONFIG_STRING };
         config_type processing_config_;

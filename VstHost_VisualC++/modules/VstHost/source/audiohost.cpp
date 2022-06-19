@@ -7,6 +7,7 @@
 #include "file.h"
 #include "arg_parser.h"
 #include "Utils.h"
+#include "VstHostMacro.h"
 
 INITIALIZE_EASYLOGGINGPP
 
