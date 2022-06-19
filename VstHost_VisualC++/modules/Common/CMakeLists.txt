@@ -6,10 +6,12 @@ set(Common_headers
     header/StdAfx.h
     json/single_include/nlohmann/json.hpp
     header/JsonUtils.h
+    header/Utils.h
     )
 
 set (Common_src
      src/JsonUtils.cpp
+     src/Utils.cpp
      )
 
 add_library(${target} ${Common_src} ${Common_headers})

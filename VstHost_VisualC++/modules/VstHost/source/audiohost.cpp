@@ -6,6 +6,7 @@
 #include "JsonUtils.h"
 #include "file.h"
 #include "arg_parser.h"
+#include "Utils.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -29,7 +30,6 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::SetMutliplePluginParameters(cons
         if (!std::filesystem::exists(single_plugin_params->second))
         {
             LOG(WARNING) << "Missing config for plugin '" << key << "'";
-            return VST_ERROR_STATUS::MISSING_CONFIG_FOR_PLUGIN;
         }
         else
         {
@@ -43,8 +43,6 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::SetMutliplePluginParameters(cons
 
 AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(std::string plugin_id, const std::string& plugin_config)
 {
-    // edit controler data flow: 
-    // https://developer.steinberg.help/display/VST/Edit+Controller+Call+Sequence
     if (!vst_plugins_[plugin_id].plug_provider_)
     {
         LOG(ERROR) << "Plugin instance was not created.";
@@ -72,7 +70,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(std::string 
     Steinberg::Vst::ParameterInfo info;
     Steinberg::Vst::ParamValue value;
     Steinberg::int32 index = 0;
-    
+
     for (int32_t i = 0; i < editController->getParameterCount(); i++)
     {
         editController->getParameterInfo(i, info);
@@ -121,8 +119,6 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::GetMutliplePluginParameters(cons
 
 AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::GetPluginParameters(std::string plugin_id, const std::string& plugin_config)
 {
-    // edit controler data flow: 
-    // https://developer.steinberg.help/display/VST/Edit+Controller+Call+Sequence
     if (!vst_plugins_[plugin_id].plug_provider_)
     {
         LOG(ERROR) << "Plugin instance was not created.";
@@ -245,10 +241,13 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
     for (auto& classInfo : factory.classInfos())
     {
         // TODO:
-        // if delay use info about that
-        // and test for different delays
+        // if delay use info about that and test for different delays
+    
         if (classInfo.category() == kVstAudioEffectClass)
         {
+            int status = this->CheckVstSdkCompatibility(classInfo.sdkVersion());
+            RETURN_ERROR_IF_NOT_SUCCESS(status);
+
             if (effectID)
             {
                 if (*effectID != classInfo.ID())
@@ -257,10 +256,34 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
                 }
             }
             vst_plugins_[plugin_id].plug_provider_ = std::unique_ptr<Steinberg::Vst::PlugProvider>(new Steinberg::Vst::PlugProvider(factory, classInfo, true));
-            break;
         }
     }
+
     LOG(INFO) << "Plugin " + plugin_path + " loadded sucessfully.";
+
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+int AudioProcessingVstHost::CheckVstSdkCompatibility(std::string plugin_sdk_version)
+{
+    std::string vst_string(VST_STRING);
+    size_t pos = plugin_sdk_version.find(vst_string);
+    if (pos != std::string::npos)
+    {
+        plugin_sdk_version.erase(pos, vst_string.length());
+    }
+    std::vector<size_t> plugin_sdk_splited;
+    auto status = Utils::SplitString(plugin_sdk_version, ".", plugin_sdk_splited);    
+    RETURN_ERROR_IF_NOT_SUCCESS(status);
+    
+    // NOTE:
+    // plugin_sdk_splited.at(0) - kVstVersionMajor
+    // plugin_sdk_splited.at(1) - kVstVersionMinor
+    // plugin_sdk_splited.at(2) - kVstVersionSub
+    if (kVstVersionMajor != plugin_sdk_splited.at(0) && kVstVersionMinor != plugin_sdk_splited.at(1))
+    {
+        LOG(ERROR) << "VST Plugin has been build with unsupported SDK " << plugin_sdk_version;
+    }
 
     return VST_ERROR_STATUS::SUCCESS;
 }

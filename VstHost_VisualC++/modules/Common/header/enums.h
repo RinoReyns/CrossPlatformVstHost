@@ -31,10 +31,11 @@ enum VST_ERROR_STATUS
     MISSING_ID                          = 15,
     INSTANCE_ALREADY_EXISTS             = 16,
     NO_PLUGIN_INITIALIZED               = 17,
-    WRONG_PARAMETER_FORMAT              = 18,
-    MISSING_CONFIG_FOR_PLUGIN           = 19,
+    NO_ELEMENT_FOUND                    = 18,
+    WRONG_PARAMETER_FORMAT              = 19,
+    MISSING_CONFIG_FOR_PLUGIN           = 20,
 
-    MAX_STATUS_VALUE                    = WRONG_PARAMETER_FORMAT
+    MAX_STATUS_VALUE                    = MISSING_CONFIG_FOR_PLUGIN
 };
 
 namespace LogLevelType
