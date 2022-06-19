@@ -2,6 +2,10 @@
 #include "audiohost.h"
 #include "easylogging++.h"
 
+#include <chrono>
+#include <thread>
+#include <future>
+
 #ifdef _WIN32
 #include "AudioCapture.h"
 #endif
@@ -56,16 +60,35 @@ int VstHostTool::Run()
 
     // TODO:
     // clean up
-    /*
+
     HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (SUCCEEDED(stat))
     {
         std::unique_ptr<AudioCapture> audio_capture(new AudioCapture(arg_parser_->GetPluginVerbosity()));
-        audio_capture->RecordAudioStream();
+        
+        
+        status = audio_capture->InitializeAudioStream();
+        if (status != VST_ERROR_STATUS::SUCCESS)
+        {
+            CoUninitialize();
+            return status;
+        }
+        
+        auto audio_capture_thread = std::async(std::launch::async, 
+                                               &AudioCapture::RecordAudioStream, 
+                                               audio_capture.get());
+        
+        while (!audio_capture->run_recording_loop_)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::cout << "Still sleeping..." << std::endl;
+        }
+
+        status = audio_capture_thread.get();
+
         CoUninitialize();
-        return 0;
-    }
-    */
+        return status;
+    }    
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
 

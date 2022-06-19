@@ -7,6 +7,7 @@ set(Common_headers
     json/single_include/nlohmann/json.hpp
     header/JsonUtils.h
     header/Utils.h
+    header/VstHostMacro.h
     )
 
 set (Common_src
@@ -24,5 +25,7 @@ if (${ANDROID_BUILD})
     add_custom_command(TARGET ${target} POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/header/enums.h
                                                         "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/include/enums.h"
+                       COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/header/VstHostMacro.h
+                                                        "${PROJECT_BINARY_DIR}/bin/${SUFFIX_CONFIG_TYPE}/AndroidPack/include/VstHostMacro.h"
         )
 endif()

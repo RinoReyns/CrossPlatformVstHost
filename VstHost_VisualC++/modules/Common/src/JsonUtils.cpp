@@ -1,7 +1,8 @@
-#include "JsonUtils.h"
-
 #include <fstream>
 #include <iostream>
+
+#include "JsonUtils.h"
+#include "VstHostMacro.h"
 
 VST_ERROR_STATUS JsonUtils::DumpJson(nlohmann::json json_config,
                                      std::string path_to_save)

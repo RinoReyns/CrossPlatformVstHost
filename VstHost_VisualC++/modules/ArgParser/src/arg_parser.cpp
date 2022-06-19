@@ -2,6 +2,7 @@
 
 #include "arg_parser.h"
 #include "JsonUtils.h"
+#include "VstHostMacro.h"
 
 
 ArgParser::ArgParser()

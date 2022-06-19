@@ -1,7 +1,10 @@
 #include "Utils.h"
+
 #include <iostream>
 
-VST_ERROR_STATUS Utils::SplitString(std::string string_to_split, std::string delimiter, std::vector<size_t>& splited_string)
+VST_ERROR_STATUS Utils::SplitString(std::string string_to_split, 
+                                    std::string delimiter, 
+                                    std::vector<size_t>& splited_string)
 {
     size_t start = 0;
     size_t end   = 0;
