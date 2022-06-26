@@ -1,7 +1,6 @@
 //----------------------------------------------------------------------------------------------
 // MFWaveWriter.cpp
 //----------------------------------------------------------------------------------------------
-#include "Stdafx.h"
 #include "WaveWriter.h"
 
 BOOL CMFWaveWriter::Initialize(const WCHAR* wszFile, const BOOL bExtensibleFormat)

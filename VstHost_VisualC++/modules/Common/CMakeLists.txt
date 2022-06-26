@@ -8,6 +8,7 @@ set(Common_headers
     header/JsonUtils.h
     header/Utils.h
     header/VstHostMacro.h
+    header/EndpointUtils.h
     )
 
 set (Common_src

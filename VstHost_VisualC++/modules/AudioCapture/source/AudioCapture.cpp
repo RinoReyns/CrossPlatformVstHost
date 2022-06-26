@@ -6,14 +6,7 @@
 #undef max
 
 #define AUDIO_CAPTURE_FILE		L"Capture.wav"
-#define REFTIMES_PER_SEC		10000000
-#define REFTIMES_PER_MILLISEC	10000
 #define DEVICE_OUTPUT_FORMAT    "Audio Device %d: %ws"
-
-const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
-const IID IID_IMMDeviceEnumerator	 = __uuidof(IMMDeviceEnumerator);
-const IID IID_IAudioClient			 = __uuidof(IAudioClient);
-const IID IID_IAudioCaptureClient	 = __uuidof(IAudioCaptureClient);
 
 AudioCapture::AudioCapture(uint8_t verbose): 
     verbose_(verbose)
@@ -233,6 +226,8 @@ VST_ERROR_STATUS AudioCapture::RecordAudioStream()
     }
     catch (HRESULT) {}
 
+    // TODO:
+    // create "clase endpoint function" to close properly data even in destructor
     if (hr == S_OK && pwfx != NULL)
     {
         WaveWriter.FinalizeHeader(pwfx, uiFileLength, bExtensibleFormat);

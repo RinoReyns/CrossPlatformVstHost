@@ -61,6 +61,8 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Integrate better wave reader 
       - [ ] Clean up code in vst host lib
       - [ ] Build solution for ARM
+      - [ ] Create Render/Capture manager class. Its design should allow to use it for any OS.
+      - [ ] Work on Render and Capture implementation for Windows
 
 1. Windows OS
 
@@ -103,3 +105,4 @@ VST 3 SDK. However, I don't not redistribute any of the original source code.
 1. [More info about treating warnings as errors](https://www.foonathan.net/2018/10/cmake-warnings/)
 1. [How to build c++ code for Android?](https://stackoverflow.com/questions/67729247/build-cmake-library-without-android-studio-by-command-line-or-gui/67729248#67729248)
 1. [How to use c++ .so on Android?](https://github.com/android/ndk-samples/tree/master/hello-libs)
+1. [Rendering an audio stream on windows](https://docs.microsoft.com/en-us/windows/win32/coreaudio/rendering-a-stream)

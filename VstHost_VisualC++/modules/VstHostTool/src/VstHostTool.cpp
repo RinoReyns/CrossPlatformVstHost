@@ -8,6 +8,7 @@
 
 #ifdef _WIN32
 #include "AudioCapture.h"
+#include "AudioRender.h"
 #endif
 
 INITIALIZE_EASYLOGGINGPP
@@ -90,6 +91,25 @@ int VstHostTool::RunAudioCapture()
     return status;
 }
 
+int VstHostTool::RunAudioRender()
+{
+    int status = VST_ERROR_STATUS::AUDIO_CAPTURE_ERROR;
+
+#ifdef _WIN32
+    HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (SUCCEEDED(stat))
+    {
+        std::unique_ptr<AudioRender> audio_render(new AudioRender());
+
+        status = audio_render->RenderAudioStream();
+        CoUninitialize();
+    }
+
+
+#endif
+    return status;
+}
+
 int VstHostTool::Run()
 {
     if (parser_arguments_.size() == 0)
@@ -112,6 +132,7 @@ int VstHostTool::Run()
     if (arg_parser_->GetEnableAudioEndpoint())
     {
         return this->RunAudioCapture();
+        //return this->RunAudioRender();
     }
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());

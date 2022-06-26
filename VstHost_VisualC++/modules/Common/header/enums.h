@@ -34,8 +34,9 @@ enum VST_ERROR_STATUS
     WRONG_PARAMETER_FORMAT              = 19,
     MISSING_CONFIG_FOR_PLUGIN           = 20,
     AUDIO_CAPTURE_ERROR                 = 21,
+    END_OF_FILE                         = 22,
 
-    MAX_STATUS_VALUE                    = AUDIO_CAPTURE_ERROR
+    MAX_STATUS_VALUE                    = END_OF_FILE
 };
 
 namespace LogLevelType
