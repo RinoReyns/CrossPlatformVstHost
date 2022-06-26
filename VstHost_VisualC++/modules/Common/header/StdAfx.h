@@ -25,9 +25,4 @@
 #include <audioclient.h>
 #include <Mmdeviceapi.h>
 
-//----------------------------------------------------------------------------------------------
-// Common Project Files
-
-#include "MFMacro.h"
-
 #endif

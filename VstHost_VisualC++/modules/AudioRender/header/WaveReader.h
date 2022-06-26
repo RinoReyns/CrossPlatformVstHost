@@ -10,7 +10,7 @@ class WaveReader
     public:
         explicit WaveReader() = default;
         ~WaveReader();
-        VST_ERROR_STATUS Initialize();
+        VST_ERROR_STATUS Initialize(const WCHAR* wave_file_path);
         VST_ERROR_STATUS LoadData(BYTE* pData, DWORD dwLength, DWORD* flags);
 
     private:

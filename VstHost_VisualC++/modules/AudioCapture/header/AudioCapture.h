@@ -12,16 +12,16 @@ class AudioCapture
 
 public:
     explicit AudioCapture(uint8_t verbose);
-    ~AudioCapture() = default;
+    ~AudioCapture();
     VST_ERROR_STATUS InitializeAudioStream();
     VST_ERROR_STATUS RecordAudioStream();
     BOOL GetRunRecordingLoop();
     void SetRunRecordingLoop(BOOL status);
+    VST_ERROR_STATUS Release();
 
 private:
-    void ReadEndpointFormat(BOOL* extensible_format_flag);
     VST_ERROR_STATUS ListAudioCaptureEndpoints();
-    HRESULT printDeviceInfo(IMMDevice* pDevice, int index, LPCWSTR outFormat, LPWSTR strDefaultDeviceID);
+    HRESULT PrintDeviceInfo(IMMDevice* pDevice, int index, LPCWSTR outFormat, LPWSTR strDefaultDeviceID);
     std::wstring getDeviceProperty(IPropertyStore* pStore, const PROPERTYKEY key);
 
 private:
@@ -32,6 +32,9 @@ private:
     IAudioClient* pAudioClient              = NULL;
     WAVEFORMATEX* pwfx                      = NULL;
     IAudioCaptureClient* pCaptureClient     = NULL;
+    DWORD recording_loop_sleep_time_        = 0;
+    
+    std::unique_ptr<CMFWaveWriter> wave_writer_;
 };
 
 #endif // AUDIO_CAPTURE_H
