@@ -4,8 +4,7 @@
 #ifndef MFWAVEWRITER_H
 #define MFWAVEWRITER_H
 
-const UINT32 WAVE_HEAD_LEN		= 44;
-const UINT32 WAVE_HEAD_EXT_LEN	= 80;
+#include "EndpointUtils.h"
 
 #define SWAP32(val) (UINT32)((((UINT32)(val)) & 0x000000FF)<<24 | (((UINT32)(val)) & 0x0000FF00)<<8 | (((UINT32)(val)) & 0x00FF0000)>>8 | (((UINT32)(val)) & 0xFF000000)>>24)
 

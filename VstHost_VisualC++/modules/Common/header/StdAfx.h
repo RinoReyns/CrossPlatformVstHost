@@ -29,23 +29,5 @@
 // Common Project Files
 
 #include "MFMacro.h"
-#define TRACE(x)
-
-inline HRESULT _LOG_HRESULT(HRESULT hr, const char* sFileName, long lLineNo) 
-{
-	if (FAILED(hr)) 
-	{
-		TRACE((L"\n%S - Line: %d hr = %s\n", sFileName, lLineNo, MFErrorString(hr)));
-	}
-	else
-	{
-		_CRT_UNUSED(lLineNo);
-		_CRT_UNUSED(sFileName);
-	}
-	return hr;
-}
-
-#define LOG_HRESULT(hr)      _LOG_HRESULT(hr, __FILE__, __LINE__)
-#define LOG_LAST_ERROR()     _LOG_HRESULT(HRESULT_FROM_WIN32(GetLastError()), __FILE__, __LINE__)
 
 #endif

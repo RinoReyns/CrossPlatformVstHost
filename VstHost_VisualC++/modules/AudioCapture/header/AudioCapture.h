@@ -2,7 +2,7 @@
 #define AUDIO_CAPTURE_H
 #include <string>
 
-#include "StdAfx.h"
+#include "EndpointUtils.h"
 #include "WaveWriter.h"
 #include "enums.h"
 #include "easylogging++.h"
