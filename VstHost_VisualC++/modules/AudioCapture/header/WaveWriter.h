@@ -5,6 +5,8 @@
 #define MFWAVEWRITER_H
 
 #include "EndpointUtils.h"
+#include "enums.h"
+#include "easylogging++.h"
 
 #define SWAP32(val) (UINT32)((((UINT32)(val)) & 0x000000FF)<<24 | (((UINT32)(val)) & 0x0000FF00)<<8 | (((UINT32)(val)) & 0x00FF0000)>>8 | (((UINT32)(val)) & 0xFF000000)>>24)
 
@@ -56,19 +58,22 @@ class CMFWaveWriter
 {
 public:
 
-	CMFWaveWriter() : m_hFile(INVALID_HANDLE_VALUE){}
-	~CMFWaveWriter(){ CLOSE_HANDLE_IF(m_hFile); }
+	CMFWaveWriter(uint8_t verbose);
+	~CMFWaveWriter();
 
-	BOOL Initialize(const WCHAR*, const BOOL);
+	VST_ERROR_STATUS Initialize(const WCHAR*, WAVEFORMATEX* pwfx);
 	BOOL WriteWaveData(const BYTE*, const DWORD);
-	BOOL FinalizeHeader(WAVEFORMATEX*, const UINT32, const BOOL);
+	BOOL FinalizeHeader(WAVEFORMATEX*, const UINT32);
 
 private:
-
-	HANDLE m_hFile;
+	HANDLE wave_file_handler_;
+	BOOL is_extensible_format_header_	= false;
+	uint8_t verbose_					= 0;
+	UINT32 header_length_				= 0;
 
 	BOOL SetWaveHeader(const WAVEFORMATEX*, const UINT32, BYTE*);
 	BOOL SetWaveHeaderExt(WAVEFORMATEX*, const UINT32, BYTE*);
+	VST_ERROR_STATUS ReadEndpointFormat(WAVEFORMATEX* pwfx);
 };
 
 #endif

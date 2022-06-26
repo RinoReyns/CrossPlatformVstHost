@@ -3,7 +3,6 @@
 
 #include "VstHostMacro.h"
 #include "WaveReader.h"
-#include "MFMacro.h"
 
 #undef max
 
@@ -32,7 +31,7 @@ VST_ERROR_STATUS AudioRender::RenderAudioStream()
     DWORD flags = 0;
     std::unique_ptr<WaveReader> wave_reader(new WaveReader());
 
-    RETURN_ERROR_IF_NOT_SUCCESS(wave_reader->Initialize());
+    RETURN_ERROR_IF_NOT_SUCCESS(wave_reader->Initialize(AUDIO_CAPUTRE_RENDER_FILE));
 
     hr = CoCreateInstance(
         CLSID_MMDeviceEnumerator, NULL,
@@ -48,17 +47,16 @@ VST_ERROR_STATUS AudioRender::RenderAudioStream()
         NULL, (void**)&pAudioClient);
     EXIT_ON_ERROR(hr)
 
-     hr = pAudioClient->GetMixFormat(&pwfx);
+    hr = pAudioClient->GetMixFormat(&pwfx);
     EXIT_ON_ERROR(hr)
 
-    hr = pAudioClient->Initialize(
-        AUDCLNT_SHAREMODE_SHARED,
-        0,
-        static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC),
-        0,
-        pwfx,
-        NULL);
-    EXIT_ON_ERROR(hr)
+    hr = pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
+                                  0,
+                                  static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC),
+                                  0,
+                                  pwfx,
+                                  NULL);
+   EXIT_ON_ERROR(hr)
 
     // Get the actual size of the allocated buffer.
     hr = pAudioClient->GetBufferSize(&bufferFrameCount);

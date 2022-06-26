@@ -1,21 +1,20 @@
 #include "WaveReader.h"
-#define AUDIO_RENDER_FILE		L"Capture.wav"
 
 WaveReader::~WaveReader()
 {
     CLOSE_HANDLE_IF(wave_file_handler_);
 }
 
-VST_ERROR_STATUS WaveReader::Initialize()
+VST_ERROR_STATUS WaveReader::Initialize(const WCHAR* wave_file_path)
 {
     CLOSE_HANDLE_IF(wave_file_handler_);
-    wave_file_handler_ = CreateFile(AUDIO_RENDER_FILE,     // file to open
-                                    GENERIC_READ,          // open for reading
-                                    FILE_SHARE_READ,       // share for reading
-                                    NULL,                  // default security
-                                    OPEN_EXISTING,         // existing file only
-                                    FILE_ATTRIBUTE_NORMAL , // normal file
-                                    0);                 // no attr. template
+    wave_file_handler_ = CreateFile(wave_file_path,                 // file to open
+                                    GENERIC_READ,                   // open for reading
+                                    FILE_SHARE_READ,                // share for reading
+                                    NULL,                           // default security
+                                    OPEN_EXISTING,                  // existing file only
+                                    FILE_ATTRIBUTE_NORMAL ,         // normal file
+                                    0);                             // no attr. template
 
     if (wave_file_handler_ == INVALID_HANDLE_VALUE)
     {
@@ -28,23 +27,23 @@ VST_ERROR_STATUS WaveReader::Initialize()
     return VST_ERROR_STATUS::SUCCESS;
 }
 
-VST_ERROR_STATUS WaveReader::LoadData(BYTE* pData, DWORD dwLength,  DWORD* flags)
+VST_ERROR_STATUS WaveReader::LoadData(BYTE* pData, DWORD dwLength,  DWORD* flag)
 {
-    // On the begining there will be a glich due to the header in wave file
     DWORD dwWritten;
  
     BOOL status = ReadFile(wave_file_handler_, (LPVOID)pData, dwLength, &dwWritten, NULL);
     if (!status)
     {
+        *flag = AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY;
         VST_ERROR_STATUS::READ_WRITE_ERROR;
     }
 
     if (status && dwWritten == 0)
     {
-        *flags = AUDCLNT_BUFFERFLAGS_SILENT;
+        *flag = AUDCLNT_BUFFERFLAGS_SILENT;
         return VST_ERROR_STATUS::END_OF_FILE;
     }  
 
-    *flags = 0;
+    *flag = 0;
     return VST_ERROR_STATUS::SUCCESS;
 }

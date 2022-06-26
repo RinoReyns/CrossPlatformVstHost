@@ -2,7 +2,6 @@ set(target Common)
 
 set(Common_headers
     header/enums.h
-    header/MFMacro.h
     header/StdAfx.h
     json/single_include/nlohmann/json.hpp
     header/JsonUtils.h

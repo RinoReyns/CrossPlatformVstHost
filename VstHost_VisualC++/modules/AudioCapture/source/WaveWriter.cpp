@@ -1,32 +1,75 @@
-//----------------------------------------------------------------------------------------------
-// MFWaveWriter.cpp
-//----------------------------------------------------------------------------------------------
 #include "WaveWriter.h"
 
-BOOL CMFWaveWriter::Initialize(const WCHAR* wszFile, const BOOL bExtensibleFormat)
+CMFWaveWriter::CMFWaveWriter(uint8_t verbose) :
+	wave_file_handler_(INVALID_HANDLE_VALUE),
+	verbose_(verbose)
+{}
+
+CMFWaveWriter::~CMFWaveWriter()
 {
-	BOOL bRet = FALSE;
-	const UINT32 bHeaderLenght = bExtensibleFormat ? WAVE_HEAD_EXT_LEN : WAVE_HEAD_LEN;
-	CLOSE_HANDLE_IF(m_hFile);
+	CLOSE_HANDLE_IF(wave_file_handler_); 
+}
 
-	m_hFile = CreateFile(wszFile, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+VST_ERROR_STATUS CMFWaveWriter::Initialize(const WCHAR* wszFile, WAVEFORMATEX* pwfx)
+{
+	RETURN_ERROR_IF_NOT_SUCCESS(this->ReadEndpointFormat(pwfx));
 
-	if(m_hFile == INVALID_HANDLE_VALUE)
+	this->header_length_ = this->is_extensible_format_header_ ? WAVE_HEAD_EXT_LEN : WAVE_HEAD_LEN;
+	CLOSE_HANDLE_IF(wave_file_handler_);
+
+	wave_file_handler_ = CreateFile(wszFile, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	if (wave_file_handler_ == INVALID_HANDLE_VALUE)
 	{
-		IF_ERROR_RETURN(bRet);
+		LOG(ERROR) << "Handler in WaveReader not created.";
+		return VST_ERROR_STATUS::OPEN_FILE_ERROR;
 	}
 
 	BYTE WavHeader[WAVE_HEAD_EXT_LEN];
 	memset(WavHeader, 0, sizeof(WavHeader));
 
+	// TODO:
+	// create one function for write to file and check status
 	DWORD dwWritten;
 
-	if(!WriteFile(m_hFile, (LPCVOID)WavHeader, bHeaderLenght, &dwWritten, 0) || dwWritten != bHeaderLenght)
+	if(!WriteFile(wave_file_handler_, (LPCVOID)WavHeader, this->header_length_, &dwWritten, 0) || 
+	   dwWritten != this->header_length_)
 	{
-		IF_ERROR_RETURN(bRet);
+		return VST_ERROR_STATUS::READ_WRITE_ERROR;
 	}
 
-	return bRet = TRUE;
+	return VST_ERROR_STATUS::SUCCESS;
+}
+
+VST_ERROR_STATUS CMFWaveWriter::ReadEndpointFormat(WAVEFORMATEX* pwfx)
+{
+	switch (pwfx->wFormatTag)
+	{
+		case WAVE_FORMAT_PCM:
+			LOG_IF(verbose_ > LogLevelType::LOG_LEVEL::ERROR_LOG, INFO) << L"WAVE_FORMAT_PCM";
+			break;
+
+		case WAVE_FORMAT_IEEE_FLOAT:
+			LOG_IF(verbose_ > LogLevelType::LOG_LEVEL::ERROR_LOG, INFO) << L"WAVE_FORMAT_IEEE_FLOAT";
+			break;
+
+		case WAVE_FORMAT_EXTENSIBLE:
+			LOG_IF(verbose_ > LogLevelType::LOG_LEVEL::ERROR_LOG, INFO) << L"WAVE_FORMAT_EXTENSIBLE";
+			this->is_extensible_format_header_ = TRUE;
+
+			WAVEFORMATEXTENSIBLE* pWaveFormatExtensible = reinterpret_cast<WAVEFORMATEXTENSIBLE*>(pwfx);
+
+			if (pWaveFormatExtensible->SubFormat == KSDATAFORMAT_SUBTYPE_PCM)
+			{
+				LOG_IF(verbose_ > LogLevelType::LOG_LEVEL::ERROR_LOG, INFO) << L"KSDATAFORMAT_SUBTYPE_PCM";
+			}
+			else if (pWaveFormatExtensible->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
+			{
+				LOG_IF(verbose_ > LogLevelType::LOG_LEVEL::ERROR_LOG, INFO) << L"KSDATAFORMAT_SUBTYPE_IEEE_FLOAT";
+			}
+			break;
+	}
+
+	return VST_ERROR_STATUS::SUCCESS;
 }
 
 BOOL CMFWaveWriter::WriteWaveData(const BYTE* pData, const DWORD dwLength)
@@ -34,7 +77,7 @@ BOOL CMFWaveWriter::WriteWaveData(const BYTE* pData, const DWORD dwLength)
 	BOOL bRet = FALSE;
 	DWORD dwWritten;
 
-	if(!WriteFile(m_hFile, (LPCVOID)pData, dwLength, &dwWritten, 0) || dwWritten != dwLength)
+	if(!WriteFile(wave_file_handler_, (LPCVOID)pData, dwLength, &dwWritten, 0) || dwWritten != dwLength)
 	{
 		IF_ERROR_RETURN(bRet);
 	}
@@ -42,22 +85,21 @@ BOOL CMFWaveWriter::WriteWaveData(const BYTE* pData, const DWORD dwLength)
 	return bRet = TRUE;
 }
 
-BOOL CMFWaveWriter::FinalizeHeader(WAVEFORMATEX* pwfx, const UINT32 uiFileLength, const BOOL bExtensibleFormat)
+BOOL CMFWaveWriter::FinalizeHeader(WAVEFORMATEX* pwfx, const UINT32 uiFileLength)
 {
 	BOOL bRet = FALSE;
 	DWORD dwMove;
 	DWORD dwWritten;
-	const UINT32 bHeaderLenght = bExtensibleFormat ? WAVE_HEAD_EXT_LEN : WAVE_HEAD_LEN;
 
 	BYTE WavHeader[WAVE_HEAD_EXT_LEN];
 	memset(WavHeader, 0, sizeof(WavHeader));
 
-	if((dwMove = SetFilePointer(m_hFile, 0, NULL, FILE_BEGIN)) == INVALID_SET_FILE_POINTER)
+	if((dwMove = SetFilePointer(wave_file_handler_, 0, NULL, FILE_BEGIN)) == INVALID_SET_FILE_POINTER)
 	{
 		IF_ERROR_RETURN(bRet);
 	}
 
-	if(bExtensibleFormat)
+	if(this->is_extensible_format_header_)
 	{
 		if(!SetWaveHeaderExt(pwfx, uiFileLength, WavHeader))
 		{
@@ -72,7 +114,8 @@ BOOL CMFWaveWriter::FinalizeHeader(WAVEFORMATEX* pwfx, const UINT32 uiFileLength
 		}
 	}
 
-	if(!WriteFile(m_hFile, (LPCVOID)WavHeader, bHeaderLenght, &dwWritten, 0) || dwWritten != bHeaderLenght)
+	if(!WriteFile(wave_file_handler_, (LPCVOID)WavHeader, this->header_length_, &dwWritten, 0) || 
+		dwWritten != this->header_length_)
 	{
 		IF_ERROR_RETURN(bRet);
 	}
@@ -129,8 +172,10 @@ BOOL CMFWaveWriter::SetWaveHeaderExt(WAVEFORMATEX* pwfx, const UINT32 uiDataLen,
 
 BOOL CMFWaveWriter::SetWaveHeader(const WAVEFORMATEX* pwfx, const UINT32 uiDataLen, BYTE* head)
 {
-	if(uiDataLen == 0)
+	if (uiDataLen == 0)
+	{
 		return FALSE;
+	}
 
 	RIFFCHUNK* pch;
 	RIFFLIST* priff;
