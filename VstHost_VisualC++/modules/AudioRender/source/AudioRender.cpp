@@ -19,11 +19,11 @@ AudioRender::AudioRender()
 VST_ERROR_STATUS AudioRender::RenderAudioStream()
 {
     HRESULT hr;
-    IMMDeviceEnumerator* pEnumerator = NULL;
-    IMMDevice* pDevice = NULL;
-    IAudioClient* pAudioClient = NULL;
-    IAudioRenderClient* pRenderClient = NULL;
-    WAVEFORMATEX* pwfx = NULL;
+    IMMDeviceEnumerator* pEnumerator    = NULL;
+    IMMDevice* pDevice                  = NULL;
+    IAudioClient* pAudioClient          = NULL;
+    IAudioRenderClient* pRenderClient   = NULL;
+    WAVEFORMATEX* pwfx                  = NULL;
     UINT32 bufferFrameCount;
     UINT32 numFramesAvailable;
     UINT32 numFramesPadding;

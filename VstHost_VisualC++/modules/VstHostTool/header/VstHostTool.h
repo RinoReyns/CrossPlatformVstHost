@@ -16,6 +16,7 @@ class VstHostTool
     private:
         int RunAudioCapture();
         int RunAudioRender();
+        int RunAudioEndpointHandler();
 
     private:
         std::unique_ptr<ArgParser> arg_parser_;
