@@ -54,11 +54,13 @@ int VstHostTool::Run()
     LOG(INFO) << "------------------------------ Audio Host Started ------------------------------";
     std::unique_ptr<AudioProcessingVstHost> vst_host = std::make_unique<AudioProcessingVstHost>();
 
+#ifdef _WIN32
     if (arg_parser_->GetEnableAudioEndpoint())
     {
         std::unique_ptr<AudioEndpointManager> endpoint_manager(new AudioEndpointManager(arg_parser_->GetPluginVerbosity()));
         return endpoint_manager->RunAudioEndpointHandler();
     }
+#endif
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
 
