@@ -7,7 +7,7 @@
 
 #define DEVICE_OUTPUT_FORMAT    "Audio Device %d: %ws"
 
-AudioCapture::AudioCapture(uint8_t verbose): 
+AudioCapture::AudioCapture(uint8_t verbose) :
     verbose_(verbose)
 {
 }
@@ -22,20 +22,32 @@ VST_ERROR_STATUS AudioCapture::Release()
     if (pAudioClient)
     {
         auto status = pAudioClient->Stop();
-        LOG(INFO) << "Stop audio client status: " << status;
+        LOG(INFO) << "Stop audio capture client status: " << status;
         SAFE_RELEASE(pAudioClient);
     }
-    
-    if (pwfx)
+
+    if (device_format_)
     {
-        CoTaskMemFree(pwfx);
-        memset(&pwfx, 0, sizeof(pwfx));
+        CoTaskMemFree(device_format_);
+        memset(&device_format_, 0, sizeof(device_format_));
+    }
+
+    if (wave_writer_)
+    {
+        wave_writer_->~CMFWaveWriter();
     }
 
     SAFE_RELEASE(pEnumerator);
     SAFE_RELEASE(pDevice);
     SAFE_RELEASE(pCaptureClient);
 
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+VST_ERROR_STATUS AudioCapture::GetEndpointSamplingRate(uint32_t* sampling_rate)
+{
+    RETURN_ERROR_IF_NULL(device_format_);
+    *sampling_rate = static_cast<uint32_t>(device_format_->nSamplesPerSec);
     return VST_ERROR_STATUS::SUCCESS;
 }
 
@@ -46,8 +58,8 @@ VST_ERROR_STATUS AudioCapture::ListAudioCaptureEndpoints()
     // set endpoint outside of this function.
     LPWSTR strDefaultDeviceID = '\0';
     IMMDeviceCollection* pDevices;
-    IMMDevice* device; 
-    UINT discovered_devices_count  = 0;
+    IMMDevice* device;
+    UINT discovered_devices_count = 0;
     auto status = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pDevices);
     if SUCCEEDED(status)
     {
@@ -75,8 +87,8 @@ VST_ERROR_STATUS AudioCapture::ListAudioCaptureEndpoints()
     int enpoint_id = -1;
     bool is_endpoint_chosen = false;
     std::cout << "Choose endpoint id (int):\n";
-    while(!is_endpoint_chosen)
-    {	
+    while (!is_endpoint_chosen)
+    {
         std::cin >> enpoint_id;
         if (enpoint_id == 0 || enpoint_id > static_cast<int>(discovered_devices_count))
         {
@@ -120,13 +132,13 @@ HRESULT AudioCapture::PrintDeviceInfo(IMMDevice* device, int index, LPCWSTR outF
         if (SUCCEEDED(hr))
         {
             wprintf_s(outFormat,
-                      index,
-                      friendlyName.c_str(),
-                      dwState,
-                      deviceDefault,
-                      Desc.c_str(),
-                      interfaceFriendlyName.c_str(),
-                      strID);
+                index,
+                friendlyName.c_str(),
+                dwState,
+                deviceDefault,
+                Desc.c_str(),
+                interfaceFriendlyName.c_str(),
+                strID);
             wprintf_s(_T("\n"));
         }
     }
@@ -152,50 +164,51 @@ std::wstring AudioCapture::getDeviceProperty(IPropertyStore* pStore, const PROPE
     }
 }
 
-VST_ERROR_STATUS AudioCapture::InitializeAudioStream()
+VST_ERROR_STATUS AudioCapture::Init()
 {
     HRESULT hr = S_OK;
 
-    RETURN_IF_AUDIO_CAPTURE_FAILED(CoCreateInstance(CLSID_MMDeviceEnumerator, 
-                                                    NULL, 
-                                                    CLSCTX_ALL, 
-                                                    IID_IMMDeviceEnumerator, 
-                                                    (void**)&pEnumerator));
+    RETURN_IF_AUDIO_CAPTURE_FAILED(CoCreateInstance(CLSID_MMDeviceEnumerator,
+        NULL,
+        CLSCTX_ALL,
+        IID_IMMDeviceEnumerator,
+        (void**)&pEnumerator));
+
     ListAudioCaptureEndpoints();
-    //IF_FAILED_THROW(pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice));
-    RETURN_IF_AUDIO_CAPTURE_FAILED(pDevice->Activate(IID_IAudioClient, 
-                                                     CLSCTX_ALL, 
-                                                     NULL, 
-                                                     (void**)&pAudioClient));
 
-    RETURN_IF_AUDIO_CAPTURE_FAILED(pAudioClient->GetMixFormat(&pwfx));
+    RETURN_IF_AUDIO_CAPTURE_FAILED(pDevice->Activate(IID_IAudioClient,
+        CLSCTX_ALL,
+        NULL,
+        (void**)&pAudioClient));
+
+    RETURN_IF_AUDIO_CAPTURE_FAILED(pAudioClient->GetMixFormat(&device_format_));
     RETURN_IF_AUDIO_CAPTURE_FAILED(pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
-                                                            0, 
-                                                            static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC), 
-                                                            0, 
-                                                            pwfx, 
-                                                            NULL));
+        0,
+        static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC),
+        0,
+        device_format_,
+        NULL));
 
-    RETURN_IF_AUDIO_CAPTURE_FAILED(pAudioClient->GetService(IID_IAudioCaptureClient, 
-                                                            (void**)&pCaptureClient));
+    RETURN_IF_AUDIO_CAPTURE_FAILED(pAudioClient->GetService(IID_IAudioCaptureClient,
+        (void**)&pCaptureClient));
 
     UINT32 buffer_frame_count; // TODO: rename
 
     RETURN_IF_AUDIO_CAPTURE_FAILED(pAudioClient->GetBufferSize(&buffer_frame_count));
     recording_loop_sleep_time_ = (static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC) * buffer_frame_count) /
-                                 (pwfx->nSamplesPerSec * 2 * REFTIMES_PER_MILLISEC);
+        (device_format_->nSamplesPerSec * 2 * REFTIMES_PER_MILLISEC);
 
     wave_writer_.reset(new CMFWaveWriter(this->verbose_));
-    RETURN_ERROR_IF_NOT_SUCCESS(wave_writer_->Initialize(AUDIO_CAPUTRE_RENDER_FILE, pwfx));
+    RETURN_ERROR_IF_NOT_SUCCESS(wave_writer_->Initialize(AUDIO_CAPUTRE_RENDER_FILE, device_format_));
 
     return VST_ERROR_STATUS::SUCCESS;
 }
 
 VST_ERROR_STATUS AudioCapture::RecordAudioStream()
 {
-    HRESULT hr              = S_OK;
-    UINT32 uiFileLength     = 0;
-   
+    HRESULT hr = S_OK;
+    UINT32 uiFileLength = 0;
+
     try
     {
         RETURN_IF_AUDIO_CAPTURE_FAILED(pAudioClient->Start());
@@ -212,11 +225,11 @@ VST_ERROR_STATUS AudioCapture::RecordAudioStream()
 
             while (packetLength != 0)
             {
-                RETURN_IF_AUDIO_CAPTURE_FAILED(pCaptureClient->GetBuffer(&pData, 
-                                                                         &numFramesAvailable, 
-                                                                         &flags, 
-                                                                         NULL, 
-                                                                         NULL));
+                RETURN_IF_AUDIO_CAPTURE_FAILED(pCaptureClient->GetBuffer(&pData,
+                    &numFramesAvailable,
+                    &flags,
+                    NULL,
+                    NULL));
 
                 if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
                 {
@@ -237,8 +250,8 @@ VST_ERROR_STATUS AudioCapture::RecordAudioStream()
                 assert(packetLength == numFramesAvailable);
 
                 RETURN_IF_AUDIO_CAPTURE_FAILED(wave_writer_->WriteWaveData(
-                    pData, 
-                    numFramesAvailable * pwfx->nBlockAlign) ? S_OK : E_FAIL);
+                    pData,
+                    numFramesAvailable * device_format_->nBlockAlign) ? S_OK : E_FAIL);
                 uiFileLength += numFramesAvailable;
                 RETURN_IF_AUDIO_CAPTURE_FAILED(pCaptureClient->ReleaseBuffer(numFramesAvailable));
                 RETURN_IF_AUDIO_CAPTURE_FAILED(pCaptureClient->GetNextPacketSize(&packetLength));
@@ -247,9 +260,9 @@ VST_ERROR_STATUS AudioCapture::RecordAudioStream()
     }
     catch (HRESULT) {}
 
-    if (hr == S_OK && pwfx != NULL)
+    if (hr == S_OK && device_format_ != NULL)
     {
-        wave_writer_->FinalizeHeader(pwfx, uiFileLength);
+        wave_writer_->FinalizeHeader(device_format_, uiFileLength);
     }
 
     this->Release();
