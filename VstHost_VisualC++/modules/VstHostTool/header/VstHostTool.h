@@ -6,21 +6,16 @@
 
 class VstHostTool
 {
-    public:
-        VstHostTool();
-        ~VstHostTool() = default;
-        int PrepareArgs(int argc, char* argv[]);
-        int PrepareArgs(std::vector<std::string> args);
-        int Run();
+public:
+    VstHostTool();
+    ~VstHostTool() = default;
+    int PrepareArgs(int argc, char* argv[]);
+    int PrepareArgs(std::vector<std::string> args);
+    int Run();
 
-    private:
-        int RunAudioCapture();
-        int RunAudioRender();
-        int RunAudioEndpointHandler();
-
-    private:
-        std::unique_ptr<ArgParser> arg_parser_;
-        std::vector<std::string> parser_arguments_;
+private:
+    std::unique_ptr<ArgParser> arg_parser_;
+    std::vector<std::string> parser_arguments_;
 };
 
 #endif // VST_HOST_TOOL

@@ -2,13 +2,8 @@
 #include "audiohost.h"
 #include "easylogging++.h"
 
-#include <chrono>
-#include <thread>
-#include <future>
-
 #ifdef _WIN32
-#include "AudioCapture.h"
-#include "AudioRender.h"
+#include "AudioEndpointManager.h"
 #endif
 
 INITIALIZE_EASYLOGGINGPP
@@ -40,66 +35,6 @@ int VstHostTool::PrepareArgs(std::vector<std::string> args)
     return VST_ERROR_STATUS::SUCCESS;
 }
 
-int VstHostTool::RunAudioCapture()
-{
-    std::unique_ptr<AudioCapture> audio_capture(new AudioCapture(arg_parser_->GetPluginVerbosity()));
-    RETURN_ERROR_IF_NOT_SUCCESS(audio_capture->InitializeAudioStream())
-
-    auto audio_capture_thread = std::async(std::launch::async,
-        &AudioCapture::RecordAudioStream,
-        audio_capture.get());
-
-    int input_value;
-    while (!audio_capture->GetRunRecordingLoop())
-    {
-        std::cout << "If you want to stop Audio Capture type '1' and press 'enter'" << std::endl;
-        std::cin >> input_value;
-        if (input_value == 1)
-        {
-            audio_capture->SetRunRecordingLoop(TRUE);
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        std::cout << "Still sleeping..." << std::endl;
-    }
-
-    return audio_capture_thread.get();
-}
-
-int VstHostTool::RunAudioRender()
-{
-    std::unique_ptr<AudioRender> audio_render(new AudioRender());
-    return audio_render->RenderAudioStream();
-}
-
-int VstHostTool::RunAudioEndpointHandler()
-{
-    int status = VST_ERROR_STATUS::AUDIO_CAPTURE_ERROR;
-
-#ifdef _WIN32
-    // TODO:
-    // 1) Create queue 
-    // 2) Write to queue in RecordAudioStream
-    // 3) Read from queue and write to file on other thread
-    // 4) Render data from queue
-    // 5) Put data from queue throught the plugin and render processed results.
-    // 6) First init audio render - it will render zeros or noise, but there will be minimal latency.
-    //    The target for latency should be 1ms to 5 ms. Latency should be adjustable.
-
-    HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-    if (SUCCEEDED(stat))
-    {
-        status = this->RunAudioCapture();
-        if (status == VST_ERROR_STATUS::SUCCESS)
-        {
-            status = this->RunAudioRender();
-        }   
-        CoUninitialize();
-    }
-
-#endif
-    return status;
-}
-
 int VstHostTool::Run()
 {
     if (parser_arguments_.size() == 0)
@@ -121,7 +56,8 @@ int VstHostTool::Run()
 
     if (arg_parser_->GetEnableAudioEndpoint())
     {
-        return RunAudioEndpointHandler();
+        std::unique_ptr<AudioEndpointManager> endpoint_manager(new AudioEndpointManager(arg_parser_->GetPluginVerbosity()));
+        return endpoint_manager->RunAudioEndpointHandler();
     }
 
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());

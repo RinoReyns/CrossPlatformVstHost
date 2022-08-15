@@ -2,86 +2,125 @@
 #include "Functiondiscoverykeys_devpkey.h"
 
 #include "VstHostMacro.h"
-#include "WaveReader.h"
 
 #undef max
 
 const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
-const IID IID_IMMDeviceEnumerator    = __uuidof(IMMDeviceEnumerator);
-const IID IID_IAudioClient           = __uuidof(IAudioClient);
-const IID IID_IAudioCaptureClient    = __uuidof(IAudioCaptureClient);
-const IID IID_IAudioRenderClient     = __uuidof(IAudioRenderClient);
+const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
+const IID IID_IAudioClient = __uuidof(IAudioClient);
+const IID IID_IAudioCaptureClient = __uuidof(IAudioCaptureClient);
+const IID IID_IAudioRenderClient = __uuidof(IAudioRenderClient);
 
 AudioRender::AudioRender()
 {
 }
 
+AudioRender::~AudioRender()
+{
+    this->Release();
+}
+
+VST_ERROR_STATUS AudioRender::Release()
+{
+    if (pAudioClient)
+    {
+        auto status = pAudioClient->Stop();
+        LOG(INFO) << "Stop audio render client status: " << status;
+        SAFE_RELEASE(pAudioClient);
+    }
+
+    if (device_format_)
+    {
+        CoTaskMemFree(device_format_);
+        memset(&device_format_, 0, sizeof(device_format_));
+    }
+
+    if (wave_reader_)
+    {
+        wave_reader_->~WaveReader();
+    }
+
+    SAFE_RELEASE(pEnumerator);
+    SAFE_RELEASE(pDevice);
+    SAFE_RELEASE(pAudioClient);
+    SAFE_RELEASE(pRenderClient);
+
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+VST_ERROR_STATUS AudioRender::Init()
+{
+    HRESULT hr = S_OK;
+
+    RETURN_IF_AUDIO_RENDER_FAILED(CoCreateInstance(
+        CLSID_MMDeviceEnumerator,
+        NULL,
+        CLSCTX_ALL,
+        IID_IMMDeviceEnumerator,
+        (void**)&pEnumerator));
+
+    RETURN_IF_AUDIO_RENDER_FAILED(pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice));
+
+    RETURN_IF_AUDIO_RENDER_FAILED(pDevice->Activate(
+        IID_IAudioClient,
+        CLSCTX_ALL,
+        NULL,
+        (void**)&pAudioClient));
+
+    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->GetMixFormat(&device_format_));
+
+    // TODO:
+    // try to work on exclusive mode
+
+    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
+        0,
+        static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC),
+        0,
+        device_format_,
+        NULL));
+
+    // Get the actual size of the allocated buffer.
+    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->GetBufferSize(&bufferFrameCount));
+    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->GetService(IID_IAudioRenderClient, (void**)&pRenderClient));
+
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+VST_ERROR_STATUS AudioRender::GetEndpointSamplingRate(uint32_t* sampling_rate)
+{
+    RETURN_ERROR_IF_NULL(device_format_);
+    *sampling_rate = static_cast<uint32_t>(device_format_->nSamplesPerSec);
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
 VST_ERROR_STATUS AudioRender::RenderAudioStream()
 {
     HRESULT hr;
-    IMMDeviceEnumerator* pEnumerator    = NULL;
-    IMMDevice* pDevice                  = NULL;
-    IAudioClient* pAudioClient          = NULL;
-    IAudioRenderClient* pRenderClient   = NULL;
-    WAVEFORMATEX* pwfx                  = NULL;
-    UINT32 bufferFrameCount;
+
     UINT32 numFramesAvailable;
     UINT32 numFramesPadding;
     BYTE* pData;
     DWORD flags = 0;
-    std::unique_ptr<WaveReader> wave_reader(new WaveReader());
 
-    RETURN_ERROR_IF_NOT_SUCCESS(wave_reader->Initialize(AUDIO_CAPUTRE_RENDER_FILE));
+    RETURN_ERROR_IF_NULL(pRenderClient);
 
-    hr = CoCreateInstance(
-        CLSID_MMDeviceEnumerator, NULL,
-        CLSCTX_ALL, IID_IMMDeviceEnumerator,
-        (void**)&pEnumerator);
-    EXIT_ON_ERROR(hr)
-
-    hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
-    EXIT_ON_ERROR(hr)
-
-    hr = pDevice->Activate(
-        IID_IAudioClient, CLSCTX_ALL,
-        NULL, (void**)&pAudioClient);
-    EXIT_ON_ERROR(hr)
-
-    hr = pAudioClient->GetMixFormat(&pwfx);
-    EXIT_ON_ERROR(hr)
-
-    hr = pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
-                                  0,
-                                  static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC),
-                                  0,
-                                  pwfx,
-                                  NULL);
-   EXIT_ON_ERROR(hr)
-
-    // Get the actual size of the allocated buffer.
-    hr = pAudioClient->GetBufferSize(&bufferFrameCount);
-    EXIT_ON_ERROR(hr)
-
-    hr = pAudioClient->GetService(
-        IID_IAudioRenderClient,
-        (void**)&pRenderClient);
-    EXIT_ON_ERROR(hr)
+    wave_reader_.reset(new WaveReader());
+    RETURN_ERROR_IF_NOT_SUCCESS(wave_reader_->Initialize(AUDIO_CAPUTRE_RENDER_FILE));
 
     // Grab the entire buffer for the initial fill operation.
-    hr = pRenderClient->GetBuffer(bufferFrameCount, &pData);
-    EXIT_ON_ERROR(hr)
+    RETURN_IF_AUDIO_RENDER_FAILED(pRenderClient->GetBuffer(bufferFrameCount, &pData));
 
     // Load the initial data into the shared buffer.
-    hr = wave_reader->LoadData(pData, bufferFrameCount * pwfx->nBlockAlign, &flags);
-    EXIT_ON_ERROR(hr)
-    hr = pRenderClient->ReleaseBuffer(bufferFrameCount, flags);
-    EXIT_ON_ERROR(hr)
+    RETURN_IF_AUDIO_RENDER_FAILED(wave_reader_->LoadData(
+        pData,
+        bufferFrameCount * device_format_->nBlockAlign,
+        &flags));
+    RETURN_IF_AUDIO_RENDER_FAILED(pRenderClient->ReleaseBuffer(bufferFrameCount, flags));
 
     // Calculate the actual duration of the allocated buffer.
     DWORD  sleep_time = (static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC) * bufferFrameCount) /
-                        (pwfx->nSamplesPerSec * 2 * REFTIMES_PER_MILLISEC);
-    hr = pAudioClient->Start();  // Start playing.
-    EXIT_ON_ERROR(hr)
+        (device_format_->nSamplesPerSec * 2 * REFTIMES_PER_MILLISEC);
+    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->Start());  // Start playing
 
     // Each loop fills about half of the shared buffer.
     while (flags != AUDCLNT_BUFFERFLAGS_SILENT)
@@ -90,35 +129,26 @@ VST_ERROR_STATUS AudioRender::RenderAudioStream()
         Sleep(sleep_time);
 
         // See how much buffer space is available.
-        hr = pAudioClient->GetCurrentPadding(&numFramesPadding);
-        EXIT_ON_ERROR(hr)
+        RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->GetCurrentPadding(&numFramesPadding));
 
         numFramesAvailable = bufferFrameCount - numFramesPadding;
 
         // Grab all the available space in the shared buffer.
-        hr = pRenderClient->GetBuffer(numFramesAvailable, &pData);
-        EXIT_ON_ERROR(hr)
+        RETURN_IF_AUDIO_RENDER_FAILED(pRenderClient->GetBuffer(numFramesAvailable, &pData));
 
         // Get next 1/2-second of data from the audio source.
-        hr = wave_reader->LoadData(pData, numFramesAvailable * pwfx->nBlockAlign, &flags);
-        EXIT_ON_ERROR(hr)
+        RETURN_IF_AUDIO_RENDER_FAILED(wave_reader_->LoadData(
+            pData,
+            numFramesAvailable * device_format_->nBlockAlign,
+            &flags));
 
-        hr = pRenderClient->ReleaseBuffer(numFramesAvailable, flags);
-        EXIT_ON_ERROR(hr)
+        RETURN_IF_AUDIO_RENDER_FAILED(pRenderClient->ReleaseBuffer(numFramesAvailable, flags))
     }
 
     // Wait for last data in buffer to play before stopping.
     Sleep(sleep_time);
 
-    hr = pAudioClient->Stop();  // Stop playing.
-    EXIT_ON_ERROR(hr)
-
-    Exit:
-        CoTaskMemFree(pwfx);
-        SAFE_RELEASE(pEnumerator);
-        SAFE_RELEASE(pDevice);
-        SAFE_RELEASE(pAudioClient);
-        SAFE_RELEASE(pRenderClient);
+    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->Stop());  // Stop playing.
 
     return VST_ERROR_STATUS::SUCCESS;
 }
