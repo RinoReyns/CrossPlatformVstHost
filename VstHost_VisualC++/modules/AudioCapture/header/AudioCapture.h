@@ -6,8 +6,9 @@
 #include "WaveWriter.h"
 #include "enums.h"
 #include "easylogging++.h"
+#include "AudioEndpointBase.h"
 
-class AudioCapture
+class AudioCapture : AudioEndpointBase
 {
 
 public:
@@ -21,15 +22,8 @@ public:
     VST_ERROR_STATUS GetEndpointSamplingRate(uint32_t* sampling_rate);
 
 private:
-    VST_ERROR_STATUS ListAudioCaptureEndpoints();
-    HRESULT PrintDeviceInfo(IMMDevice* pDevice, int index, LPCWSTR outFormat, LPWSTR strDefaultDeviceID);
-    std::wstring getDeviceProperty(IPropertyStore* pStore, const PROPERTYKEY key);
-
-private:
     std::atomic<BOOL> run_recording_loop_ = FALSE;
     uint8_t verbose_ = 0;
-    IMMDevice* pDevice = NULL;
-    IMMDeviceEnumerator* pEnumerator = NULL;
     IAudioClient* pAudioClient = NULL;
     WAVEFORMATEX* device_format_ = NULL;
     IAudioCaptureClient* pCaptureClient = NULL;

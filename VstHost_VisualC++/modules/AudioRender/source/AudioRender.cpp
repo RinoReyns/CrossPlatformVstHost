@@ -13,6 +13,7 @@ const IID IID_IAudioRenderClient = __uuidof(IAudioRenderClient);
 
 AudioRender::AudioRender()
 {
+    endpoint_type_ = eRender;
 }
 
 AudioRender::~AudioRender()
@@ -59,7 +60,11 @@ VST_ERROR_STATUS AudioRender::Init()
         IID_IMMDeviceEnumerator,
         (void**)&pEnumerator));
 
-    RETURN_IF_AUDIO_RENDER_FAILED(pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice));
+    UINT discovered_devices_count = 0;
+
+    LOG(INFO) << "--------- Render devices: ---------";
+    RETURN_ERROR_IF_NOT_SUCCESS(ListAudioCaptureEndpoints(&discovered_devices_count));
+    RETURN_ERROR_IF_NOT_SUCCESS(SetAudioEnpoint(&discovered_devices_count));
 
     RETURN_IF_AUDIO_RENDER_FAILED(pDevice->Activate(
         IID_IAudioClient,
@@ -68,10 +73,6 @@ VST_ERROR_STATUS AudioRender::Init()
         (void**)&pAudioClient));
 
     RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->GetMixFormat(&device_format_));
-
-    // TODO:
-    // try to work on exclusive mode
-
     RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED,
         0,
         static_cast<REFERENCE_TIME>(REFTIMES_PER_SEC),

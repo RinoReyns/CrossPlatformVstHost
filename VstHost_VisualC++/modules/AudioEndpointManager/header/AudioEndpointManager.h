@@ -21,7 +21,6 @@ private:
     int RunAudioCapture();
     int RunAudioRender();
 
-
 private:
     std::unique_ptr<AudioCapture> audio_capture_;
     std::unique_ptr<AudioRender> audio_render_;

@@ -36,6 +36,7 @@ set(SUFFIX_CONFIG_TYPE $<IF:$<CONFIG:Debug>,Debug,Release>)
 
 if (MSVC)
     set(SMTG_USE_STDATOMIC_H OFF CACHE BOOL "" FORCE)
+    set(AUDIO_ENDPOINTS_FOLDER FOLDER "AudioEndpoints")
 endif()
 
 include_directories(${SDK_ROOT})
@@ -62,6 +63,13 @@ set_target_properties(sdk_hosting PROPERTIES ${SDK_IDE_LIBS_FOLDER})
 set_target_properties(base PROPERTIES ${SDK_IDE_LIBS_FOLDER})
 set_target_properties(pluginterfaces PROPERTIES ${SDK_IDE_LIBS_FOLDER})
 set_target_properties(cmake_modules PROPERTIES ${SDK_IDE_LIBS_FOLDER})
+
+if (MSVC)
+    set_target_properties(AudioEndpointManager PROPERTIES ${AUDIO_ENDPOINTS_FOLDER})
+    set_target_properties(AudioRender PROPERTIES ${AUDIO_ENDPOINTS_FOLDER})
+    set_target_properties(AudioCapture PROPERTIES ${AUDIO_ENDPOINTS_FOLDER})
+    set_target_properties(AudioEndpointBase PROPERTIES ${AUDIO_ENDPOINTS_FOLDER})
+endif()
 
 if(TARGET base_ios)
     set_target_properties(base_ios PROPERTIES ${SDK_IDE_LIBS_FOLDER})

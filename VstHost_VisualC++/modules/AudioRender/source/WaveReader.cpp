@@ -11,12 +11,13 @@ WaveReader::~WaveReader()
 VST_ERROR_STATUS WaveReader::Initialize(const WCHAR* wave_file_path)
 {
     CLOSE_HANDLE_IF(wave_file_handler_);
-    wave_file_handler_ = CreateFile(wave_file_path,                 // file to open
+    wave_file_handler_ = CreateFile(
+        wave_file_path,                 // file to open
         GENERIC_READ,                   // open for reading
         FILE_SHARE_READ,                // share for reading
         NULL,                           // default security
         OPEN_EXISTING,                  // existing file only
-        FILE_ATTRIBUTE_NORMAL,         // normal file
+        FILE_ATTRIBUTE_NORMAL,          // normal file
         0);                             // no attr. template
 
     if (wave_file_handler_ == INVALID_HANDLE_VALUE)
@@ -26,6 +27,7 @@ VST_ERROR_STATUS WaveReader::Initialize(const WCHAR* wave_file_path)
     }
     // TODO:
     // read header, check signal lenght and read only until the one of file
+    // handle different formats e.g. sampling rate, bit depth etc
 
     return VST_ERROR_STATUS::SUCCESS;
 }

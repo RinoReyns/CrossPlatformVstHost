@@ -63,6 +63,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Build solution for ARM
       - [ ] Create Render/Capture manager class. Its design should allow to use it for any OS.
       - [ ] Work on Render and Capture implementation for Windows
+      - [ ] Handle different audio formats e.g. sampling rate, bit depth etc.
 
 1. Windows OS
 
