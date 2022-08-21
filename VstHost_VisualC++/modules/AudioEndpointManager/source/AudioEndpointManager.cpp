@@ -41,16 +41,15 @@ int AudioEndpointManager::RunAudioRender()
 
 int AudioEndpointManager::RunAudioEndpointHandler()
 {
-
     // TODO:
-    // 1) Choose Render Endpoint
-    // 2) Create queue 
-    // 3) Write to queue in RecordAudioStream
-    // 4) Read from queue and write to file on other thread
-    // 5) Render data from queue
-    // 6) Put data from queue throught the plugin and render processed results.
-    // 7) First init audio render - it will render zeros or noise, but there will be minimal latency.
+    // 1) Create queue 
+    // 2) Write to queue in RecordAudioStream
+    // 3) Read from queue and write to file on other thread
+    // 4) Render data from queue
+    // 5) Put data from queue throught the plugin and render processed results.
+    // 6) First init audio render - it will render zeros or noise, but there will be minimal latency.
     //    The target for latency should be 1ms to 5 ms. Latency should be adjustable.
+    // 7) try to work on exclusive mode
 
     HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (!SUCCEEDED(stat))
@@ -63,12 +62,14 @@ int AudioEndpointManager::RunAudioEndpointHandler()
 
     uint32_t capture_sampling_rate;
     RETURN_ERROR_IF_ENDPOINT_ERROR(audio_capture_->GetEndpointSamplingRate(&capture_sampling_rate));
+    LOG(INFO) << "Capture sampling rate: " << capture_sampling_rate;
 
     audio_render_.reset(new AudioRender());
     RETURN_ERROR_IF_ENDPOINT_ERROR(audio_render_->Init());
 
     uint32_t render_sampling_rate;
     RETURN_ERROR_IF_ENDPOINT_ERROR(audio_render_->GetEndpointSamplingRate(&render_sampling_rate));
+    LOG(INFO) << "Render sampling rate: " << render_sampling_rate;
 
     if (render_sampling_rate != capture_sampling_rate)
     {
@@ -84,4 +85,3 @@ int AudioEndpointManager::RunAudioEndpointHandler()
 
     return status;
 }
-

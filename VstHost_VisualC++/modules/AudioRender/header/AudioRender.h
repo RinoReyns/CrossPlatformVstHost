@@ -6,8 +6,9 @@
 #include "enums.h"
 #include "easylogging++.h"
 #include "WaveReader.h"
+#include "AudioEndpointBase.h"
 
-class AudioRender
+class AudioRender : AudioEndpointBase
 {
 
 public:
@@ -21,8 +22,6 @@ public:
 
 private:
     WAVEFORMATEX* device_format_ = NULL;
-    IMMDeviceEnumerator* pEnumerator = NULL;
-    IMMDevice* pDevice = NULL;
     IAudioClient* pAudioClient = NULL;
     IAudioRenderClient* pRenderClient = NULL;
     std::unique_ptr<WaveReader> wave_reader_;
