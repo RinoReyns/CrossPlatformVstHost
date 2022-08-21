@@ -58,7 +58,7 @@ VST_ERROR_STATUS AudioCapture::Init()
 
     UINT discovered_devices_count = 0;
 
-    LOG(INFO) << "Capture devices: ";
+    LOG(INFO) << "--------- Capture devices: ---------";
     RETURN_ERROR_IF_NOT_SUCCESS(ListAudioCaptureEndpoints(&discovered_devices_count));
     RETURN_ERROR_IF_NOT_SUCCESS(SetAudioEnpoint(&discovered_devices_count));
 

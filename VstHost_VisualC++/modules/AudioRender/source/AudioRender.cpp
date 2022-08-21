@@ -62,7 +62,7 @@ VST_ERROR_STATUS AudioRender::Init()
 
     UINT discovered_devices_count = 0;
 
-    LOG(INFO) << "Render devices: ";
+    LOG(INFO) << "--------- Render devices: ---------";
     RETURN_ERROR_IF_NOT_SUCCESS(ListAudioCaptureEndpoints(&discovered_devices_count));
     RETURN_ERROR_IF_NOT_SUCCESS(SetAudioEnpoint(&discovered_devices_count));
 

@@ -6,7 +6,6 @@
 #include "AudioEndpointBase.h"
 #include "Functiondiscoverykeys_devpkey.h"
 
-#define DEVICE_OUTPUT_FORMAT  "Audio Device %d: %ws"
 #undef max
 
 /// @brief List all endpoint avaiable. 
@@ -15,7 +14,6 @@ VST_ERROR_STATUS AudioEndpointBase::ListAudioCaptureEndpoints(
     UINT* discovered_devices_count /// - number of found enpoints
 )
 {
-    LPWSTR strDefaultDeviceID = '\0';
     IMMDeviceCollection* pDevices;
     IMMDevice* device;
     auto status = pEnumerator->EnumAudioEndpoints(endpoint_type_, DEVICE_STATE_ACTIVE, &pDevices);
@@ -24,18 +22,15 @@ VST_ERROR_STATUS AudioEndpointBase::ListAudioCaptureEndpoints(
         pDevices->GetCount(discovered_devices_count);
         LOG(INFO) << "Discovered endpoints count: " << *discovered_devices_count;
         IMMDevice* pDefaultDevice;
-        status = pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDefaultDevice);
+        status = pEnumerator->GetDefaultAudioEndpoint(endpoint_type_, eConsole, &pDefaultDevice);
         if (SUCCEEDED(status))
         {
-            // TODO:
-            // store enpoints names 
-            status = pDefaultDevice->GetId(&strDefaultDeviceID);
-            for (int i = 1; i <= static_cast<int>(*discovered_devices_count); i++)
+            for (int device_index = 1; device_index <= static_cast<int>(*discovered_devices_count); device_index++)
             {
-                status = pDevices->Item(i - 1, &device);
+                status = pDevices->Item(device_index - 1, &device);
                 if (SUCCEEDED(status))
                 {
-                    status = PrintDeviceInfo(device, i, _T(DEVICE_OUTPUT_FORMAT), strDefaultDeviceID);
+                    status = PrintDeviceInfo(device, device_index);
                     device->Release();
                 }
             }
@@ -60,13 +55,13 @@ VST_ERROR_STATUS AudioEndpointBase::SetAudioEnpoint(UINT* discovered_devices_cou
     IMMDeviceCollection* pDevices;
     auto status = pEnumerator->EnumAudioEndpoints(endpoint_type_, DEVICE_STATE_ACTIVE, &pDevices);
 
-    int enpoint_id = -1;
+    int endpoint_id = -1;
     bool is_endpoint_selected = false;
     LOG(INFO) << "Insert endpoint id (int):";
     while (!is_endpoint_selected)
     {
-        std::cin >> enpoint_id;
-        if (enpoint_id == 0 || enpoint_id > static_cast<int>(*discovered_devices_count))
+        std::cin >> endpoint_id;
+        if (endpoint_id == 0 || endpoint_id > static_cast<int>(*discovered_devices_count))
         {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -75,28 +70,24 @@ VST_ERROR_STATUS AudioEndpointBase::SetAudioEnpoint(UINT* discovered_devices_cou
         else
         {
             is_endpoint_selected = true;
+            LOG(INFO) << "Selected endpoint: " << enpoints_names_map_.at(static_cast<uint8_t>(endpoint_id));
         }
     }
 
-    status = pDevices->Item(enpoint_id - 1, &pDevice);
+    status = pDevices->Item(endpoint_id - 1, &pDevice);
     pDevices->Release();
     return VST_ERROR_STATUS::SUCCESS;
 }
 
-HRESULT AudioEndpointBase::PrintDeviceInfo(
-    IMMDevice* device,
-    int index,
-    LPCWSTR out_format,
-    LPWSTR strDefaultDeviceID)
+HRESULT AudioEndpointBase::PrintDeviceInfo(IMMDevice* device, int index)
 {
     // Device ID
     LPWSTR strID = NULL;
     HRESULT hr = S_OK;
     RETURN_IF_AUDIO_CAPTURE_FAILED(device->GetId(&strID));
 
-    int deviceDefault = (strDefaultDeviceID != '\0' && (wcscmp(strDefaultDeviceID, strID) == 0));
-
     // Device state
+    // https://docs.microsoft.com/en-us/windows/win32/coreaudio/device-state-xxx-constants
     DWORD dwState;
     RETURN_IF_AUDIO_CAPTURE_FAILED(device->GetState(&dwState));
 
@@ -105,28 +96,22 @@ HRESULT AudioEndpointBase::PrintDeviceInfo(
     hr = device->OpenPropertyStore(STGM_READ, &pStore);
     if (SUCCEEDED(hr))
     {
-        std::wstring friendlyName = getDeviceProperty(pStore, PKEY_Device_FriendlyName);
-        std::wstring description = getDeviceProperty(pStore, PKEY_Device_DeviceDesc);
-        std::wstring interfaceFriendlyName = getDeviceProperty(pStore, PKEY_DeviceInterface_FriendlyName);
-        // TODO:
-        // try to use logger
-        wprintf_s(
-            out_format,
-            index,
-            friendlyName.c_str(),
-            dwState,
-            deviceDefault,
-            description.c_str(),
-            interfaceFriendlyName.c_str(),
-            strID);
-        wprintf_s(_T("\n"));
+        std::string friendly_name = getDeviceProperty(pStore, PKEY_Device_FriendlyName);
+        std::string description = getDeviceProperty(pStore, PKEY_Device_DeviceDesc);
+        std::string interfaceFriendlyName = getDeviceProperty(pStore, PKEY_DeviceInterface_FriendlyName);
+        enpoints_names_map_.insert(std::make_pair(static_cast<uint8_t>(index), friendly_name));
+        LOG(INFO) << "\nAudio Device " << index << ":\n\t" << friendly_name.c_str()
+            << "\n\tDescription: " << description
+            << "\n\tInterface Name: " << interfaceFriendlyName
+            << "\n\tDevice ID: " << strID
+            << "\n\tDevice state:" << dwState;
     }
 
     pStore->Release();
     return hr;
 }
 
-std::wstring AudioEndpointBase::getDeviceProperty(IPropertyStore* pStore, const PROPERTYKEY key)
+std::string AudioEndpointBase::getDeviceProperty(IPropertyStore* pStore, const PROPERTYKEY key)
 {
     PROPVARIANT prop;
     PropVariantInit(&prop);
@@ -134,10 +119,16 @@ std::wstring AudioEndpointBase::getDeviceProperty(IPropertyStore* pStore, const 
     if (!SUCCEEDED(hr))
     {
         PropVariantClear(&prop);
-        return std::wstring(L"");
+        return std::string("");
     }
 
-    std::wstring result(prop.pwszVal);
+    std::wstring wstring_text(prop.pwszVal);
+    // Convert wstring to std::string
+    std::string result;
+    std::transform(wstring_text.begin(), wstring_text.end(), std::back_inserter(result), [](wchar_t c) {
+        return (char)c;
+        });
+
     PropVariantClear(&prop);
     return result;
 }

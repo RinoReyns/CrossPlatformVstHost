@@ -16,18 +16,15 @@ public:
     VST_ERROR_STATUS SetAudioEnpoint(UINT* discovered_devices_count);
 
 private:
-    HRESULT PrintDeviceInfo(
-        IMMDevice* pDevice,
-        int index,
-        LPCWSTR out_format,
-        LPWSTR strDefaultDeviceID);
-    std::wstring getDeviceProperty(IPropertyStore* pStore, const PROPERTYKEY key);
+    HRESULT PrintDeviceInfo(IMMDevice* pDevice, int index);
+    std::string getDeviceProperty(IPropertyStore* pStore, const PROPERTYKEY key);
 
 protected:
     IMMDevice* pDevice = NULL;
     IMMDeviceEnumerator* pEnumerator = NULL;
     /// Type of enpoint e.g. capture or render. 
     EDataFlow endpoint_type_ = EDataFlow_enum_count;
+    std::map<uint8_t, std::string> enpoints_names_map_;
 };
 
 #endif // AUDIO_ENDPOINT_BASE_H
