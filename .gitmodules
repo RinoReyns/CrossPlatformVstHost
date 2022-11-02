@@ -7,3 +7,7 @@
 [submodule "VstHost_VisualC++/modules/UnitTests/googletest"]
 	path = VstHost_VisualC++/modules/UnitTests/googletest
 	url = https://github.com/google/googletest.git
+[submodule "VstHost_VisualC++/modules/AudioProcessing/filter-c"]
+	path = VstHost_VisualC++/modules/AudioProcessing/filter-c
+	url = git@github.com:RinoReyns/filter-c.git
+

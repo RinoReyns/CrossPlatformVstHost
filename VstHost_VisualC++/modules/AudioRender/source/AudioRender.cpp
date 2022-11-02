@@ -3,8 +3,6 @@
 
 #include "VstHostMacro.h"
 
-#undef max
-
 const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
 const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
 const IID IID_IAudioClient = __uuidof(IAudioClient);
@@ -149,7 +147,7 @@ VST_ERROR_STATUS AudioRender::RenderAudioStream()
     // Wait for last data in buffer to play before stopping.
     Sleep(sleep_time);
 
-    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->Stop());  // Stop playing.
+    RETURN_IF_AUDIO_RENDER_FAILED(pAudioClient->Stop()); // Stop playing.
 
     return VST_ERROR_STATUS::SUCCESS;
 }

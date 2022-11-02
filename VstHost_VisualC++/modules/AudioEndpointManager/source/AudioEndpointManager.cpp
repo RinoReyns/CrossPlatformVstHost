@@ -49,7 +49,8 @@ int AudioEndpointManager::RunAudioEndpointHandler()
     // 5) Put data from queue throught the plugin and render processed results.
     // 6) First init audio render - it will render zeros or noise, but there will be minimal latency.
     //    The target for latency should be 1ms to 5 ms. Latency should be adjustable.
-    // 7) try to work on exclusive mode
+    // 7) try to work on exclusive mode - use wasapi sample. Support for shared and exclusive 
+    //    mode should be provided.
 
     HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (!SUCCEEDED(stat))
