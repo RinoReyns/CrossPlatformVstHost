@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-
 #include "AudioProcessingWrapper.h"
 #include "UnitTestsCommon.h"
 #include "file.h"

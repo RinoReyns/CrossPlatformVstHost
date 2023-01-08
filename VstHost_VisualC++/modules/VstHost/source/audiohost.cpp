@@ -7,7 +7,6 @@
 #include "file.h"
 #include "Utils.h"
 #include "VstHostMacro.h"
-#include "filter.h"
 
 INITIALIZE_EASYLOGGINGPP
 
