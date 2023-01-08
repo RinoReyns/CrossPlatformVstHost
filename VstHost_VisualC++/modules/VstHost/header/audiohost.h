@@ -25,8 +25,6 @@ class AudioProcessingVstHost
         AUDIOHOSTLIB_EXPORT ~AudioProcessingVstHost();
         int AUDIOHOSTLIB_EXPORT ProcessWaveFile(const std::string& input_wave_path,
                                                 const std::string& output_wave_path);
-        int AUDIOHOSTLIB_EXPORT ApplyFilter(const std::string& input_wave_path,
-                                            const std::string& output_wave_path);
         int AUDIOHOSTLIB_EXPORT CreatePluginInstance(const std::string& plugin_path,
                                                      const std::string& plugin_id,
                                                      VST3::Optional<VST3::UID> effectID);

@@ -53,7 +53,7 @@ target_include_directories(${target}
                                   ${PROJECT_BINARY_DIR}/modules/VstHost
                                   ${PROJECT_SOURCE_DIR})
                  
-target_link_libraries(${target} PRIVATE base sdk WaveIO Logger Common sdk_hosting AudioProcessing)
+target_link_libraries(${target} PRIVATE base sdk WaveIO Logger Common sdk_hosting)
 
 include (GenerateExportHeader)
 generate_export_header(AudioHostLib)

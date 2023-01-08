@@ -84,8 +84,8 @@ namespace AudioHostLibUnitTest
     {
         int status = vst_host_lib_->CreatePluginInstance(VST_PLUGIN_PATH, PLUGIN_NAME);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        status = vst_host_lib_->ProcessWaveFile(INPUT_WAVE_PATH, 
-                                                                OUTPUT_WAVE_PATH);
+        status = vst_host_lib_->ProcessWaveFile(INPUT_WAVE_PATH,
+                                                OUTPUT_WAVE_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         
         std::vector<float> output;
@@ -349,9 +349,4 @@ namespace AudioHostLibUnitTest
                                      output_wave_path.c_str());
         EXPECT_EQ(status, VST_ERROR_STATUS::PATH_NOT_EXISTS);
     }
-
-    //status = vst_host->ApplyFilter(
-//    arg_parser_->GetInputWavePath(),
-//    arg_parser_->GetOutputWavePath());
-
 }
