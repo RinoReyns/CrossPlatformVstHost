@@ -91,6 +91,12 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     if (!dump_plugin_params_)
     {
         // input_wave_path_
+        if (!arg_parser_->present("-input_wave"))
+        {
+            LOG(ERROR) << "-input_wave can't be empty.";
+            return VST_ERROR_STATUS::MISSING_PARAMETER_VALUE;
+        }
+
         status = CheckIfPathExists(arg_parser_->get<std::string>("-input_wave"));
         RETURN_ERROR_IF_NOT_SUCCESS(status);
 

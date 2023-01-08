@@ -84,8 +84,8 @@ namespace AudioHostLibUnitTest
     {
         int status = vst_host_lib_->CreatePluginInstance(VST_PLUGIN_PATH, PLUGIN_NAME);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        status = vst_host_lib_->ProcessWaveFile(INPUT_WAVE_PATH, 
-                                                                OUTPUT_WAVE_PATH);
+        status = vst_host_lib_->ProcessWaveFile(INPUT_WAVE_PATH,
+                                                OUTPUT_WAVE_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         
         std::vector<float> output;

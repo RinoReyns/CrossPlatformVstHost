@@ -16,14 +16,15 @@ if (NOT ${ANDROID_BUILD})
 
     set(UnitTests_sources
         header/UnitTestsCommon.h
-        src/AudioHostLibUnitTests.cpp)
+        src/AudioHostLibUnitTests.cpp
+		src/AudioProcessingClassUnitTests.cpp)
 
     set (OfflineToolsUnitTest
          header/UnitTestsCommon.h
          src/VstHostToolUnitTests.cpp)
 
     add_executable(${target} ${UnitTests_sources})
-    target_link_libraries(${target} gtest gtest_main AudioHostLib WaveIO Logger Common ArgParser sdk_hosting base sdk)
+    target_link_libraries(${target} gtest gtest_main gmock gmock_main AudioHostLib WaveIO Logger Common ArgParser sdk_hosting base sdk AudioProcessing)
     add_test(NAME ${target} COMMAND ${target})
 
     add_executable(${target_offline_tools} ${OfflineToolsUnitTest})

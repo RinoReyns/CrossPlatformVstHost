@@ -16,7 +16,7 @@ jobs:
 
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=1
           cd ..
 
       - name: Build C++ Code
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -90,7 +90,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=1
           cd ..
 
       - name: Build C++ Code
@@ -132,11 +132,11 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
@@ -154,7 +154,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G Xcode ${{github.workspace}}/VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=0
+          cmake -G Xcode ${{github.workspace}}/VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=1
           cd ..
 
       - name: Build C++ Code
@@ -195,7 +195,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 

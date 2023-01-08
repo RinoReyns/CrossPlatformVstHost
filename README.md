@@ -55,6 +55,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] Basic python and android unit test for c api
       - [x] Allow to use multiple plugins and configs for them
       - [x] Generate Documentation
+      - [x] AudioProcessing Class that can wrap different non-vst algorithms
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Add more UT for python and Android
@@ -64,6 +65,8 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Create Render/Capture manager class. Its design should allow to use it for any OS.
       - [ ] Work on Render and Capture implementation for Windows
       - [ ] Handle different audio formats e.g. sampling rate, bit depth etc.
+      - [ ] Create and pass config for AudioProcessing Class
+      - [ ] Enable streaming processing (one frame in one frame out) 
 
 1. Windows OS
 
@@ -92,6 +95,7 @@ is why this repository was created. I know that it will take a lot of work but i
 1. [Wave Reader](https://github.com/audionamix/wave)
 1. [C ++ Json Handler](https://github.com/nlohmann/json)
 1. [Windows Endpoint Reader](https://github.com/mofo7777/Stackoverflow/tree/master/WasapiCapture)
+1. [Implementation of audio filters in C] (https://github.com/adis300/filter-c)
 
 VST is a trademark held by Steinberg Media Technologies, GMBH.
 

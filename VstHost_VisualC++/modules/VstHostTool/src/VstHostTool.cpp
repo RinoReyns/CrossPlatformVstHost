@@ -76,6 +76,9 @@ int VstHostTool::Run()
             status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
             if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
             {
+                // TODO:
+                // 1. add option to apply any audio pre or post processing with or without plugin
+                // 2. Pass buffert with data between modules.
                 status = vst_host->ProcessWaveFile(
                     arg_parser_->GetInputWavePath(),
                     arg_parser_->GetOutputWavePath());
