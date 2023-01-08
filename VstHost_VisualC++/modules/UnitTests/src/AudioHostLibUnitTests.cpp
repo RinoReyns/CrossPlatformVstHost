@@ -349,4 +349,9 @@ namespace AudioHostLibUnitTest
                                      output_wave_path.c_str());
         EXPECT_EQ(status, VST_ERROR_STATUS::PATH_NOT_EXISTS);
     }
+
+    //status = vst_host->ApplyFilter(
+//    arg_parser_->GetInputWavePath(),
+//    arg_parser_->GetOutputWavePath());
+
 }

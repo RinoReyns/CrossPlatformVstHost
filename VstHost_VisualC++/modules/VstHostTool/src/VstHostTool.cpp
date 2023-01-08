@@ -76,6 +76,12 @@ int VstHostTool::Run()
             status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
             if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
             {
+                // TODO:
+                // 1. add option to apply fillter pre or post processing with plugin
+                // 2. Pass buffert with data between modules.
+                //status = vst_host->ApplyFilter(
+                //    arg_parser_->GetInputWavePath(),
+                //    arg_parser_->GetOutputWavePath());
                 status = vst_host->ProcessWaveFile(
                     arg_parser_->GetInputWavePath(),
                     arg_parser_->GetOutputWavePath());
