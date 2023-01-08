@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=1
           cd ..
 
       - name: Build C++ Code
@@ -90,7 +90,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=0
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=1
           cd ..
 
       - name: Build C++ Code
@@ -154,7 +154,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G Xcode ${{github.workspace}}/VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=0
+          cmake -G Xcode ${{github.workspace}}/VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=1
           cd ..
 
       - name: Build C++ Code
