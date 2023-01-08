@@ -95,7 +95,7 @@ is why this repository was created. I know that it will take a lot of work but i
 1. [Wave Reader](https://github.com/audionamix/wave)
 1. [C ++ Json Handler](https://github.com/nlohmann/json)
 1. [Windows Endpoint Reader](https://github.com/mofo7777/Stackoverflow/tree/master/WasapiCapture)
-1. [Implementation of audio filters in C] (https://github.com/adis300/filter-c)
+1. [Implementation of audio filters in C](https://github.com/adis300/filter-c)
 
 VST is a trademark held by Steinberg Media Technologies, GMBH.
 
