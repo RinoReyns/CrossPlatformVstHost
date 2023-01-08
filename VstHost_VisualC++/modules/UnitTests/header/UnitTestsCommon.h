@@ -22,11 +22,7 @@ const std::string REF_OUTPUT_WITH_TWO_PLUGINS_2     = UT_DATA_FOLDER + "sine_440
 const std::string PROCESSING_CONFIG_PATH            = UT_DATA_FOLDER + "processing_config.json";
 const std::string PLUGIN_NAME                       = "plugin_1";
 const std::string REF_FILTRATED                     = UT_DATA_FOLDER + "sine_440_filtrated.wav";
-#ifndef __APPLE__
 const float FILTRATION_PRECISION                    = 1e-9;
-#else
-const float FILTRATION_PRECISION                    = 1e-8;
-#endif // !__APPLE__
 
 
 #endif //UNIT_TESTS_COMMON_H
