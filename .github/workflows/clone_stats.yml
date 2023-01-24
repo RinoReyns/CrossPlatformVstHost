@@ -85,6 +85,6 @@ jobs:
           fi
 
       - name: Push
-        uses: ad-m/github-push-action@master
+        uses: peter-evans/create-pull-request@v4
         with:
-          github_token: ${{ secrets.VSTHOSTSECRET  }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
