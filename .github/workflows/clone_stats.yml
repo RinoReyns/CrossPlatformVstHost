@@ -64,22 +64,14 @@ jobs:
           if [ ! -f CLONE.md ]; then
             shields="https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url="
             url="https://gist.githubusercontent.com/${{ github.actor }}/${{ steps.set_id.outputs.GIST }}/raw/clone.json"
-            repo="https://github.com/MShawon/github-clone-count-badge"
-            echo ''> CLONE.md
-            echo '
-            **Markdown**
+            repo="https://https://github.com/RinoReyns/CrossPlatformVstHost"
 
-            ```markdown' >> CLONE.md
             echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" >> CLONE.md
-            echo '
-            ```
-
-            **HTML**
-            ```html' >> CLONE.md
-            echo "<a href='$repo'><img alt='GitHub Clones' src='$shields$url&logo=github'></a>" >> CLONE.md
-            echo '```' >> CLONE.md
+            echo "" >> CLONE.md
+            tail -n +2 README.md >> CLONE.MD
+            mv CLONE.MD README.md 
             
-            git add CLONE.md
+            git add README.md
             git config --global user.name "GitHub Action"
             git config --global user.email "action@github.com"
             git commit -m "create clone count badge"
