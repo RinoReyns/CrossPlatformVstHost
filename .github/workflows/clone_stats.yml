@@ -45,8 +45,6 @@ jobs:
               echo ::set-output name=GIST::$gist_id
               cp clone.json clone_before.json
           fi
-          cat clone.json
-          cat clone_before.json
 
       - name: update clone.json
         run: |
