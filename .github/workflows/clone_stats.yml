@@ -1,4 +1,4 @@
-name: GitHub Clone Count Update Everyday
+name: GitHub Clone Count Update Weekly
 
 on:
   schedule:
@@ -66,16 +66,9 @@ jobs:
           repo="https://https://github.com/RinoReyns/CrossPlatformVstHost"
 
           echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" >> CLONE.md
-          echo "" >> CLONE.md
-          
-          echo "Clone.md"
-          cat CLONE.md
-          tail -n +2 README.md >> CLONE.md
-          echo "Merge ---------------- "
-          cat CLONE.md
+          echo "" >> CLONE.md   
+          tail -n +3 README.md >> CLONE.md
           mv CLONE.md README.md 
-          echo "Final readme.md"
-          cat README.md 
           git add README.md
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
