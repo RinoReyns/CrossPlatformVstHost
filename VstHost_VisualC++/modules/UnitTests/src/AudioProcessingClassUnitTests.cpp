@@ -7,7 +7,6 @@
 #include <filesystem>
 #include "enums.h"
 
-
 INITIALIZE_EASYLOGGINGPP
 
 namespace AudioProcessingWrapperClassUnitTest

@@ -99,7 +99,7 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(std::string 
 
 int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::GetMutliplePluginParameters(const config_type processing_config)
 {
-	int status = VST_ERROR_STATUS::VST_HOST_ERROR;;
+	int status = VST_ERROR_STATUS::VST_HOST_ERROR;
 	for (auto& [key, value] : processing_config)
 	{
 		auto single_plugin_params = value.find(CONFIG_STRING);
