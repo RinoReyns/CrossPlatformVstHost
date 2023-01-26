@@ -42,7 +42,55 @@ is why this repository was created. I know that it will take a lot of work but i
 
 3. Android
     ```
-    TBD
+    NOTE:
+    Following instraction is made for Linux enviroment. However, steps for any OS should be similar.
+    1. Download Android NDK and unzip in the chosen location. (https://developer.android.com/ndk/downloads).
+    
+    2. Set environmental variable for Android NDK as foloow:
+       
+       > export ANDROID_NDK_PATH=/path/to/android/ndk/main/folder
+    
+    3. Build VST Host for chosen architecture:
+       a. armeabi-v7a:
+         > cmake "../VstHost_VisualC++" -B build_armeabi-v7a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
+         > cd build_armeabi-v7a
+         > $ANDROID_NDK_PATH/prebuilt/linux-x86_64/bin/make
+       
+       b. arm64-v8a:
+         > cmake "../VstHost_VisualC++"  -B build_arm64-v8a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=arm64-v8a -DANDROID_BUILD=True
+         > cd build_arm64-v8a
+         > $ANDROID_NDK_PATH/prebuilt/linux-x86_64/bin/make
+       
+       c. build_x86:
+         > cmake "../VstHost_VisualC++" -B build_x86 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86 -DANDROID_BUILD=True
+         > cd build_x86
+         > $ANDROID_NDK_PATH/prebuilt/linux-x86_64/bin/make
+       
+       d. build_x86_64:
+         > cmake "../VstHost_VisualC++" -B build_x86_64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86_64 -DANDROID_BUILD=True
+         > cd build_x86_64
+         > $ANDROID_NDK_PATH/prebuilt/linux-x86_64/bin/make
+
+    4. Build Android Demo App that uses VST Host lib
+       a. Copy necessery dependencess. In the example below dependeces for all architectures were copied. Also note that
+          in the example VST plugin has been copied from "build_x86_64" due to the fact that Instrumentation test are 
+          executed in androdi simulater on regular CPU.
+   
+         > mkdir VstHost_Android/AndroidPack
+         > cp -rv build_armeabi-v7a/bin/Release/AndroidPack/ VstHost_Android/
+         > cp -rv build_arm64-v8a/bin/Release/AndroidPack/ VstHost_Android/
+         > cp -rv build_x86/bin/Release/AndroidPack/ VstHost_Android/
+         > cp -rv build_x86_64/bin/Release/AndroidPack/ VstHost_Android/
+         > cp -rv build_x86_64/VST3/Release VstHost_Android/app/src/main/assets
+         > cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav VstHost_Android/app/src/main/assets/
+         > cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440_output_ref.wav VstHost_Android/app/src/main/assets/
+       
+       b. Build Android App
+         > cd VstHost_Android
+         > chmod +x gradlew
+       
+       c. Run Intrumentation Test
+         > ./gradlew connectedCheck
     ```
 
 ## Features list
@@ -72,7 +120,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Work on Render and Capture implementation for Windows
       - [ ] Handle different audio formats e.g. sampling rate, bit depth etc.
       - [ ] Create and pass config for AudioProcessing Class
-      - [ ] Enable streaming processing (one frame in one frame out) 
+      - [ ] Enable streaming processing (one frame in, one frame out) 
 
 1. Windows OS
 
