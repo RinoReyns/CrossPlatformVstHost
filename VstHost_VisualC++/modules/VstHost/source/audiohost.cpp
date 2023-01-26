@@ -288,6 +288,8 @@ int AudioProcessingVstHost::CheckVstSdkCompatibility(std::string plugin_sdk_vers
 	return VST_ERROR_STATUS::SUCCESS;
 }
 
+
+[[deprecated("This function is no longer developed. Please use function 'BufferProcessing'")]]
 AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::string& input_wave_path,
 	const std::string& output_wave_path)
 {
@@ -418,6 +420,112 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
 		}
 		assignBusBuffers(buffs, processData, content.data(), output.data(), true);
 		input_wave_path_ = output_wave_path;
+	}
+	return VST_ERROR_STATUS::SUCCESS;
+}
+
+int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(WaveDataContainer* input_data, WaveDataContainer* output_data)
+{
+
+	if (vst_plugins_.size() == 0)
+	{
+		return VST_ERROR_STATUS::NO_PLUGIN_INITIALIZED;
+	}
+
+	for (auto& [plugin_id, _] : vst_plugins_)
+	{
+
+		if (!vst_plugins_[plugin_id].plug_provider_)
+		{
+			LOG(ERROR) << "Plugin " + vst_plugins_[plugin_id].plugin_path_ + " was not initialized.";
+			return VST_ERROR_STATUS::CREATE_PLUGIN_PROVIDER_ERROR;
+		}
+
+		// audio processing data flow: 
+		// https://developer.steinberg.help/display/VST/Audio+Processor+Call+Sequence
+		Steinberg::OPtr<Steinberg::Vst::IComponent> component = vst_plugins_[plugin_id].plug_provider_->getComponent();
+		Steinberg::FUnknownPtr<Steinberg::Vst::IAudioProcessor> processor(component);
+
+		if (!processor)
+		{
+			LOG(ERROR) << "Processing instance not created.";
+			return VST_ERROR_STATUS::CREATE_PROCESSING_INSTANCE_ERROR;
+		}
+
+		Buffers buffs = {};
+
+		std::vector<float> output(input_data->data.size(), 1);
+		Steinberg::Vst::ProcessSetup setup
+		{
+			Steinberg::Vst::kOffline,
+			Steinberg::Vst::kSample32,
+			static_cast<Steinberg::int32>(input_data->frame_number),
+			static_cast<Steinberg::Vst::SampleRate>(input_data->sample_rate)
+		};
+
+		if (processor->setupProcessing(setup) != Steinberg::kResultOk)
+		{
+			LOG(ERROR) << "Processing set up failed.";
+			return VST_ERROR_STATUS::VST_HOST_ERROR;
+		}
+
+		if (component->setActive(true) != Steinberg::kResultOk)
+		{
+			LOG(ERROR) << "Processing activated.";
+			return VST_ERROR_STATUS::VST_HOST_ERROR;
+		}
+
+		auto status = processor->setProcessing(true);
+		if (status != Steinberg::kResultOk)
+		{
+			if (status != Steinberg::kNotImplemented)
+			{
+				LOG(ERROR) << "Processing->setProcessing() error.";
+				return VST_ERROR_STATUS::VST_HOST_ERROR;
+			}
+
+			if (verbose_ > LogLevelType::LOG_LEVEL::ERROR_LOG)
+			{
+				LOG(WARNING) << "Processing->setProcessing() not implemented.";
+			}
+		}
+
+		processData.inputParameterChanges = &inputParameterChanges;
+		processData.prepare(*component, input_data->frame_number, Steinberg::Vst::kSample32);
+
+		processData.numSamples = input_data->frame_number * input_data->channel_number;
+		buffs.numInputs = input_data->channel_number;
+		buffs.numOutputs = input_data->channel_number;
+		buffs.numSamples = input_data->frame_number;
+
+		processContext.continousTimeSamples = true;
+		assignBusBuffers(buffs, processData, input_data->data.data(), output.data());
+
+		if (processor->process(processData) != Steinberg::kResultOk)
+		{
+			LOG(ERROR) << "Processing failed.";
+			return VST_ERROR_STATUS::PLUGIN_PROCESSING_FAILED;
+		}
+
+		wave::File write_file;
+		if (write_file.Open(output_data->file_path, wave::kOut))
+		{
+			LOG(ERROR) << "Opening of output wave file failed." << std::endl;
+			return VST_ERROR_STATUS::OPEN_FILE_ERROR;
+		}
+
+		write_file.set_sample_rate(input_data->sample_rate);
+		write_file.set_bits_per_sample(input_data->bits_per_sample);
+		write_file.set_channel_number(input_data->channel_number);
+		auto output_buffer_ptr = static_cast<float*> (*processData.outputs[0].channelBuffers32);
+		std::vector<float> out(output_buffer_ptr, output_buffer_ptr + input_data->data.size());
+		if (write_file.Write(out))
+		{
+			LOG(ERROR) << "Write to output wave failed." << std::endl;
+			return VST_ERROR_STATUS::READ_WRITE_ERROR;
+		}
+		assignBusBuffers(buffs, processData, input_data->data.data(), output.data(), true);
+		input_data = output_data;
 	}
 	return VST_ERROR_STATUS::SUCCESS;
 }
