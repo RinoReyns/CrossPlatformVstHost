@@ -5,6 +5,7 @@
 #include "UnitTestsCommon.h"
 #include "file.h"
 #include "enums.h"
+#include "WaveIOClass.h"
 
 namespace AudioHostLibUnitTest
 {
@@ -96,6 +97,27 @@ namespace AudioHostLibUnitTest
         status = LoadWave(REF_OUTPUT_DEFAULT_CONFIG, &ref);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         EXPECT_EQ(output, ref);
+    }
+
+    TEST_F(AudioHostLibTest, BufferProcessingWithSinglePluginAndDefaultPluginSettings)
+    {
+        int status = vst_host_lib_->CreatePluginInstance(VST_PLUGIN_PATH, PLUGIN_NAME);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        std::unique_ptr<WaveIOClass> wave_io(new WaveIOClass());
+
+        WaveDataContainer input_wave;
+        WaveDataContainer output_wave;
+        input_wave.file_path = INPUT_WAVE_PATH;
+        status = wave_io->LoadWave(&input_wave);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+        status = vst_host_lib_->BufferProcessing(&input_wave, &output_wave);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+        std::vector<float> ref;
+        status = LoadWave(REF_OUTPUT_DEFAULT_CONFIG, &ref);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        EXPECT_EQ(output_wave.data, ref);
     }
 
     TEST_F(AudioHostLibTest, CapiProcessWaveFileWithSinglePluginAndDefaultPluginSettings)

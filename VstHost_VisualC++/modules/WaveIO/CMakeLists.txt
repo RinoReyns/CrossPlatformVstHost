@@ -6,6 +6,7 @@ set(WaveIO_headers
     header/header_list.h
     header/file.h
     header/error.h
+    header/WaveIOClass.h
     )
 
 set (WaveIO_src
@@ -13,12 +14,13 @@ set (WaveIO_src
      src/header.cc
      src/header_list.cc
      src/file.cc
+     src/WaveIOClass.cpp
      )
 
 add_library(${target} ${WaveIO_src} ${WaveIO_headers})
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header)
 target_compile_features(${target} PUBLIC cxx_std_17)
-target_link_libraries(${target})
+target_link_libraries(${target} Common)
 
 if (${ANDROID_BUILD})
     add_custom_command(TARGET ${target} POST_BUILD

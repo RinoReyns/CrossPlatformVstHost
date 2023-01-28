@@ -1,6 +1,7 @@
 #include "VstHostTool.h"
 #include "audiohost.h"
 #include "easylogging++.h"
+#include "WaveIOClass.h"
 
 #ifdef _WIN32
 #include "AudioEndpointManager.h"
@@ -35,6 +36,57 @@ int VstHostTool::PrepareArgs(std::vector<std::string> args)
     return VST_ERROR_STATUS::SUCCESS;
 }
 
+int VstHostTool::EndpointProcessingPipeline()
+{
+    // 1. Get Data From Mic 
+    // 2. Put In queue
+    // 3. Processing
+    // 4. Render
+    return VST_ERROR_STATUS::NOT_IMPLEMENTED;
+}
+
+int VstHostTool::OfflineProcessingPipeline()
+{
+    std::unique_ptr<AudioProcessingVstHost> vst_host = std::make_unique<AudioProcessingVstHost>();
+    vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
+
+    int status = vst_host->CreateMutliplePluginInstance(arg_parser_->GetProcessingConfig());
+
+    if (status == VST_ERROR_STATUS::SUCCESS)
+    {
+        if (arg_parser_->GetDumpPluginParams())
+        {
+            status = vst_host->GetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
+        }
+        else
+        {
+            status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
+            if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
+            {
+                std::unique_ptr<WaveIOClass> wave_io(new WaveIOClass());
+
+                // Load wave file
+                WaveDataContainer input_wave;
+                input_wave.file_path = arg_parser_->GetInputWavePath();
+                status = wave_io->LoadWave(&input_wave);
+                RETURN_ERROR_IF_NOT_SUCCESS(status);
+
+                WaveDataContainer output_wave;
+                output_wave.file_path = arg_parser_->GetOutputWavePath();
+
+                status = vst_host->BufferProcessing(&input_wave, &output_wave);
+                RETURN_ERROR_IF_NOT_SUCCESS(status);
+
+                // Save wave file
+                status = wave_io->SaveWave(&output_wave);
+                RETURN_ERROR_IF_NOT_SUCCESS(status);
+            }
+        }
+    }
+    vst_host->Terminate();
+    return status;
+}
+
 int VstHostTool::Run()
 {
     if (parser_arguments_.size() == 0)
@@ -52,7 +104,6 @@ int VstHostTool::Run()
     }
 
     LOG(INFO) << "------------------------------ Audio Host Started ------------------------------";
-    std::unique_ptr<AudioProcessingVstHost> vst_host = std::make_unique<AudioProcessingVstHost>();
 
 #ifdef _WIN32
     if (arg_parser_->GetEnableAudioEndpoint())
@@ -62,31 +113,7 @@ int VstHostTool::Run()
     }
 #endif
 
-    vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
-
-    status = vst_host->CreateMutliplePluginInstance(arg_parser_->GetProcessingConfig());
-    if (status == VST_ERROR_STATUS::SUCCESS)
-    {
-        if (arg_parser_->GetDumpPluginParams())
-        {
-            status = vst_host->GetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
-        }
-        else
-        {
-            status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
-            if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
-            {
-                // TODO:
-                // 1. add option to apply any audio pre or post processing with or without plugin
-                // 2. Pass buffert with data between modules.
-                status = vst_host->ProcessWaveFile(
-                    arg_parser_->GetInputWavePath(),
-                    arg_parser_->GetOutputWavePath());
-            }
-        }
-    }
-
-    vst_host->Terminate();
+    status = this->OfflineProcessingPipeline();
     LOG(INFO) << "Application finished processing with status: " << status;
     return status;
 }

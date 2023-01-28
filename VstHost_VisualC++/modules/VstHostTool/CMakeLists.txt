@@ -22,15 +22,15 @@ if (NOT ${ANDROID_BUILD})
 
     if(SMTG_WIN)
         target_link_libraries (${target}Lib PUBLIC AudioHostLib
-                               PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioEndpointManager AudioCapture AudioRender AudioEndpointBase)
+                               PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioEndpointManager AudioCapture AudioRender AudioEndpointBase WaveIO)
         target_link_libraries (${target} PUBLIC ${target}Lib
-                               PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioEndpointManager AudioCapture AudioRender AudioEndpointBase)
+                               PRIVATE base sdk ArgParser Logger Common sdk_hosting AudioEndpointManager AudioCapture AudioRender AudioEndpointBase WaveIO)
     else()
 
         target_link_libraries (${target}Lib PUBLIC AudioHostLib
-                               PRIVATE base sdk ArgParser Logger Common sdk_hosting)
+                               PRIVATE base sdk ArgParser Logger Common sdk_hosting WaveIO)
         target_link_libraries (${target} PUBLIC ${target}Lib
-                               PRIVATE base sdk ArgParser Logger Common)
+                               PRIVATE base sdk ArgParser Logger Common WaveIO)
 
     endif(SMTG_WIN)
 endif()              

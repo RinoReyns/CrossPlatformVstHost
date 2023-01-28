@@ -13,67 +13,67 @@ namespace VstHostToolUnitTest
 {
     class VstHostToolTest : public testing::Test
     {
-        protected:
-            VstHostToolTest()          = default;
-            virtual ~VstHostToolTest() = default;
+    protected:
+        VstHostToolTest() = default;
+        virtual ~VstHostToolTest() = default;
 
-            std::unique_ptr<VstHostTool> vst_host_tool_;
-        
-            virtual void SetUp()
+        std::unique_ptr<VstHostTool> vst_host_tool_;
+
+        virtual void SetUp()
+        {
+            vst_host_tool_.reset(new VstHostTool());
+        }
+
+        virtual void TearDown()
+        {
+            vst_host_tool_.reset();
+            CleanUpUtProducts();
+        }
+
+        void CleanUpUtProducts()
+        {
+            if (std::filesystem::exists(OUTPUT_WAVE_PATH))
             {
-                vst_host_tool_.reset(new VstHostTool());
+                std::remove(OUTPUT_WAVE_PATH.c_str());
             }
 
-            virtual void TearDown()
+            if (std::filesystem::exists(DUMP_JSON_FILE_PATH))
             {
-                vst_host_tool_.reset();
-                CleanUpUtProducts();
+                std::remove(DUMP_JSON_FILE_PATH.c_str());
             }
 
-            void CleanUpUtProducts()
+            if (std::filesystem::exists(PROCESSING_CONFIG_PATH))
             {
-                if (std::filesystem::exists(OUTPUT_WAVE_PATH))
-                {
-                    std::remove(OUTPUT_WAVE_PATH.c_str());
-                }
+                std::remove(PROCESSING_CONFIG_PATH.c_str());
+            }
+        }
 
-                if (std::filesystem::exists(DUMP_JSON_FILE_PATH))
-                {
-                    std::remove(DUMP_JSON_FILE_PATH.c_str());
-                }
-
-                if (std::filesystem::exists(PROCESSING_CONFIG_PATH))
-                {
-                    std::remove(PROCESSING_CONFIG_PATH.c_str());
-                }
+        int LoadWave(std::string wave_path, std::vector<float>* data)
+        {
+            wave::File input_wave_file;
+            if (input_wave_file.Open(wave_path, wave::kIn))
+            {
+                return VST_ERROR_STATUS::OPEN_FILE_ERROR;
             }
 
-            int LoadWave(std::string wave_path, std::vector<float>* data)
+            if (input_wave_file.Read(data))
             {
-                wave::File input_wave_file;
-                if (input_wave_file.Open(wave_path, wave::kIn))
-                {
-                    return VST_ERROR_STATUS::OPEN_FILE_ERROR;
-                }
 
-                if (input_wave_file.Read(data))
-                {
-
-                    return VST_ERROR_STATUS::READ_WRITE_ERROR;
-                }
-                return VST_ERROR_STATUS::SUCCESS;
+                return VST_ERROR_STATUS::READ_WRITE_ERROR;
             }
+            return VST_ERROR_STATUS::SUCCESS;
+        }
 
-            void RemoveDumpedJsonConfig()
+        void RemoveDumpedJsonConfig()
+        {
+            int status = VST_ERROR_STATUS::PATH_NOT_EXISTS;
+            if (std::filesystem::exists(DUMP_JSON_FILE_PATH))
             {
-                int status = VST_ERROR_STATUS::PATH_NOT_EXISTS;
-                if (std::filesystem::exists(DUMP_JSON_FILE_PATH))
-                {
-                    std::remove(DUMP_JSON_FILE_PATH.c_str());
-                    status = VST_ERROR_STATUS::SUCCESS;
-                }
-                EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+                std::remove(DUMP_JSON_FILE_PATH.c_str());
+                status = VST_ERROR_STATUS::SUCCESS;
             }
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        }
     };
 
     // TODO:
@@ -88,7 +88,7 @@ namespace VstHostToolUnitTest
     TEST_F(VstHostToolTest, ProcessSignalWithSinglePlugin)
     {
         std::vector<std::string> arg_params = {
-            "OfflineToolsUnitTests.exe", 
+            "OfflineToolsUnitTests.exe",
             "-vst_plugin",
             VST_PLUGIN_PATH,
             "-input_wave",
@@ -97,7 +97,7 @@ namespace VstHostToolUnitTest
             OUTPUT_WAVE_PATH,
             "-plugin_config",
             CONFIG_FOR_ADELAY_PLUGIN
-            };
+        };
 
         int status = vst_host_tool_->PrepareArgs(arg_params);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
@@ -161,7 +161,7 @@ namespace VstHostToolUnitTest
         plugin_config_json["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
         plugin_config_json["plugin_2"]["plugin"] = VST_PLUGIN_PATH;
         plugin_config_json["plugin_2"]["config"] = CONFIG_FOR_ADELAY_PLUGIN_2;
-        
+
         int status = JsonUtils::DumpJson(plugin_config_json, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 

@@ -14,6 +14,10 @@ public:
     int Run();
 
 private:
+    int OfflineProcessingPipeline();
+    int EndpointProcessingPipeline();
+
+private:
     std::unique_ptr<ArgParser> arg_parser_;
     std::vector<std::string> parser_arguments_;
 };

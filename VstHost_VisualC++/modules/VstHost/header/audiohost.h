@@ -7,6 +7,7 @@
 #include "plugprovider.h"
 #include "enums.h"
 #include "easylogging++.h"
+#include "WaveIOClass.h"
 
 #ifdef _WIN32
     #include "AudioHostLib_Export.h"
@@ -25,6 +26,8 @@ class AudioProcessingVstHost
         AUDIOHOSTLIB_EXPORT ~AudioProcessingVstHost();
         int AUDIOHOSTLIB_EXPORT ProcessWaveFile(const std::string& input_wave_path,
                                                 const std::string& output_wave_path);
+        int AUDIOHOSTLIB_EXPORT BufferProcessing(WaveDataContainer* input_data,
+                                                 WaveDataContainer* output_data);
         int AUDIOHOSTLIB_EXPORT CreatePluginInstance(const std::string& plugin_path,
                                                      const std::string& plugin_id,
                                                      VST3::Optional<VST3::UID> effectID);
