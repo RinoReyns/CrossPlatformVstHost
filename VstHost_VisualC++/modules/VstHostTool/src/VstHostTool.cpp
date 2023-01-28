@@ -49,9 +49,9 @@ int VstHostTool::OfflineProcessingPipeline()
 {
     std::unique_ptr<AudioProcessingVstHost> vst_host = std::make_unique<AudioProcessingVstHost>();
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
-    
+
     int status = vst_host->CreateMutliplePluginInstance(arg_parser_->GetProcessingConfig());
-    
+
     if (status == VST_ERROR_STATUS::SUCCESS)
     {
         if (arg_parser_->GetDumpPluginParams())
@@ -64,7 +64,7 @@ int VstHostTool::OfflineProcessingPipeline()
             if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
             {
                 std::unique_ptr<WaveIOClass> wave_io(new WaveIOClass());
-                
+
                 // Load wave file
                 WaveDataContainer input_wave;
                 input_wave.file_path = arg_parser_->GetInputWavePath();
@@ -73,10 +73,10 @@ int VstHostTool::OfflineProcessingPipeline()
 
                 WaveDataContainer output_wave;
                 output_wave.file_path = arg_parser_->GetOutputWavePath();
-               
+
                 status = vst_host->BufferProcessing(&input_wave, &output_wave);
                 RETURN_ERROR_IF_NOT_SUCCESS(status);
-               
+
                 // Save wave file
                 status = wave_io->SaveWave(&output_wave);
                 RETURN_ERROR_IF_NOT_SUCCESS(status);
