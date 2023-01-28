@@ -42,15 +42,11 @@ int VstHostTool::EndpointProcessingPipeline()
     // 2. Put In queue
     // 3. Processing
     // 4. Render
-    return 0;
+    return VST_ERROR_STATUS::NOT_IMPLEMENTED;
 }
 
 int VstHostTool::OfflineProcessingPipeline()
 {
-    // 1. Read WaveFile -> this changes will affect UT on android, but it is necessery to move on with project.
-    //      in the worst case scenario anroid will also include WaveIo dll and it will have it's owne AuioLib
-    // 2. Process It (Pre processig, VST Processing, Post processing)
-    // 3. Save wave file
     std::unique_ptr<AudioProcessingVstHost> vst_host = std::make_unique<AudioProcessingVstHost>();
     vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
     
@@ -67,11 +63,9 @@ int VstHostTool::OfflineProcessingPipeline()
             status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
             if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
             {
-                // TODO:
-                // 1. add option to apply any audio pre or post processing with or without plugin
-                // 2. Pass buffer with data between modules.
                 std::unique_ptr<WaveIOClass> wave_io(new WaveIOClass());
                 
+                // Load wave file
                 WaveDataContainer input_wave;
                 input_wave.file_path = arg_parser_->GetInputWavePath();
                 status = wave_io->LoadWave(&input_wave);
@@ -81,6 +75,10 @@ int VstHostTool::OfflineProcessingPipeline()
                 output_wave.file_path = arg_parser_->GetOutputWavePath();
                
                 status = vst_host->BufferProcessing(&input_wave, &output_wave);
+                RETURN_ERROR_IF_NOT_SUCCESS(status);
+               
+                // Save wave file
+                status = wave_io->SaveWave(&output_wave);
                 RETURN_ERROR_IF_NOT_SUCCESS(status);
             }
         }

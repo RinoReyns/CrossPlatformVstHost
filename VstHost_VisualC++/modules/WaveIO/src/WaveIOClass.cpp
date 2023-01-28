@@ -30,3 +30,28 @@ int WaveIOClass::LoadWave(WaveDataContainer* data)
 
 	return VST_ERROR_STATUS::SUCCESS;
 }
+
+int WaveIOClass::SaveWave(WaveDataContainer* data)
+{
+	if (data->file_path == "")
+	{
+		return VST_ERROR_STATUS::PATH_NOT_EXISTS;
+	}
+
+	wave::File write_file;
+	if (write_file.Open(data->file_path, wave::kOut))
+	{
+		return VST_ERROR_STATUS::OPEN_FILE_ERROR;
+	}
+
+	write_file.set_sample_rate(data->sample_rate);
+	write_file.set_bits_per_sample(data->bits_per_sample);
+	write_file.set_channel_number(data->channel_number);
+
+	if (write_file.Write(data->data))
+	{
+		return VST_ERROR_STATUS::READ_WRITE_ERROR;
+	}
+
+	return VST_ERROR_STATUS::SUCCESS;
+}

@@ -424,7 +424,9 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
 	return VST_ERROR_STATUS::SUCCESS;
 }
 
-int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(WaveDataContainer* input_data, WaveDataContainer* output_data)
+int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
+	WaveDataContainer* input_data,
+	WaveDataContainer* output_data)
 {
 
 	if (vst_plugins_.size() == 0)
@@ -454,7 +456,7 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(WaveDataContain
 
 		Buffers buffs = {};
 
-		std::vector<float> output(input_data->data.size(), 1);
+		output_data->data.resize(input_data->data.size(), 1);
 		Steinberg::Vst::ProcessSetup setup
 		{
 			Steinberg::Vst::kOffline,
@@ -499,7 +501,8 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(WaveDataContain
 		buffs.numSamples = input_data->frame_number;
 
 		processContext.continousTimeSamples = true;
-		assignBusBuffers(buffs, processData, input_data->data.data(), output.data());
+
+		assignBusBuffers(buffs, processData, input_data->data.data(), output_data->data.data());
 
 		if (processor->process(processData) != Steinberg::kResultOk)
 		{
@@ -507,26 +510,16 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(WaveDataContain
 			return VST_ERROR_STATUS::PLUGIN_PROCESSING_FAILED;
 		}
 
-		wave::File write_file;
-		if (write_file.Open(output_data->file_path, wave::kOut))
-		{
-			LOG(ERROR) << "Opening of output wave file failed." << std::endl;
-			return VST_ERROR_STATUS::OPEN_FILE_ERROR;
-		}
+		output_data->sample_rate = input_data->sample_rate;
+		output_data->bits_per_sample = input_data->bits_per_sample;
+		output_data->channel_number = input_data->channel_number;
 
-		write_file.set_sample_rate(input_data->sample_rate);
-		write_file.set_bits_per_sample(input_data->bits_per_sample);
-		write_file.set_channel_number(input_data->channel_number);
 		auto output_buffer_ptr = static_cast<float*> (*processData.outputs[0].channelBuffers32);
-		std::vector<float> out(output_buffer_ptr, output_buffer_ptr + input_data->data.size());
-		if (write_file.Write(out))
-		{
-			LOG(ERROR) << "Write to output wave failed." << std::endl;
-			return VST_ERROR_STATUS::READ_WRITE_ERROR;
-		}
-		assignBusBuffers(buffs, processData, input_data->data.data(), output.data(), true);
-		input_data = output_data;
+		output_data->data.assign(output_buffer_ptr, output_buffer_ptr + input_data->data.size());
+		assignBusBuffers(buffs, processData, input_data->data.data(), output_data->data.data(), true);
+		input_data->data = output_data->data;
 	}
+
 	return VST_ERROR_STATUS::SUCCESS;
 }
 

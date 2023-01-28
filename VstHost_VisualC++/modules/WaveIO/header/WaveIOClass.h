@@ -10,8 +10,8 @@ struct WaveDataContainer{
     std::vector<float> data;
     uint64_t frame_number;
     int sample_rate;
-    int channel_number;
-    int bits_per_sample;
+    uint16_t channel_number;
+    uint16_t bits_per_sample;
     std::string file_path;
 };      
 
@@ -22,6 +22,7 @@ public:
     ~WaveIOClass() = default;
 
     int LoadWave(WaveDataContainer* data);
+    int SaveWave(WaveDataContainer* data);
 
 };
 
