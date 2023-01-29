@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "arg_parser.h"
+#include "WaveProcessingPipeline.h"
 
 class VstHostTool
 {

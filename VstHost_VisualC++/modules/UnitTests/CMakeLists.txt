@@ -11,24 +11,23 @@ if (NOT ${ANDROID_BUILD})
                         ${gtest_SOURCE_DIR}
                         ${PROJECT_SOURCE_DIR}/src
                         ${PROJECT_SOURCE_DIR}/header
-                        SYSTEM ${GTEST_INCLUDE_DIRS}
-                        ${PROJECT_SOURCE_DIR}/../VstHostTool/header)
+                        SYSTEM ${GTEST_INCLUDE_DIRS})
 
     set(UnitTests_sources
         header/UnitTestsCommon.h
         src/AudioHostLibUnitTests.cpp
 		src/AudioProcessingClassUnitTests.cpp)
 
-    set (OfflineToolsUnitTest
-         header/UnitTestsCommon.h
-         src/VstHostToolUnitTests.cpp)
+    set(OfflineToolsUnitTest
+        header/UnitTestsCommon.h
+        src/VstHostToolUnitTests.cpp)
 
     add_executable(${target} ${UnitTests_sources})
-    target_link_libraries(${target} gtest gtest_main gmock gmock_main AudioHostLib WaveIO Logger Common ArgParser sdk_hosting base sdk AudioProcessing)
+    target_link_libraries(${target} PRIVATE gtest gtest_main gmock gmock_main AudioProcessing WaveIO Logger Common ArgParser sdk_hosting base sdk AudioHostLib)
     add_test(NAME ${target} COMMAND ${target})
 
     add_executable(${target_offline_tools} ${OfflineToolsUnitTest})
-    target_link_libraries(${target_offline_tools} gtest gtest_main VstHostToolLib WaveIO Logger Common ArgParser base sdk)
+    target_link_libraries(${target_offline_tools} PRIVATE gtest gtest_main VstHostToolLib WaveIO Logger Common ArgParser base sdk)
     add_test(NAME ${target_offline_tools} COMMAND ${target_offline_tools})
 
     if(SMTG_WIN)
