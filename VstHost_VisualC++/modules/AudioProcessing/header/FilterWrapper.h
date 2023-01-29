@@ -5,13 +5,13 @@
 #include "enums.h"
 #include "filter.h"
 
-class AudioProcessingWrapper
+class FilterWrapper
 {
 public:
-    explicit AudioProcessingWrapper();
+    explicit FilterWrapper();
     int Init(float sampling_rate);
     int ApplyBwLowPassFilter(std::vector<float> input, std::vector<float>& output);
-    ~AudioProcessingWrapper();
+    ~FilterWrapper();
 
 private:
     BWLowPass* bw_low_pass_filter_;

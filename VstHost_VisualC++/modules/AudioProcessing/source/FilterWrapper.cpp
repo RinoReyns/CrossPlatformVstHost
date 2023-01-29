@@ -1,10 +1,10 @@
 #include "FilterWrapper.h"
 
-AudioProcessingWrapper::AudioProcessingWrapper()
+FilterWrapper::FilterWrapper()
 {
 }
 
-AudioProcessingWrapper::~AudioProcessingWrapper()
+FilterWrapper::~FilterWrapper()
 {
 	if (bw_low_pass_filter_ != nullptr)
 	{
@@ -13,7 +13,7 @@ AudioProcessingWrapper::~AudioProcessingWrapper()
 	}
 }
 
-int AudioProcessingWrapper::Init(float sampling_rate)
+int FilterWrapper::Init(float sampling_rate)
 {
 	// TODO:
 	// parameterization for each module is needed.
@@ -25,7 +25,7 @@ int AudioProcessingWrapper::Init(float sampling_rate)
 	return VST_ERROR_STATUS::SUCCESS;
 }
 
-int AudioProcessingWrapper::ApplyBwLowPassFilter(std::vector<float> input, 
+int FilterWrapper::ApplyBwLowPassFilter(std::vector<float> input,
 	std::vector<float>& output)
 {
 	if (bw_low_pass_filter_ == nullptr)

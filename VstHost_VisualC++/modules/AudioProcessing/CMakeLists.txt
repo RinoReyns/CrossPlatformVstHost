@@ -2,12 +2,12 @@ set(target AudioProcessing)
 
 set(AudioProcessing_headers
     filter-c/filter.h
-	header/AudioProcessingWrapper.h
+	header/FilterWrapper.h
     )
 
 set (AudioProcessing_src
      filter-c/filter.c
-	 source/AudioProcessingWrapper.cpp
+	 source/FilterWrapper.cpp
      )
 
 add_library(${target} ${AudioProcessing_src} ${AudioProcessing_headers})
