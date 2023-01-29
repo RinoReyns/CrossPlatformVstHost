@@ -1,7 +1,5 @@
 #include "VstHostTool.h"
-#include "audiohost.h"
 #include "easylogging++.h"
-#include "WaveIOClass.h"
 
 #ifdef _WIN32
 #include "AudioEndpointManager.h"
@@ -47,44 +45,18 @@ int VstHostTool::EndpointProcessingPipeline()
 
 int VstHostTool::OfflineProcessingPipeline()
 {
-    std::unique_ptr<AudioProcessingVstHost> vst_host = std::make_unique<AudioProcessingVstHost>();
-    vst_host->SetVerbosity(arg_parser_->GetPluginVerbosity());
-
-    int status = vst_host->CreateMutliplePluginInstance(arg_parser_->GetProcessingConfig());
-
-    if (status == VST_ERROR_STATUS::SUCCESS)
+    std::unique_ptr<WaveProcessingPipeline> pipeline;
+    pipeline.reset(new WaveProcessingPipeline(arg_parser_->GetPluginVerbosity()));
+    
+    int status = pipeline->Init(arg_parser_->GetProcessingConfig());
+    RETURN_ERROR_IF_NOT_SUCCESS(status);
+    
+    if (arg_parser_->GetDumpPluginParams())
     {
-        if (arg_parser_->GetDumpPluginParams())
-        {
-            status = vst_host->GetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
-        }
-        else
-        {
-            status = vst_host->SetMutliplePluginParameters(arg_parser_->GetProcessingConfig());
-            if (status != VST_ERROR_STATUS::VST_HOST_ERROR)
-            {
-                std::unique_ptr<WaveIOClass> wave_io(new WaveIOClass());
-
-                // Load wave file
-                WaveDataContainer input_wave;
-                input_wave.file_path = arg_parser_->GetInputWavePath();
-                status = wave_io->LoadWave(&input_wave);
-                RETURN_ERROR_IF_NOT_SUCCESS(status);
-
-                WaveDataContainer output_wave;
-                output_wave.file_path = arg_parser_->GetOutputWavePath();
-
-                status = vst_host->BufferProcessing(&input_wave, &output_wave);
-                RETURN_ERROR_IF_NOT_SUCCESS(status);
-
-                // Save wave file
-                status = wave_io->SaveWave(&output_wave);
-                RETURN_ERROR_IF_NOT_SUCCESS(status);
-            }
-        }
+        return pipeline->GetConfig();
     }
-    vst_host->Terminate();
-    return status;
+    
+    return pipeline->Run(arg_parser_->GetInputWavePath(), arg_parser_->GetOutputWavePath());
 }
 
 int VstHostTool::Run()

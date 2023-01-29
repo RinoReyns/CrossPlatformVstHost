@@ -538,3 +538,82 @@ AUDIOHOSTLIB_EXPORT void AudioProcessingVstHost::Terminate()
 	}
 	Steinberg::Vst::PluginContextFactory::instance().setPluginContext(nullptr);
 }
+
+C_API_PREFIX AudioProcessingVstHost* CApiInitialize() {
+	AudioProcessingVstHost* dc = new AudioProcessingVstHost();
+	return dc;
+}
+
+C_API_PREFIX int CApiSetVerbosity(AudioProcessingVstHost* vst_host,
+	uint8_t value)
+{
+	RETURN_ERROR_IF_NULL(vst_host);
+	vst_host->SetVerbosity(value);
+	return VST_ERROR_STATUS::SUCCESS;
+}
+
+C_API_PREFIX int CApiCreatePluginInstance(
+	AudioProcessingVstHost* vst_host,
+	const char* plugin_path,
+	const char* plugin_id)
+{
+	RETURN_ERROR_IF_NULL(vst_host);
+	RETURN_ERROR_IF_NULL(plugin_path);
+	RETURN_ERROR_IF_NULL(plugin_id);
+	std::string plugin_path_(plugin_path);
+	std::string plugin_id_(plugin_id);
+	return vst_host->CreatePluginInstance(plugin_path_, plugin_id_);
+}
+
+C_API_PREFIX int CApiGetPluginParameters(
+	AudioProcessingVstHost* vst_host,
+	const char* plugin_config,
+	const char* plugin_id)
+{
+	RETURN_ERROR_IF_NULL(vst_host);
+	RETURN_ERROR_IF_NULL(plugin_config);
+	RETURN_ERROR_IF_NULL(plugin_id);
+	std::string plugin_config_(plugin_config);
+	std::string plugin_id_(plugin_id);
+	return vst_host->GetPluginParameters(plugin_id_, plugin_config_);
+}
+
+C_API_PREFIX int CApiSetPluginParameters(
+	AudioProcessingVstHost* vst_host,
+	const char* plugin_config,
+	const char* plugin_id)
+{
+	RETURN_ERROR_IF_NULL(vst_host);
+	RETURN_ERROR_IF_NULL(plugin_config);
+	RETURN_ERROR_IF_NULL(plugin_id);
+	std::string plugin_config_(plugin_config);
+	std::string plugin_id_(plugin_id);
+	return vst_host->SetPluginParameters(plugin_id_, plugin_config_);
+}
+
+C_API_PREFIX int CApiProcessWaveFile(AudioProcessingVstHost* vst_host,
+	const char* input_wave_path,
+	const char* output_wave_path)
+{
+	RETURN_ERROR_IF_NULL(vst_host);
+	RETURN_ERROR_IF_NULL(input_wave_path);
+	RETURN_ERROR_IF_NULL(output_wave_path);
+	std::string input_wave_path_srt(input_wave_path);
+	std::string output_wave_path_srt(output_wave_path);
+	return vst_host->ProcessWaveFile(input_wave_path_srt, output_wave_path_srt);
+}
+
+C_API_PREFIX int CApiDeleteInstance(AudioProcessingVstHost* vst_host)
+{
+	RETURN_ERROR_IF_NULL(vst_host);
+	vst_host->Terminate();
+	try
+	{
+		delete vst_host;
+		return 0;
+	}
+	catch (...)
+	{
+		return -1;
+	}
+}

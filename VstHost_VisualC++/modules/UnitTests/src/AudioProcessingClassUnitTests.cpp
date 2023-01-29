@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-#include "AudioProcessingWrapper.h"
+#include "FilterWrapper.h"
 #include "UnitTestsCommon.h"
 #include "file.h"
 #include <filesystem>
@@ -14,20 +14,19 @@ namespace AudioProcessingWrapperClassUnitTest
     class AudioProcessingWrapperTest : public testing::Test
     {
     protected:
-        std::unique_ptr<AudioProcessingWrapper> audio_processing_wrapper_;
+        std::unique_ptr<FilterWrapper> audio_processing_wrapper_;
 
         AudioProcessingWrapperTest() = default;
         virtual ~AudioProcessingWrapperTest() = default;
         virtual void SetUp()
         {
-            audio_processing_wrapper_.reset(new AudioProcessingWrapper());
+            audio_processing_wrapper_.reset(new FilterWrapper());
             CleanUpUtProducts();
         }
 
         virtual void TearDown()
         {
             audio_processing_wrapper_.reset();
-
             CleanUpUtProducts();
         }
 

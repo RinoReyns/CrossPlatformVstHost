@@ -51,7 +51,8 @@ target_include_directories(${target}
                                   ${SDK_ROOT}/public.sdk/source/vst/utility
                                   ${SDK_ROOT}/pluginterfaces/vst
                                   ${PROJECT_BINARY_DIR}/modules/VstHost
-                                  ${PROJECT_SOURCE_DIR})
+                                  ${PROJECT_SOURCE_DIR}
+                                  ${SDK_ROOT}/pluginterfaces/vst)
                  
 target_link_libraries(${target} PRIVATE base sdk WaveIO Logger Common sdk_hosting)
 
