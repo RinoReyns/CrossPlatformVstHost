@@ -2,7 +2,7 @@ set(target AudioProcessing)
 
 set(AudioProcessing_headers
     filter-c/filter.h
-	header/FilterWrapper.h
+    header/FilterWrapper.h
     header/WaveProcessingPipeline.h
     )
 

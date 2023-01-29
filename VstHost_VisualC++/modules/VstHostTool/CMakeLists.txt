@@ -25,10 +25,11 @@ if (NOT ${ANDROID_BUILD})
                                PRIVATE ${target}Lib base sdk ArgParser Logger Common)
     else()
 
-        target_link_libraries (${target}Lib PUBLIC AudioProcessing
-                               PRIVATE base sdk ArgParser Logger Common sdk_hosting WaveIO)
+        target_link_libraries (${target}Lib PUBLIC WaveIO AudioProcessing AudioHostLib
+                               PRIVATE base sdk ArgParser Logger Common sdk_hosting)
+        target_include_directories(${target}Lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header)
         target_link_libraries (${target} PUBLIC ${target}Lib
-                               PRIVATE base sdk ArgParser Logger Common WaveIO)
+                               PRIVATE base sdk ArgParser Logger Common)
 
     endif(SMTG_WIN)
 endif()              
