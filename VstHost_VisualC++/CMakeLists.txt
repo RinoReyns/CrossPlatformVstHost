@@ -4,16 +4,17 @@ cmake_minimum_required (VERSION 3.4.3)
 # Includes
 #-------------------------------------------------------------------------------
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk/cmake/modules")
+include(cmake/custom_functions.cmake)
+include(SMTG_VST3_SDK)
+include(SMTG_CustomModuleTarget)
+include_directories(${SDK_ROOT})
 
 if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "11.15" CACHE STRING "macOS deployment target")
     message(STATUS "[CrossPlatformVstHost] macOS Deployment Target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
 endif()
 
-include(SMTG_VST3_SDK)
-include(SMTG_CustomModuleTarget)
 SET(ANDROID_BUILD False CACHE BOOL "Determin if build is dedicated for andorid.")
-
 if (${ANDROID_BUILD})
     message("-- Android Build: ${ANDROID_BUILD}")
     include(cmake/andorid_toolchain.cmake)
@@ -25,6 +26,8 @@ endif()
 project(VstHost C CXX)
 smtg_setup_platform_toolset()
 
+SET(vstsdk_VERSION 3.7.7)
+set(SMTG_CREATE_MODULE_INFO OFF CACHE BOOL "" FORCE)
 set(SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk")
 set(SDK_IDE_LIBS_FOLDER FOLDER "Libraries")
 set(UNIT_TESTS_FOLDER FOLDER "UnitTest")
@@ -38,8 +41,6 @@ if (MSVC)
     set(SMTG_USE_STDATOMIC_H OFF CACHE BOOL "" FORCE)
     set(AUDIO_ENDPOINTS_FOLDER FOLDER "AudioEndpoints")
 endif()
-
-include_directories(${SDK_ROOT})
 
 message(STATUS "CMAKE_SOURCE_DIR is set to: ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_CURRENT_LIST_DIR is set to: ${CMAKE_CURRENT_LIST_DIR}")
