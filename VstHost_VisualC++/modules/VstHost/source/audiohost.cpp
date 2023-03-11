@@ -256,6 +256,13 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::CreatePluginInstance(const std::
                 }
             }
             vst_plugins_[plugin_id].plug_provider_ = std::unique_ptr<Steinberg::Vst::PlugProvider>(new Steinberg::Vst::PlugProvider(factory, classInfo, true));
+            if (vst_plugins_[plugin_id].plug_provider_->initialize() == false)
+            {
+                vst_plugins_[plugin_id].plug_provider_ = nullptr;
+                LOG(ERROR) << "Plugin provider couldn't been created.";
+                return VST_ERROR_STATUS::CREATE_PLUGIN_PROVIDER_ERROR;
+            }
+
         }
     }
 
