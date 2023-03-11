@@ -204,6 +204,14 @@ jobs:
         with:
           ndk-version: r24
           add-to-path: false
+      
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.13
+        with:
+            cmake-version: '3.19.x'
+      
+      - name: Use cmake
+        run: cmake --version
 
       - name: Configure CMake and Build C++ .so for armeabi-v7a
         run: |
