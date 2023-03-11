@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18.1)
+cmake_minimum_required(VERSION 3.22.1)
 
 set(SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../VstHost_VisualC++/vst3sdk")
 set(public_sdk_SOURCE_DIR ${SDK_ROOT}/public.sdk)

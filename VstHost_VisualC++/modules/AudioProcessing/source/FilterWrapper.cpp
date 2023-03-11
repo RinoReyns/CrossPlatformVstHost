@@ -15,7 +15,7 @@ FilterWrapper::~FilterWrapper()
 
 int FilterWrapper::Init(float sampling_rate)
 {
-	// TODO:
+    // TODO:
 	// parameterization for each module is needed.
 	 bw_low_pass_filter_ = create_bw_low_pass_filter(
 		 8,
@@ -33,7 +33,8 @@ int FilterWrapper::ApplyBwLowPassFilter(std::vector<float> input,
 		return VST_ERROR_STATUS::NULL_POINTER;
 	}
 
-	for (int i = 0; i < input.size(); i++) {
+	for (int i = 0; i < input.size(); i++) 
+	{
 		output[i] = bw_low_pass(bw_low_pass_filter_, input[i]);
 	}
 

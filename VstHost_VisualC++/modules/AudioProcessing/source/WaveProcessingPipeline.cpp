@@ -2,11 +2,9 @@
 #include "VstHostMacro.h"
 
 
-WaveProcessingPipeline::WaveProcessingPipeline(uint8_t verbosity):
+WaveProcessingPipeline::WaveProcessingPipeline(uint8_t verbosity) :
     verbosity_(verbosity)
-{
-
-}
+{}
 
 int WaveProcessingPipeline::Init(config_type vst_host_config)
 {
@@ -24,7 +22,7 @@ int WaveProcessingPipeline::GetConfig()
 }
 
 int WaveProcessingPipeline::Run(std::string input_path, std::string output_path)
-{ 
+{
     if (input_path == "" || output_path == "")
     {
         return VST_ERROR_STATUS::PATH_NOT_EXISTS;
@@ -51,8 +49,7 @@ int WaveProcessingPipeline::Run(std::string input_path, std::string output_path)
         status = wave_io->SaveWave(&output_wave);
         RETURN_ERROR_IF_NOT_SUCCESS(status);
     }
-    
+
     vst_host_->Terminate();
     return status;
-
 }
