@@ -265,7 +265,7 @@ jobs:
           api-level: 28
           arch: x86_64
           profile: Nexus 6
-          cmake: 3.19.7
+          cmake: 3.22.1
           working-directory: ${{github.workspace}}/VstHost_Android
           script: |
             ls -la ${{github.workspace}}/VstHost_Android/app/src/main/assets/
