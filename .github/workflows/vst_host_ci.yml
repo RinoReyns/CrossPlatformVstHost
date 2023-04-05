@@ -112,7 +112,8 @@ jobs:
       - name: Generate a code coverage report
         uses: threeal/gcovr-action@latest
         with:
-          exclude: '^(.*gtest*|.*gmoc*)$'
+          root: ${{github.workspace}}
+          exclude: VstHost_VisualC++/modules/UnitTests/googletest
 
       - name: Run Python Unit Tests
         run: |
