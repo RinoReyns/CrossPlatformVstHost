@@ -63,9 +63,8 @@ if (NOT ${ANDROID_BUILD})
         message("Code coverage analysis requires gcov!")
     endif()
     if(CMAKE_CXX_COMPILER_ID MATCHES GNU AND CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-     set(CMAKE_CXX_FLAGS --coverage)
-    )
-endif()
+        set(CMAKE_CXX_FLAGS --coverage)
+    endif()
     
 endif()
 
