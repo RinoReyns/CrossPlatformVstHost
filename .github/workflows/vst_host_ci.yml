@@ -106,13 +106,9 @@ jobs:
           cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
+          cd ${{github.workspace}}
+          gcovr --exclude .*gtest* --exclude .*gmoc*
       
-      - name: Code Coverage
-        uses: threeal/gcovr-action@latest
-        with:
-          root: ${{github.workspace}}
-          exclude: .*gmoc*
-
       - name: Run Python Unit Tests
         run: |
           cp -fr ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
