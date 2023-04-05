@@ -107,8 +107,7 @@ jobs:
         uses: threeal/gcovr-action@latest
         with:
           root: ${{github.workspace}}
-          exclude: .*gmoc*
-          exclude: .*gtest*
+          exclude: .*gmoc*, .*gtest*
 
       - name: Run Python Unit Tests
         run: |
