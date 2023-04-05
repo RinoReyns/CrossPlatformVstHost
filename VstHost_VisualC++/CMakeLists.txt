@@ -44,7 +44,6 @@ endif()
 
 message(STATUS "CMAKE_SOURCE_DIR is set to: ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_CURRENT_LIST_DIR is set to: ${CMAKE_CURRENT_LIST_DIR}")
-
 add_subdirectory(vst3sdk/pluginterfaces)
 add_subdirectory(vst3sdk/base)
 add_subdirectory(vst3sdk/public.sdk)
@@ -58,14 +57,8 @@ if (NOT ${ANDROID_BUILD})
     set_target_properties(gmock_main PROPERTIES ${UNIT_TESTS_FOLDER})
     set_target_properties(ApiUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
     set_target_properties(OfflineToolsUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
-    find_program(GCOV_PATH gcov)
-    if(NOT GCOV_PATH)
-        message("Code coverage analysis requires gcov!")
-    endif()
-    if(CMAKE_CXX_COMPILER_ID MATCHES GNU AND CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -O0")
-        message("Flag set")
-    endif()
+   
+   
     
 endif()
 

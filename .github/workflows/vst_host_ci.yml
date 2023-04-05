@@ -105,6 +105,10 @@ jobs:
       
       - name: Code Coverage
         uses: threeal/gcovr-action@latest
+        with:
+          root: ${{github.workspace}}
+          exclude: .*gmoc*
+          exclude: .*gtest*
 
       - name: Run Python Unit Tests
         run: |
