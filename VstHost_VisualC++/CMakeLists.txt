@@ -58,6 +58,21 @@ if (NOT ${ANDROID_BUILD})
     set_target_properties(gmock_main PROPERTIES ${UNIT_TESTS_FOLDER})
     set_target_properties(ApiUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
     set_target_properties(OfflineToolsUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
+    find_program(GCOV_PATH gcov)
+    if(NOT GCOV_PATH)
+        message("Code coverage analysis requires gcov!")
+    endif()
+    if(CMAKE_CXX_COMPILER_ID MATCHES GNU AND CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+      target_compile_options(example
+        PUBLIC
+          "--coverage"
+        )
+      target_link_options(example
+        INTERFACE
+          "--coverage"
+    )
+endif()
+    
 endif()
 
 set_target_properties(sdk PROPERTIES ${SDK_IDE_LIBS_FOLDER})

@@ -336,9 +336,6 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
             return VST_ERROR_STATUS::CREATE_PROCESSING_INSTANCE_ERROR;
         }
 
-        // TODO:
-        // create class for management of read/write wave
-
         wave::File input_wave_file;
 
         // TODO:
