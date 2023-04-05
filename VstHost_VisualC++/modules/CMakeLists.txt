@@ -3,6 +3,7 @@ if (MSVC)
     add_link_options(/WX)
 elseif (UNIX AND !${ANDROID_BUILD})
     add_compile_options(-Werror -Wextra)
+elseif(LINUX)
     find_program(GCOV_PATH gcov)
     if(NOT GCOV_PATH)
 	message("[WARNING] Code coverage analysis requires gcov!")
@@ -10,8 +11,6 @@ elseif (UNIX AND !${ANDROID_BUILD})
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -O0")
 	message("[MESSAGE] Code coverage analysis found gcov!")
     endif()
-
-
 endif()
 
 include(SMTG_AddSubDirectories)
