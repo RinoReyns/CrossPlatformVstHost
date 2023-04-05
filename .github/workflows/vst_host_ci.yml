@@ -103,8 +103,10 @@ jobs:
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
       
-      - name: Coveralls
-        uses: coverallsapp/github-action@v1
+      - name: Code Coverage
+        uses: threeal/gcovr-action@latest
+        with:
+          root: {{github.workspace}}
 
       - name: Run Python Unit Tests
         run: |
