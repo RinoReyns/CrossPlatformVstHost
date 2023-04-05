@@ -113,7 +113,7 @@ jobs:
         uses: threeal/gcovr-action@latest
         with:
           root: ${{github.workspace}}
-          exclude: ${{github.workspace}}/VstHost_VisualC++/modules/UnitTests/googletest/*
+          exclude: .*googletest*
 
       - name: Run Python Unit Tests
         run: |
