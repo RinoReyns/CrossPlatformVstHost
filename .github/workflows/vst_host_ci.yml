@@ -112,7 +112,7 @@ jobs:
       - name: Generate a code coverage report
         uses: threeal/gcovr-action@latest
         with:
-          exclude: .*gtest*
+          exclude: '^(.*gtest*|.*gmoc*)$'
 
       - name: Run Python Unit Tests
         run: |
