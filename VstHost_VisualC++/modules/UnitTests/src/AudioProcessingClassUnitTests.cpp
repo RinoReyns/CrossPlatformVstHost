@@ -14,19 +14,19 @@ namespace AudioProcessingWrapperClassUnitTest
     class AudioProcessingWrapperTest : public testing::Test
     {
     protected:
-        std::unique_ptr<FilterWrapper> audio_processing_wrapper_;
+        std::unique_ptr<FilterWrapper> filter_wrapper_;
 
         AudioProcessingWrapperTest() = default;
         virtual ~AudioProcessingWrapperTest() = default;
         virtual void SetUp()
         {
-            audio_processing_wrapper_.reset(new FilterWrapper());
+            filter_wrapper_.reset(new FilterWrapper());
             CleanUpUtProducts();
         }
 
         virtual void TearDown()
         {
-            audio_processing_wrapper_.reset();
+            filter_wrapper_.reset();
             CleanUpUtProducts();
         }
 
@@ -80,10 +80,10 @@ namespace AudioProcessingWrapperClassUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         std::vector<float> output(content.size(), 1);
 
-        status = audio_processing_wrapper_->Init(static_cast<float>(input_wave_file.sample_rate()));
+        status = filter_wrapper_->Init(static_cast<float>(input_wave_file.sample_rate()));
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        status = audio_processing_wrapper_->ApplyBwLowPassFilter(content, output);
+        status = filter_wrapper_->ApplyBwLowPassFilter(content, output);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 #ifndef __APPLE__
         std::vector<float> ref;

@@ -40,14 +40,6 @@ class AudioProcessingVstHost
         int AUDIOHOSTLIB_EXPORT GetMutliplePluginParameters(const config_type processing_config);
         void AUDIOHOSTLIB_EXPORT Terminate();
         void AUDIOHOSTLIB_EXPORT SetVerbosity(uint8_t value);
-        // TODO:
-        // remove this buffer
-        struct Buffers
-        {
-            int32_t numInputs;
-            int32_t numOutputs;
-            int32_t numSamples;
-        };
 
         struct VstPluginParameters
         {
