@@ -102,6 +102,16 @@ jobs:
           cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
+      
+      - name: Upload code coverage to coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run: |
+          cd ${{github.workspace}}
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools cpp-coveralls
+          coveralls -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*" --exclude "venv" --exclude "build/_deps"
 
       - name: Run Python Unit Tests
         run: |
@@ -166,15 +176,6 @@ jobs:
           cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
-      
-       - name: Upload code coverage to coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip setuptools cpp-coveralls
-          coveralls -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*" --exclude "venv" --exclude "build/_deps"
 
       - name: Run Python Unit Tests
         run: |
