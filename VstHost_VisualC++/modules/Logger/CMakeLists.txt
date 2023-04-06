@@ -16,6 +16,10 @@ target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header)
 target_compile_features(${target} PUBLIC cxx_std_17)
 target_link_libraries(${target} PRIVATE Common)
 
+if(LINUX)
+    set(CMAKE_CXX_FLAGS "-Wno-multichar")
+endif()
+
 if (${ANDROID_BUILD})
     add_custom_command(TARGET ${target} POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/header/easylogging++.h
