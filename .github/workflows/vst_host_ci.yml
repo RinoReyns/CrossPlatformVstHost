@@ -127,7 +127,7 @@ jobs:
           #github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
           #path-to-lcov: ${{github.workspace}}/coverage_raport.json
         run: |
-           curl -v -F json_file=@${{github.workspace}}/coverage_raport.json https://coveralls.io/api/v1/jobs
+           COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} curl -v -F json_file=@${{github.workspace}}/coverage_raport.json https://coveralls.io/api/v1/jobs
 
       - name: Run Python Unit Tests
         run: |
