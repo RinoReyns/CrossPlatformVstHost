@@ -109,26 +109,14 @@ jobs:
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
           cd ${{github.workspace}}
       
-      #- name: Generate a code coverage report
-      #  uses: threeal/gcovr-action@latest
-      #  with:
-      #    root: ${{github.workspace}}
-      #    exclude: .*googletest*
-      #    fail-under-line: 49
-      #    coveralls-send: true
-      #    github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
       - name: Generate a code coverage report
-        run: |
-          cd ${{github.workspace}}
-          gcovr --exclude .*googletest* --fail-under-line '49' --coveralls coverage_raport.json
-      
-      - name: Coveralls
-        uses: coverallsapp/github-action@v1
+        uses: threeal/gcovr-action@latest
         with:
+          root: ${{github.workspace}}
+          exclude: .*googletest*
+          fail-under-line: 49
+          coveralls-send: true
           github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          path-to-lcov: ${{github.workspace}}/coverage_raport.json
-        #run: |
-        #   COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} curl -v -F json_file=@${{github.workspace}}/coverage_raport.json https://coveralls.io/api/v1/jobs
 
       - name: Run Python Unit Tests
         run: |
