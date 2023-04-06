@@ -113,7 +113,7 @@ jobs:
         uses: threeal/gcovr-action@latest
         with:
           root: ${{github.workspace}}
-          exclude: [.*googletest*, .*json*]
+          exclude: .*googletest*
           fail-under-line: 49
           coveralls-send: true
           github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
