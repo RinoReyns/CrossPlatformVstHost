@@ -115,7 +115,7 @@ jobs:
           exclude: .*googletest*
           fail-under-line: 49
           coveralls-send: true
-          github-token: ${{ secrets.VST_HOST_COVERAGE }}
+          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
       - name: Run Python Unit Tests
         run: |
