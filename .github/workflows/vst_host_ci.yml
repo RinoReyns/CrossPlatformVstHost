@@ -25,6 +25,7 @@ jobs:
           python --version
           python -m pip install --upgrade pip
           pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
+          pip install coveralls
 
       - name: Configure CMake
         run: |
@@ -122,12 +123,12 @@ jobs:
           gcovr --exclude .*googletest* --fail-under-line '49' --coveralls coverage_raport.json
       
       - name: Coveralls
-        #uses: coverallsapp/github-action@v1
-        #with:
-          #github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          #path-to-lcov: ${{github.workspace}}/coverage_raport.json
-        run: |
-           COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} curl -v -F json_file=@${{github.workspace}}/coverage_raport.json https://coveralls.io/api/v1/jobs
+        uses: coverallsapp/github-action@v1
+        with:
+          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          path-to-lcov: ${{github.workspace}}/coverage_raport.json
+        #run: |
+        #   COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} curl -v -F json_file=@${{github.workspace}}/coverage_raport.json https://coveralls.io/api/v1/jobs
 
       - name: Run Python Unit Tests
         run: |
