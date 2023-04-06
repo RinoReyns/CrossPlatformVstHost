@@ -55,3 +55,16 @@ function(smtg_target_setup_as_vst3_example target)
         COMPANY_NAME "Steinberg Media Technologies"
     )
 endfunction()
+
+function(set_flags_for_gcovr target)
+
+if(LINUX)
+    if(NOT GCOV_PATH)
+        message("[WARNING] Code coverage analysis requires gcov!")
+    else()
+        set_target_properties(${TARGET} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -O0")
+        #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -O0")
+        message("[MESSAGE] Code coverage analysis found gcov!")
+    endif()
+endif()
+endfunction()

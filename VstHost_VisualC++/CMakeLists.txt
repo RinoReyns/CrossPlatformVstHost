@@ -74,6 +74,8 @@ if (MSVC)
     set_target_properties(AudioRender PROPERTIES ${AUDIO_ENDPOINTS_FOLDER})
     set_target_properties(AudioCapture PROPERTIES ${AUDIO_ENDPOINTS_FOLDER})
     set_target_properties(AudioEndpointBase PROPERTIES ${AUDIO_ENDPOINTS_FOLDER})
+elseif(LINUX)
+    find_program(GCOV_PATH gcov)
 endif()
 
 if(TARGET base_ios)
