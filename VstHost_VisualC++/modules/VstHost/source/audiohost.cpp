@@ -145,7 +145,10 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::GetPluginParameters(std::string 
     return JsonUtils::DumpJson(plugin_config_json, plugin_config);
 }
 
-static void assignBusBuffers(const AudioProcessingVstHost::Buffers& buffers,
+
+static void assignBusBuffers(
+    int32_t inputs_number,
+    int32_t outputs_number,
     Steinberg::Vst::HostProcessData& processData,
     float* input,
     float* output,
@@ -158,7 +161,7 @@ static void assignBusBuffers(const AudioProcessingVstHost::Buffers& buffers,
         auto channelCount = processData.outputs[busIndex].numChannels;
         for (auto chanIndex = 0; chanIndex < channelCount; chanIndex++)
         {
-            if (bufferIndex < buffers.numOutputs)
+            if (bufferIndex < outputs_number)
             {
                 processData.setChannelBuffer(Steinberg::Vst::BusDirections::kOutput,
                     busIndex,
@@ -176,7 +179,7 @@ static void assignBusBuffers(const AudioProcessingVstHost::Buffers& buffers,
         auto channelCount = processData.inputs[busIndex].numChannels;
         for (auto chanIndex = 0; chanIndex < channelCount; chanIndex++)
         {
-            if (bufferIndex < buffers.numInputs)
+            if (bufferIndex < inputs_number)
             {
                 processData.setChannelBuffer(Steinberg::Vst::BusDirections::kInput,
                     busIndex,
@@ -333,9 +336,6 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
             return VST_ERROR_STATUS::CREATE_PROCESSING_INSTANCE_ERROR;
         }
 
-        // TODO:
-        // create class for management of read/write wave
-
         wave::File input_wave_file;
 
         // TODO:
@@ -346,7 +346,6 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
             return VST_ERROR_STATUS::OPEN_FILE_ERROR;
         }
 
-        Buffers buffs = {};
         std::vector<float> content;
 
         if (input_wave_file.Read(&content))
@@ -395,12 +394,13 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
         processData.prepare(*component, input_wave_file.frame_number(), Steinberg::Vst::kSample32);
 
         processData.numSamples = input_wave_file.frame_number() * input_wave_file.channel_number();
-        buffs.numInputs = input_wave_file.channel_number();
-        buffs.numOutputs = input_wave_file.channel_number();
-        buffs.numSamples = input_wave_file.frame_number();
 
         processContext.continousTimeSamples = true;
-        assignBusBuffers(buffs, processData, content.data(), output.data());
+        assignBusBuffers(input_wave_file.channel_number(), 
+                         input_wave_file.channel_number(), 
+                         processData, 
+                         content.data(), 
+                         output.data());
 
         if (processor->process(processData) != Steinberg::kResultOk)
         {
@@ -425,7 +425,12 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::ProcessWaveFile(const std::strin
             LOG(ERROR) << "Write to output wave failed." << std::endl;
             return VST_ERROR_STATUS::READ_WRITE_ERROR;
         }
-        assignBusBuffers(buffs, processData, content.data(), output.data(), true);
+        assignBusBuffers(input_wave_file.channel_number(), 
+                         input_wave_file.channel_number(), 
+                         processData, 
+                         content.data(), 
+                         output.data(), 
+                         true);
         input_wave_path_ = output_wave_path;
     }
     return VST_ERROR_STATUS::SUCCESS;
@@ -460,8 +465,6 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
             LOG(ERROR) << "Processing instance not created.";
             return VST_ERROR_STATUS::CREATE_PROCESSING_INSTANCE_ERROR;
         }
-
-        Buffers buffs = {};
 
         output_data->data.resize(input_data->data.size(), 1);
         Steinberg::Vst::ProcessSetup setup
@@ -501,15 +504,14 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
 
         processData.inputParameterChanges = &inputParameterChanges;
         processData.prepare(*component, input_data->frame_number, Steinberg::Vst::kSample32);
-
         processData.numSamples = input_data->frame_number * input_data->channel_number;
-        buffs.numInputs = input_data->channel_number;
-        buffs.numOutputs = input_data->channel_number;
-        buffs.numSamples = input_data->frame_number;
-
         processContext.continousTimeSamples = true;
 
-        assignBusBuffers(buffs, processData, input_data->data.data(), output_data->data.data());
+        assignBusBuffers(input_data->channel_number, 
+                         input_data->channel_number,
+                         processData, 
+                         input_data->data.data(), 
+                         output_data->data.data());
 
         if (processor->process(processData) != Steinberg::kResultOk)
         {
@@ -523,7 +525,12 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
 
         auto output_buffer_ptr = static_cast<float*> (*processData.outputs[0].channelBuffers32);
         output_data->data.assign(output_buffer_ptr, output_buffer_ptr + input_data->data.size());
-        assignBusBuffers(buffs, processData, input_data->data.data(), output_data->data.data(), true);
+        assignBusBuffers(input_data->channel_number, 
+                         input_data->channel_number, 
+                         processData, 
+                         input_data->data.data(), 
+                         output_data->data.data(), 
+                         true);
         input_data->data = output_data->data;
     }
 

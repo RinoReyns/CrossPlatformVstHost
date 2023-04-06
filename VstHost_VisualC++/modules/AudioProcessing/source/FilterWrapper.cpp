@@ -25,7 +25,8 @@ int FilterWrapper::Init(float sampling_rate)
 	return VST_ERROR_STATUS::SUCCESS;
 }
 
-int FilterWrapper::ApplyBwLowPassFilter(std::vector<float> input,
+int FilterWrapper::ApplyBwLowPassFilter(
+	std::vector<float> input,
 	std::vector<float>& output)
 {
 	if (bw_low_pass_filter_ == nullptr)

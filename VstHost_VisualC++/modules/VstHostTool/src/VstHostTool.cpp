@@ -36,6 +36,11 @@ int VstHostTool::PrepareArgs(std::vector<std::string> args)
 
 int VstHostTool::EndpointProcessingPipeline()
 {
+
+#ifdef _WIN32
+    std::unique_ptr<AudioEndpointManager> endpoint_manager(new AudioEndpointManager(arg_parser_->GetPluginVerbosity()));
+    endpoint_manager->RunAudioEndpointHandler();
+#endif
     // 1. Get Data From Mic 
     // 2. Put In queue
     // 3. Processing
@@ -80,8 +85,7 @@ int VstHostTool::Run()
 #ifdef _WIN32
     if (arg_parser_->GetEnableAudioEndpoint())
     {
-        std::unique_ptr<AudioEndpointManager> endpoint_manager(new AudioEndpointManager(arg_parser_->GetPluginVerbosity()));
-        return endpoint_manager->RunAudioEndpointHandler();
+        return this->EndpointProcessingPipeline();
     }
 #endif
 
