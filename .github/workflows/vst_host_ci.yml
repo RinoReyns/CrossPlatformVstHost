@@ -119,8 +119,7 @@ jobs:
       - name: Generate a code coverage report
         run: |
           gcovr --help
-          gcovr --version
-          gcovr --exclude .*googletest* --fail-under-line '49' --coverall ${{github.workspace}}/coverage_raport.json
+          gcovr --exclude .*googletest* --fail-under-line '49' --coveralls-pretty  ${{github.workspace}}/coverage_raport.json
       
       - name: Coveralls
         uses: coverallsapp/github-action@v1
