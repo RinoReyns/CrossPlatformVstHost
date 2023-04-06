@@ -114,6 +114,8 @@ jobs:
           root: ${{github.workspace}}
           exclude: .*googletest*
           fail-under-line: 49
+          coveralls-send: true
+          github-token: ${{ secrets.VST_HOST_COVERAGE }}
 
       - name: Run Python Unit Tests
         run: |
