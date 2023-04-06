@@ -55,3 +55,4 @@ function(smtg_target_setup_as_vst3_example target)
         COMPANY_NAME "Steinberg Media Technologies"
     )
 endfunction()
+

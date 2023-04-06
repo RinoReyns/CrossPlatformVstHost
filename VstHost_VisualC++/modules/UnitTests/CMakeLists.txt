@@ -29,6 +29,7 @@ if (NOT ${ANDROID_BUILD})
     add_executable(${target_offline_tools} ${OfflineToolsUnitTest})
     target_link_libraries(${target_offline_tools} PRIVATE gtest gtest_main VstHostToolLib WaveIO Logger Common ArgParser base sdk)
     add_test(NAME ${target_offline_tools} COMMAND ${target_offline_tools})
+    
 
     if(SMTG_WIN)
         add_custom_command(TARGET ${target} POST_BUILD

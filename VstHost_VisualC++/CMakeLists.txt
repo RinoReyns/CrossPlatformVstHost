@@ -53,13 +53,10 @@ add_subdirectory(modules)
 if (NOT ${ANDROID_BUILD})
     set_target_properties(gtest PROPERTIES ${UNIT_TESTS_FOLDER})
     set_target_properties(gtest_main PROPERTIES ${UNIT_TESTS_FOLDER})
-	set_target_properties(gmock PROPERTIES ${UNIT_TESTS_FOLDER})
+    set_target_properties(gmock PROPERTIES ${UNIT_TESTS_FOLDER})
     set_target_properties(gmock_main PROPERTIES ${UNIT_TESTS_FOLDER})
     set_target_properties(ApiUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
-    set_target_properties(OfflineToolsUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})
-   
-   
-    
+    set_target_properties(OfflineToolsUnitTests PROPERTIES ${UNIT_TESTS_FOLDER})   
 endif()
 
 set_target_properties(sdk PROPERTIES ${SDK_IDE_LIBS_FOLDER})
