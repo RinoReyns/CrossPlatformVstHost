@@ -66,7 +66,6 @@ jobs:
           repo="https://https://github.com/RinoReyns/CrossPlatformVstHost"
           
           echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" >> CLONE.md
-          echo "" >> CLONE.md   
           tail -n +2 README.md >> CLONE.md
           mv CLONE.md README.md 
           git add README.md
