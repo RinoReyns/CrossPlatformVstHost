@@ -72,7 +72,7 @@ jobs:
           git add README.md
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          status= git status | grep -q "nothing to commit, working tree clean" ; echo $?
+          #status= git status | grep -q "nothing to commit, working tree clean" ; echo $?
           
           #if(( $status==0 ))
           #then
