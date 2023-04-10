@@ -65,19 +65,6 @@ jobs:
           url="https://gist.githubusercontent.com/${{ github.actor }}/${{ steps.set_id.outputs.GIST }}/raw/clone.json"
           repo="https://https://github.com/RinoReyns/CrossPlatformVstHost"
 
-          echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" >> CLONE.md
-          echo "" >> CLONE.md   
-          tail -n +3 README.md >> CLONE.md
-          mv CLONE.md README.md 
-          git add README.md
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          status= git status | grep -q "nothing to commit, working tree clean" ; echo $?
-          if(( $status==0 ))
-          then
-          git commit -m "create clone count badge"
-          fi
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
