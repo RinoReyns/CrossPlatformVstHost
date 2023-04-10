@@ -67,7 +67,7 @@ jobs:
 
           echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" >> CLONE.md
           echo "" >> CLONE.md   
-          tail -n +3 README.md >> CLONE.md
+          tail -n +4 README.md >> CLONE.md
           mv CLONE.md README.md 
           git add README.md
           git config --global user.name "GitHub Action"

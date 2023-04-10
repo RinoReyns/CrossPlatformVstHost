@@ -1,4 +1,5 @@
 [![GitHub Clones](https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url=https://gist.githubusercontent.com/RinoReyns/afa8bf238a66bf45f6d3659af73ffecf/raw/clone.json&logo=github)](https://https://github.com/RinoReyns/CrossPlatformVstHost)
+[![Coverage Status](https://coveralls.io/repos/github/RinoReyns/CrossPlatformVstHost/badge.svg?branch=main)](https://coveralls.io/github/RinoReyns/CrossPlatformVstHost?branch=main)
 
 <p align="left">
     <img alt="ViewCount" src="https://views.whatilearened.today/views/github/CrossPlatformVstHost/github-clone-count-badge.svg">
