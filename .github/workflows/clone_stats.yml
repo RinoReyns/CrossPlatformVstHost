@@ -64,13 +64,12 @@ jobs:
           shields="https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url="
           url="https://gist.githubusercontent.com/${{ github.actor }}/${{ steps.set_id.outputs.GIST }}/raw/clone.json"
           repo="https://https://github.com/RinoReyns/CrossPlatformVstHost"
-
-          echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" 
-          # echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" >> CLONE.md
-          # echo "" >> CLONE.md   
-          # tail -n +4 README.md >> CLONE.md
-          # mv CLONE.md README.md 
-          # git add README.md
+          
+          echo "[![GitHub Clones]($shields$url&logo=github)]($repo)" >> CLONE.md
+          echo "" >> CLONE.md   
+          tail -n +4 README.md >> CLONE.md
+          mv CLONE.md README.md 
+          git add README.md
           # git config --global user.name "GitHub Action"
           # git config --global user.email "action@github.com"
           # status= git status | grep -q "nothing to commit, working tree clean" ; echo $?
