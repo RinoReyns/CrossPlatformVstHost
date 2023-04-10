@@ -72,12 +72,12 @@ jobs:
           git add README.md
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          #status= git status | grep -q "nothing to commit, working tree clean" ; echo $?
+          status_value= git status | grep -q "nothing to commit, working tree clean" ; echo $?
           
-          #if(( $status==0 ))
-          #then
-          #git commit -m "create clone count badge"
-          #fi
+          if [ "$status_value" = "0" ];
+          then
+            git commit -m "create clone count badge"
+          fi
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
