@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/RinoReyns/CrossPlatformVstHost/badge.png?branch=main)](https://coveralls.io/github/RinoReyns/CrossPlatformVstHost?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/RinoReyns/CrossPlatformVstHost/badge.jpg?branch=main)](https://coveralls.io/github/RinoReyns/CrossPlatformVstHost?branch=main)
 
 <p align="left">
     <img alt="ViewCount" src="https://views.whatilearened.today/views/github/CrossPlatformVstHost/github-clone-count-badge.svg">
