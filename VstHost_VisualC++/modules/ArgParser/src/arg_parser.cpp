@@ -96,9 +96,9 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         status = this->DumpVstHostConfig();
         RETURN_ERROR_IF_NOT_SUCCESS(status);
 
-        for each (nlohmann::json params in main_config_["vst_host"]["processing_config"])
+        for(nlohmann::json params : main_config_["vst_host"]["processing_config"])
         {
-            for each (auto single_param in params.items())
+            for(auto single_param : params.items())
             {
                 if (single_param.value() == "")
                 { 
