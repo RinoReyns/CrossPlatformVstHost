@@ -92,6 +92,17 @@ is why this repository was created. I know that it will take a lot of work but i
        c. Run Intrumentation Test
          > ./gradlew connectedCheck
     ```
+## Examples of usage
+  1. Print help:
+    ```
+     VstHostTool.exe --help
+    ```
+  1. Dump an empty configuration needed to run the tool:
+    ```VstHostTool.exe -dump_vst_host_config -vst_host_config config.json```
+  1. Dump an empty configuration for VST plugin/plugins that will be used be.
+    ```VstHostTool.exe -dump_plugins_config -vst_host_config config.json```
+  1. Run Audio Processing with Vst Plugin.
+    ```VstHostTool.exe -vst_host_config config.json```
 
 ## Features list
 1. Platform Agnostic Features

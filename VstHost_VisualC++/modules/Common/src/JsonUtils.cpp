@@ -63,3 +63,8 @@ VST_ERROR_STATUS JsonUtils::JsonFileToMap(
     }
     return VST_ERROR_STATUS::SUCCESS;
 }
+
+bool JsonUtils::CheckIfParamInDict(nlohmann::json dict, std::string parameter)
+{
+    return dict.find(parameter) == dict.end();
+}

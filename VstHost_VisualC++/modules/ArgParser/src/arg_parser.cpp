@@ -3,22 +3,15 @@
 #include "arg_parser.h"
 #include "JsonUtils.h"
 #include "VstHostMacro.h"
+#include "VstHostConfigGenerator.h"
 
+#define DUMP_CMD_PARAM_STR "-dump_vst_host_config"
+#define VST_HOST_CMD_PARAM_STR "-vst_host_config"
+#define DUMP_PLUGINS_CONFIGS "-dump_plugins_config"
 
 ArgParser::ArgParser()
 {
     arg_parser_.reset(new argparse::ArgumentParser("audiohost"));
-    arg_parser_->add_argument("-vst_plugin")
-        .help("vst plugin that will be used for processing");
-
-    arg_parser_->add_argument("-processing_config")
-        .help("Json file that defines plugins' order and configs for them.");
-
-    arg_parser_->add_argument("-input_wave")
-        .help("Input wave that will be processed");
-
-    arg_parser_->add_argument("-output_wave_path")
-        .help("Output wave that will be processed");
 
     arg_parser_->add_argument("-verbosity")
         .help("Possible values:\n"
@@ -28,13 +21,18 @@ ArgParser::ArgParser()
         .scan<'i', int>()
         .default_value(0);
 
-    arg_parser_->add_argument("-plugin_config")
-        .help("Path to the json file with VST Plugin parameters that needs to be set or in which params will be dumped.");
+    arg_parser_->add_argument(VST_HOST_CMD_PARAM_STR)
+        .help("path to the application config run.");
 
-    arg_parser_->add_argument("-dump_plugin_params")
-        .default_value(false)
+    arg_parser_->add_argument(DUMP_CMD_PARAM_STR)
+        .help("allows to dump empty configuration file for VST Host Application that needs to be fill with parameters.\nThis parameter needes to be commbined with " + std::string(VST_HOST_CMD_PARAM_STR) + ".")
         .implicit_value(true)
-        .help("Allows to dump parameters for given plugin.");
+        .default_value(false);
+
+    arg_parser_->add_argument(DUMP_PLUGINS_CONFIGS)
+        .help("allows to dump empty configuration for all plugins defined in VST Host Application config.\nThis parameter needes to be commbined with " + std::string(VST_HOST_CMD_PARAM_STR) + ".")
+        .implicit_value(true)
+        .default_value(false);
 
     arg_parser_->add_argument("-enable_audio_capture")
         .default_value(false)
@@ -48,13 +46,14 @@ int ArgParser::CheckInputArgsFormat(std::vector<std::string> args)
         if (arg.find('=') != std::string::npos)
         {
             LOG(INFO) << "VST Host Tool doesn't accept parameter definition with '='. "
-                "Please pass parameters in convetion without '=' e.g. '-vst_plugin plugin.vst3'.";
+                "Please pass parameters in convetion without '=' e.g. '-vst_host_config config.json'.";
             return VST_ERROR_STATUS::WRONG_PARAMETER_FORMAT;
         }
         std::cout << arg << std::endl;
     }
     return VST_ERROR_STATUS::SUCCESS;
 }
+
 
 int ArgParser::ParsParameters(std::vector<std::string> args)
 {
@@ -67,8 +66,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         return VST_ERROR_STATUS::VST_HOST_ERROR;
     }
 
-    int status = CheckInputArgsFormat(args);
-    RETURN_ERROR_IF_NOT_SUCCESS(status);
+    RETURN_ERROR_IF_NOT_SUCCESS(CheckInputArgsFormat(args));
 
     try
     {
@@ -79,60 +77,52 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         LOG(ERROR) << err.what();
         return VST_ERROR_STATUS::VST_HOST_ERROR;
     }
+    
+    int status = VST_ERROR_STATUS::SUCCESS;
+    dump_tool_config_ = arg_parser_->get<bool>(DUMP_CMD_PARAM_STR);
+    dump_plugin_params_ = arg_parser_->get<bool>(DUMP_PLUGINS_CONFIGS);
 
-    // TODO:
-    // create private set for each parameter
-    status = CheckPluginParams();
-    RETURN_ERROR_IF_NOT_SUCCESS(status);
-
-    // dump_plugin_params
-    dump_plugin_params_ = arg_parser_->get<bool>("-dump_plugin_params");
-
-    if (!dump_plugin_params_)
+    if (dump_tool_config_)
     {
-        // input_wave_path_
-        if (!arg_parser_->present("-input_wave"))
+        status = this->DumpVstHostConfig();
+        if (status == VST_ERROR_STATUS::SUCCESS)
         {
-            LOG(ERROR) << "-input_wave can't be empty.";
-            return VST_ERROR_STATUS::MISSING_PARAMETER_VALUE;
+            LOG(INFO) << "VST Host config has been dump successfully in location: " << std::filesystem::absolute(vst_host_config_);
         }
-
-        status = CheckIfPathExists(arg_parser_->get<std::string>("-input_wave"));
+        return status;
+    }
+    else if (dump_plugin_params_)
+    {
+        status = this->DumpVstHostConfig();
         RETURN_ERROR_IF_NOT_SUCCESS(status);
 
-        input_wave_path_ = arg_parser_->get<std::string>("-input_wave");
-
-        status = CheckOutputWave();
-        RETURN_ERROR_IF_NOT_SUCCESS(status);
-
-        if (!arg_parser_->present("-processing_config"))
+        for each (nlohmann::json params in main_config_["vst_host"]["processing_config"])
         {
-            status = CheckIfPathExists(arg_parser_->get<std::string>("-plugin_config"));
-            if (status != VST_ERROR_STATUS::SUCCESS && dump_plugin_params_ == false)
+            for each (auto single_param in params.items())
             {
-                return status;
+                if (single_param.value() == "")
+                { 
+                    LOG(INFO) << "Empty value for following parameter in VST Host Config: " << single_param.key();
+                    return VST_ERROR_STATUS::EMPTY_ARG;
+                }
             }
-            plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
-            std::map<std::string, std::string> plugin_params = { {PLUGINS_STRING, plugin_path_},
-                                                                 {CONFIG_STRING, plugin_config_}
-            };
-            processing_config_.insert(std::make_pair("plugin_1", plugin_params));
         }
+        return status;
     }
     else
     {
-        plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
-        if (plugin_config_ == "")
-        {
-            LOG(ERROR) << "-plugin_config can't be empty.";
-            return VST_ERROR_STATUS::JSON_CONFIG_ERROR;
-        }
+        status = this->ValidateVstHostConfigParam();
+        
+        std::unique_ptr<VstHostConfigGenerator> config_generator(new VstHostConfigGenerator());
+        main_config_ = config_generator->ReadVstHostConfig(vst_host_config_);
 
-        plugin_config_ = arg_parser_->get<std::string>("-plugin_config");
-        std::map<std::string, std::string> plugin_params = { {PLUGINS_STRING, plugin_path_},
-                                                             {CONFIG_STRING, plugin_config_}
-        };
-        processing_config_.insert(std::make_pair("plugin_1", plugin_params));
+        // input_wave_path_
+        status = CheckIfPathExists(main_config_["input_wave"]);
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
+        input_wave_path_ = main_config_["input_wave"];
+
+        status = CheckOutputWave();
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
     }
 
     // verbosity_
@@ -144,7 +134,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     verbosity_ = static_cast<uint8_t>(arg_parser_->get<int>("-verbosity"));
 
     enable_audio_capture_ = arg_parser_->get<bool>("-enable_audio_capture");
-
+    
     return status;
 }
 
@@ -158,80 +148,61 @@ int ArgParser::CheckIfPathExists(std::string path)
     return status;
 }
 
-int ArgParser::CheckPluginParams()
+int ArgParser::ValidateVstHostConfigParam()
 {
-    int status = VST_ERROR_STATUS::ARG_PARSER_ERROR;
-    if (arg_parser_->present("-vst_plugin") && arg_parser_->present("-processing_config"))
+     if (!arg_parser_->present(VST_HOST_CMD_PARAM_STR))
+     {
+         LOG(ERROR) << VST_HOST_CMD_PARAM_STR + std::string(" can't be empty.");
+         return VST_ERROR_STATUS::MISSING_PARAMETER_VALUE;
+     }
+
+     RETURN_ERROR_IF_NOT_SUCCESS(CheckIfPathExists(arg_parser_->get<std::string>(VST_HOST_CMD_PARAM_STR)));
+
+     vst_host_config_ = arg_parser_->get<std::string>(VST_HOST_CMD_PARAM_STR);
+     return VST_ERROR_STATUS::SUCCESS;
+}
+
+int ArgParser::DumpVstHostConfig()
+{
+    int status = this->ValidateVstHostConfigParam();
+    if (status == VST_ERROR_STATUS::MISSING_PARAMETER_VALUE)
     {
-        LOG(ERROR) << "Unsupported configuration. You need to set either -processing_config or -vst_plugin parameter. You can't use both.";
-        return VST_ERROR_STATUS::UNSUPPORTED_CONFIGURATION;
+        return status;
     }
 
-    if (arg_parser_->present("-plugin_config") && arg_parser_->present("-processing_config"))
+    vst_host_config_ = arg_parser_->get<std::string>(VST_HOST_CMD_PARAM_STR);
+    std::unique_ptr<VstHostConfigGenerator> config_generator(new VstHostConfigGenerator());
+    if (status != VST_ERROR_STATUS::SUCCESS)
     {
-        LOG(ERROR) << "Unsupported configuration. You need to set either -processing_config or -plugin_config parameter. You can't use both.";
-        return VST_ERROR_STATUS::UNSUPPORTED_CONFIGURATION;
+        return config_generator->DumpEmptyVstHostConfig(vst_host_config_);
     }
-
-    if (arg_parser_->present("-vst_plugin"))
-    {
-        status = CheckIfPathExists(arg_parser_->get<std::string>("-vst_plugin"));
-        if (status == VST_ERROR_STATUS::SUCCESS)
-        {
-            plugin_path_ = arg_parser_->get<std::string>("-vst_plugin");
-        }
-    }
-
-    if (status != VST_ERROR_STATUS::SUCCESS && arg_parser_->present("-processing_config"))
-    {
-        status = CheckIfPathExists(arg_parser_->get<std::string>("-processing_config"));
-        if (status == VST_ERROR_STATUS::SUCCESS)
-        {
-            status = JsonUtils::JsonFileToMap(arg_parser_->get<std::string>("-processing_config"),
-                &processing_config_,
-                expected_keys_in_json_);
-            if (status == VST_ERROR_STATUS::MISSING_ID)
-            {
-                const char* const delim = ", ";
-                std::ostringstream imploded;
-                std::copy(expected_keys_in_json_.begin(), expected_keys_in_json_.end(),
-                    std::ostream_iterator<std::string>(imploded, delim));
-                LOG(ERROR) << "Missing ID in: '" << arg_parser_->get<std::string>("-processing_config") <<
-                    "'. Please make sure that each param has following values: " << imploded.str();
-            }
-            return status;
-        }
-    }
-
-    if (status == VST_ERROR_STATUS::SUCCESS && arg_parser_->present("-processing_config"))
-    {
-        status = VST_ERROR_STATUS::ARG_PARSER_ERROR;
-        LOG(ERROR) << "Empty parameters. You need to set either -processing_config or -vst_plugin parameters.";
-    }
-
+ 
+    status = config_generator->ReadAndDumpVstHostConfig(vst_host_config_);
+    RETURN_ERROR_IF_NOT_SUCCESS(status);
+    
+    main_config_ = config_generator->GetConfigDict();
     return status;
 }
 
 int ArgParser::CheckOutputWave()
 {
-    if (!arg_parser_->present("-output_wave_path"))
+    try
+    {
+        output_wave_path_ = main_config_["output_wave"];
+    }
+    catch (...)
     {
         LOG(ERROR) << "-output_wave_path can't be empty.";
         return VST_ERROR_STATUS::EMPTY_ARG;
-    }
+    }   
 
-    output_wave_path_ = arg_parser_->get<std::string>("-output_wave_path");
     if (output_wave_path_.empty())
     {
         LOG(ERROR) << "-output_wave_path can't be empty.";
         return VST_ERROR_STATUS::EMPTY_ARG;
     }
-    return VST_ERROR_STATUS::SUCCESS;
-}
 
-std::string ArgParser::GetPluginPath()
-{
-    return plugin_path_;
+    return VST_ERROR_STATUS::SUCCESS;
 }
 
 std::string ArgParser::GetInputWavePath()
@@ -249,11 +220,6 @@ uint8_t ArgParser::GetPluginVerbosity()
     return verbosity_;
 }
 
-std::string ArgParser::GetPluginConfig()
-{
-    return plugin_config_;
-}
-
 bool ArgParser::GetDumpPluginParams()
 {
     return dump_plugin_params_;
@@ -261,10 +227,15 @@ bool ArgParser::GetDumpPluginParams()
 
 config_type ArgParser::GetProcessingConfig()
 {
-    return processing_config_;
+    return main_config_[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR];
 }
 
 bool ArgParser::GetEnableAudioEndpoint()
 {
     return enable_audio_capture_;
+}
+
+bool ArgParser::GetDumpToolConfigParam()
+{
+    return dump_tool_config_;
 }

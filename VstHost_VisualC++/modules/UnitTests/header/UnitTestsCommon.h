@@ -23,6 +23,8 @@ const std::string PROCESSING_CONFIG_PATH            = UT_DATA_FOLDER + "processi
 const std::string PLUGIN_NAME                       = "plugin_1";
 const std::string REF_FILTRATED                     = UT_DATA_FOLDER + "sine_440_filtrated.wav";
 const float FILTRATION_PRECISION                    = 1e-9;
+const int8_t MODULES_COUNT                          = 5;
+const int8_t DELAY_PARAMS_COUNT                     = 2;
 
 
 #endif //UNIT_TESTS_COMMON_H

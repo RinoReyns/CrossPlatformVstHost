@@ -17,6 +17,7 @@ public:
 private:
     int OfflineProcessingPipeline();
     int EndpointProcessingPipeline();
+    int ParsArgs();
 
 private:
     std::unique_ptr<ArgParser> arg_parser_;
