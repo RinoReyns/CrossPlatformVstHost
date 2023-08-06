@@ -3,10 +3,12 @@ set(target ArgParser)
 set(arg_parser_headers
     header/argparser.hpp
     header/arg_parser.h
+    header/VstHostConfigGenerator.h
     )
 
 set (arg_parser_src
      src/arg_parser.cpp
+     src/VstHostConfigGenerator.cpp
     )
 
 add_library(${target} ${arg_parser_src} ${arg_parser_headers})

@@ -34,6 +34,23 @@ int VstHostTool::PrepareArgs(std::vector<std::string> args)
     return VST_ERROR_STATUS::SUCCESS;
 }
 
+int VstHostTool::ParsArgs()
+{
+    if (parser_arguments_.size() == 0)
+    {
+        LOG(ERROR) << "Empty args.";
+        return VST_ERROR_STATUS::ARG_PARSER_ERROR;
+    }
+
+    int status = arg_parser_->ParsParameters(parser_arguments_);
+    if (status != VST_ERROR_STATUS::SUCCESS)
+    {
+        LOG(ERROR) << "Arg Parser failed with status: " << status;
+    }
+
+    return status;
+}
+
 int VstHostTool::EndpointProcessingPipeline()
 {
 
@@ -66,19 +83,8 @@ int VstHostTool::OfflineProcessingPipeline()
 
 int VstHostTool::Run()
 {
-    if (parser_arguments_.size() == 0)
-    {
-        LOG(ERROR) << "Empty args.";
-        return VST_ERROR_STATUS::ARG_PARSER_ERROR;
-    }
-
-    int status = arg_parser_->ParsParameters(parser_arguments_);
-
-    if (status != VST_ERROR_STATUS::SUCCESS)
-    {
-        LOG(ERROR) << "Arg Parser failed with status: " << status;
-        return status;
-    }
+    int status = this->ParsArgs();
+    RETURN_ERROR_IF_NOT_SUCCESS(status);
 
     LOG(INFO) << "------------------------------ Audio Host Started ------------------------------";
 
@@ -88,8 +94,10 @@ int VstHostTool::Run()
         return this->EndpointProcessingPipeline();
     }
 #endif
-
-    status = this->OfflineProcessingPipeline();
+    if (!arg_parser_->GetDumpToolConfigParam() || arg_parser_->GetDumpPluginParams())
+    {
+        status = this->OfflineProcessingPipeline();
+    }
     LOG(INFO) << "Application finished processing with status: " << status;
     return status;
 }
