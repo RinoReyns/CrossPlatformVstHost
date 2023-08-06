@@ -121,11 +121,11 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] Allow to use multiple plugins and configs for them
       - [x] Generate Documentation
       - [x] AudioProcessing Class that can wrap different non-vst algorithms
+      - [x] Clean up code in vst host lib
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Add more UT for python and Android
-      - [ ] Integrate better wave reader 
-      - [ ] Clean up code in vst host lib
+      - [ ] Integrate better wave reader
       - [ ] Build solution for ARM
       - [ ] Create Render/Capture manager class. Its design should allow to use it for any OS.
       - [ ] Work on Render and Capture implementation for Windows
