@@ -166,8 +166,6 @@ jobs:
           python --version
           python -m pip install --upgrade pip
           pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
-          sudo apt-get install libasound2-dev
-          
 
       - name: Install Doxygen
         run: |
@@ -232,6 +230,10 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v1.13
         with:
             cmake-version: '3.19.x'
+
+      - name: Install Audio Drivers
+        run: |
+          sudo apt-get install libasound2-dev
       
       - name: Use cmake
         run: cmake --version
