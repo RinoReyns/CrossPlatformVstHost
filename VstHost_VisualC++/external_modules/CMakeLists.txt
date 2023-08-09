@@ -1,5 +1,5 @@
 if (MSVC)
-   add_compile_options(/W4 /WX)
+   add_compile_options(/W1 /WX)
    add_link_options(/WX)
 elseif (UNIX AND !${ANDROID_BUILD})
     add_compile_options(-Werror -Wextra)

@@ -11,3 +11,6 @@
 	path = VstHost_VisualC++/modules/AudioProcessing/filter-c
 	url = git@github.com:RinoReyns/filter-c.git
 
+[submodule "VstHost_VisualC++/external_modules/RtAudio/rtaudio"]
+	path = VstHost_VisualC++/external_modules/RtAudio/rtaudio
+	url = https://github.com/thestk/rtaudio.git
