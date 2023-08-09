@@ -49,6 +49,7 @@ add_subdirectory(vst3sdk/base)
 add_subdirectory(vst3sdk/public.sdk)
 add_subdirectory(vst3sdk/public.sdk/samples/vst/adelay)
 add_subdirectory(modules)
+add_subdirectory(external_modules)
 
 if (NOT ${ANDROID_BUILD})
     set_target_properties(gtest PROPERTIES ${UNIT_TESTS_FOLDER})
