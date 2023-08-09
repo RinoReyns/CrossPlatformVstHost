@@ -167,7 +167,7 @@ endif()
 if (RTAUDIO_API_ASIO)
   set(NEED_WIN32LIBS ON)
   include_directories(rtaudio/include)
-  list(APPEND rtaudio_SOURCES
+  list(APPEND RtAudio_SOURCES
     rtaudio/include/asio.cpp
     rtaudio/include/asiodrivers.cpp
     rtaudio/include/asiolist.cpp
@@ -213,21 +213,21 @@ set(LIB_TARGETS)
 # are defined, otherwise default to standard BUILD_SHARED_LIBS.
 if (DEFINED RTAUDIO_BUILD_SHARED_LIBS)
   if (RTAUDIO_BUILD_SHARED_LIBS)
-    add_library(rtaudio SHARED ${rtaudio_SOURCES})
+    add_library(rtaudio SHARED ${RtAudio_SOURCES})
   else()
     
-    add_library(rtaudio STATIC ${rtaudio_SOURCES})
+    add_library(rtaudio STATIC ${RtAudio_SOURCES})
     set(RTAUDIO_IS_STATIC TRUE)
   endif()
 elseif (DEFINED RTAUDIO_BUILD_STATIC_LIBS)
   if (RTAUDIO_BUILD_STATIC_LIBS)
-    add_library(rtaudio STATIC ${rtaudio_SOURCES})
+    add_library(rtaudio STATIC ${RtAudio_SOURCES})
     set(RTAUDIO_IS_STATIC TRUE)
   else()
-    add_library(rtaudio SHARED ${rtaudio_SOURCES})
+    add_library(rtaudio SHARED ${RtAudio_SOURCES})
   endif()
 else()
-  add_library(rtaudio ${rtaudio_SOURCES})
+  add_library(rtaudio ${RtAudio_SOURCES})
   if(NOT BUILD_SHARED_LIBS)
     set(RTAUDIO_IS_STATIC TRUE)
   endif()
