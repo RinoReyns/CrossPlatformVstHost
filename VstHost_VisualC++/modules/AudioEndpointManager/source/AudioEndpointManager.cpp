@@ -53,6 +53,7 @@ unsigned int getDeviceIndex(std::vector<std::string> deviceNames, bool isInput =
     std::cout << '\n';
     for (i = 0; i < deviceNames.size(); i++)
         std::cout << "  Device #" << i << ": " << deviceNames[i] << '\n';
+    
     do {
         if (isInput)
             std::cout << "\nChoose an input device #: ";
@@ -86,7 +87,6 @@ int inout(void* outputBuffer, void* inputBuffer, unsigned int /*nBufferFrames*/,
 
 int AudioEndpointManager::RunAudioEndpointHandler()
 {
-
     RtAudio adac;
     std::vector<unsigned int> deviceIds = adac.getDeviceIds();
     if (deviceIds.size() < 1) {
