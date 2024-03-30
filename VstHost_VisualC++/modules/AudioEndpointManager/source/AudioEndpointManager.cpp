@@ -87,51 +87,26 @@ int inout(void* outputBuffer, void* inputBuffer, unsigned int /*nBufferFrames*/,
 int AudioEndpointManager::RunAudioEndpointHandler()
 {
 
-    unsigned int channels, fs, bufferBytes, oDevice = 0, iDevice = 0, iOffset = 0, oOffset = 0;
-
-    // Minimal command-line checking
-    // TODO:
-    // print devices info to choose from
-    fs = 48000;
     RtAudio adac;
     std::vector<unsigned int> deviceIds = adac.getDeviceIds();
     if (deviceIds.size() < 1) {
         std::cout << "\nNo audio devices found!\n";
-        exit(1);
+        exit(0);
     }
-
-    channels = (unsigned int) 2;
-    iDevice = (unsigned int)3;
-    oDevice = (unsigned int)0;
-    iOffset = (unsigned int)0;
-    oOffset = (unsigned int)0;
-
-    // Let RtAudio print messages to stderr.
-    adac.showWarnings(true);
 
     // Set the same number of channels for both input and output.
-    unsigned int bufferFrames = 128;
+    unsigned int bufferBytes, bufferFrames = 1024;
     RtAudio::StreamParameters iParams, oParams;
+    uint16_t channels = 2;
     iParams.nChannels = channels;
-    iParams.firstChannel = iOffset;
     oParams.nChannels = channels;
-    oParams.firstChannel = oOffset;
-
-    if (iDevice == 0)
-        iParams.deviceId = adac.getDefaultInputDevice();
-    else {
-        if (iDevice >= deviceIds.size())
-            iDevice = getDeviceIndex(adac.getDeviceNames(), true);
-        iParams.deviceId = deviceIds[iDevice];
-    }
-    if (oDevice == 0)
-        oParams.deviceId = adac.getDefaultOutputDevice();
-    else {
-        if (oDevice >= deviceIds.size())
-            oDevice = getDeviceIndex(adac.getDeviceNames());
-        oParams.deviceId = deviceIds[oDevice];
-    }
-
+    unsigned int fs = 48000;
+  
+    unsigned int iDevice = getDeviceIndex(adac.getDeviceNames(), true);
+    iParams.deviceId = deviceIds[iDevice];
+    unsigned int oDevice = getDeviceIndex(adac.getDeviceNames());
+    oParams.deviceId = deviceIds[oDevice];
+    
     RtAudio::StreamOptions options;
     //options.flags |= RTAUDIO_NONINTERLEAVED;
 
@@ -157,7 +132,7 @@ int AudioEndpointManager::RunAudioEndpointHandler()
 
 cleanup:
     if (adac.isStreamOpen()) adac.closeStream();
-    
-    
+
+
     return 0;
 }
