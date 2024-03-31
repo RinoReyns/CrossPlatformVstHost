@@ -43,7 +43,7 @@ is why this repository was created. I know that it will take a lot of work but i
 3. Android
     ```
     NOTE:
-    Following instraction is made for Linux enviroment. However, steps for any OS should be similar.
+    Following instruction is made for Linux enviroment. However, steps for any OS should be similar.
     1. Download Android NDK and unzip in the chosen location. (https://developer.android.com/ndk/downloads).
     
     2. Set environmental variable for Android NDK as foloow:
@@ -122,28 +122,17 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] Generate Documentation
       - [x] AudioProcessing Class that can wrap different non-vst algorithms
       - [x] Clean up code in vst host lib
+      - [x] Cross-Platform Audio Endpoint Render-Capture
     - TODO:
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Add more UT for python and Android
       - [ ] Integrate better wave reader
       - [ ] Build solution for ARM
-      - [ ] Create Render/Capture manager class. Its design should allow to use it for any OS.
-      - [ ] Work on Render and Capture implementation for Windows
       - [ ] Handle different audio formats e.g. sampling rate, bit depth etc.
-      - [ ] Create and pass config for AudioProcessing Class.
-      - [ ] Enable streaming processing (one frame in, one frame out).
-
-1. Windows OS
-
-    - Implemented:
-      - [x] Basic code for Audio Endpoint Reader
-    - TODO:
-      - [ ] Clean up audio endpoint reader and utilize it in code (add queue, use it for processing with vst plugin etc)
-
-1. Linux & Mac OS
-
-    - TODO:
-      - [ ] Add endpoint reader
+      - [ ] Create and pass config for AudioProcessing Class
+      - [ ] Enable streaming processing (one frame in, one frame out) 
+      - [ ] Clean up Endpoint Manager Class
+ 
 
 1. Android
 
@@ -161,6 +150,7 @@ is why this repository was created. I know that it will take a lot of work but i
 1. [C ++ Json Handler](https://github.com/nlohmann/json)
 1. [Windows Endpoint Reader](https://github.com/mofo7777/Stackoverflow/tree/master/WasapiCapture)
 1. [Implementation of audio filters in C](https://github.com/adis300/filter-c)
+1. [Real Timie Audio Render and Capture](https://github.com/thestk/rtaudio)
 
 VST is a trademark held by Steinberg Media Technologies, GMBH.
 

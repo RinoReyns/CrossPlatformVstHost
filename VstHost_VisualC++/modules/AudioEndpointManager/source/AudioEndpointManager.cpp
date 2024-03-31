@@ -5,6 +5,12 @@
 #include "VstHostMacro.h"
 #include "AudioEndpointManager.h"
 
+#include "RtAudio.h"
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+typedef double MY_TYPE;
+#define FORMAT RTAUDIO_FLOAT64
 #undef max
 
 AudioEndpointManager::AudioEndpointManager(uint8_t verbose) :
@@ -39,50 +45,94 @@ int AudioEndpointManager::RunAudioRender()
     return audio_render_->RenderAudioStream();
 }
 
+
+unsigned int getDeviceIndex(std::vector<std::string> deviceNames, bool isInput = false)
+{
+    unsigned int i;
+    std::string keyHit;
+    std::cout << '\n';
+    for (i = 0; i < deviceNames.size(); i++)
+        std::cout << "  Device #" << i << ": " << deviceNames[i] << '\n';
+    
+    do {
+        if (isInput)
+            std::cout << "\nChoose an input device #: ";
+        else
+            std::cout << "\nChoose an output device #: ";
+        std::cin >> i;
+    } while (i >= deviceNames.size());
+    std::getline(std::cin, keyHit);  // used to clear out stdin
+    return i;
+}
+
+double streamTimePrintIncrement = 1.0; // seconds
+double streamTimePrintTime = 1.0; // seconds
+
+int inout(void* outputBuffer, void* inputBuffer, unsigned int /*nBufferFrames*/,
+    double streamTime, RtAudioStreamStatus status, void* data)
+{
+    // Since the number of input and output channels is equal, we can do
+    // a simple buffer copy operation here.
+    if (status) std::cout << "Stream over/underflow detected." << std::endl;
+
+    if (streamTime >= streamTimePrintTime) {
+        std::cout << "streamTime = " << streamTime << std::endl;
+        streamTimePrintTime += streamTimePrintIncrement;
+    }
+
+    unsigned int* bytes = (unsigned int*)data;
+    memcpy(outputBuffer, inputBuffer, *bytes);
+    return 0;
+}
+
 int AudioEndpointManager::RunAudioEndpointHandler()
 {
-    // TODO:
-    // 1) Create queue 
-    // 2) Write to queue in RecordAudioStream
-    // 3) Read from queue and write to file on other thread
-    // 4) Render data from queue
-    // 5) Put data from queue throught the plugin and render processed results.
-    // 6) First init audio render - it will render zeros or noise, but there will be minimal latency.
-    //    The target for latency should be 1ms to 5 ms. Latency should be adjustable.
-    // 7) try to work on exclusive mode - use wasapi sample. Support for shared and exclusive 
-    //    mode should be provided.
-
-    HRESULT stat = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-    if (!SUCCEEDED(stat))
-    {
-        return VST_ERROR_STATUS::AUDIO_ENDPOINT_MANAGER_ERROR;
+    RtAudio adac;
+    std::vector<unsigned int> deviceIds = adac.getDeviceIds();
+    if (deviceIds.size() < 1) {
+        std::cout << "\nNo audio devices found!\n";
+        exit(0);
     }
 
-    audio_capture_.reset(new AudioCapture(verbose_));
-    RETURN_ERROR_IF_ENDPOINT_ERROR(audio_capture_->Init());
+    // Set the same number of channels for both input and output.
+    unsigned int bufferBytes, bufferFrames = 1024;
+    RtAudio::StreamParameters iParams, oParams;
+    uint16_t channels = 2;
+    iParams.nChannels = channels;
+    oParams.nChannels = channels;
+    unsigned int fs = 48000;
+  
+    unsigned int iDevice = getDeviceIndex(adac.getDeviceNames(), true);
+    iParams.deviceId = deviceIds[iDevice];
+    unsigned int oDevice = getDeviceIndex(adac.getDeviceNames());
+    oParams.deviceId = deviceIds[oDevice];
+    
+    RtAudio::StreamOptions options;
+    //options.flags |= RTAUDIO_NONINTERLEAVED;
 
-    uint32_t capture_sampling_rate;
-    RETURN_ERROR_IF_ENDPOINT_ERROR(audio_capture_->GetEndpointSamplingRate(&capture_sampling_rate));
-    LOG(INFO) << "Capture sampling rate: " << capture_sampling_rate;
-
-    audio_render_.reset(new AudioRender());
-    RETURN_ERROR_IF_ENDPOINT_ERROR(audio_render_->Init());
-
-    uint32_t render_sampling_rate;
-    RETURN_ERROR_IF_ENDPOINT_ERROR(audio_render_->GetEndpointSamplingRate(&render_sampling_rate));
-    LOG(INFO) << "Render sampling rate: " << render_sampling_rate;
-
-    if (render_sampling_rate != capture_sampling_rate)
-    {
-        CoUninitialize();
-        LOG(ERROR) << "Sampling rate of render and capture miss match.";
-        return VST_ERROR_STATUS::ENPOINTS_SAMPLING_RATE_MISS_MATCH;
+    bufferBytes = bufferFrames * channels * sizeof(MY_TYPE);
+    if (adac.openStream(&oParams, &iParams, FORMAT, fs, &bufferFrames, &inout, (void*)&bufferBytes, &options)) {
+        goto cleanup;
     }
 
-    RETURN_ERROR_IF_ENDPOINT_ERROR(this->RunAudioCapture());
+    if (adac.isStreamOpen() == false) goto cleanup;
 
-    int status = this->RunAudioRender();
-    CoUninitialize();
+    // Test RtAudio functionality for reporting latency.
+    std::cout << "\nStream latency = " << adac.getStreamLatency() << " frames" << std::endl;
 
-    return status;
+    if (adac.startStream()) goto cleanup;
+
+    char input;
+    std::cout << "\nRunning ... press <enter> to quit (buffer frames = " << bufferFrames << ").\n";
+    std::cin.get(input);
+
+    // Stop the stream.
+    if (adac.isStreamRunning())
+        adac.stopStream();
+
+cleanup:
+    if (adac.isStreamOpen()) adac.closeStream();
+
+
+    return 0;
 }

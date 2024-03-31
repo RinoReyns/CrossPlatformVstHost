@@ -81,6 +81,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     int status = VST_ERROR_STATUS::SUCCESS;
     dump_tool_config_ = arg_parser_->get<bool>(DUMP_CMD_PARAM_STR);
     dump_plugin_params_ = arg_parser_->get<bool>(DUMP_PLUGINS_CONFIGS);
+    enable_audio_capture_ = arg_parser_->get<bool>("-enable_audio_capture");
 
     if (dump_tool_config_)
     {
@@ -109,7 +110,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         }
         return status;
     }
-    else
+    else if (!enable_audio_capture_)
     {
         status = this->ValidateVstHostConfigParam();
         
@@ -133,7 +134,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     }
     verbosity_ = static_cast<uint8_t>(arg_parser_->get<int>("-verbosity"));
 
-    enable_audio_capture_ = arg_parser_->get<bool>("-enable_audio_capture");
+
     
     return status;
 }
