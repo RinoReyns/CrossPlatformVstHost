@@ -13,6 +13,7 @@ elseif(SMTG_WIN)
         )
    add_library(${target} ${audio_enpoint_manager_src} ${audio_enpoint_manager_headers})
    target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header)
+   target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../external_modules/RtAudio/rtaudio/)
    target_compile_features(${target} PUBLIC cxx_std_17)
    target_link_libraries(${target} PRIVATE Common Logger AudioCapture AudioRender rtaudio AudioEndpointBase)
 
