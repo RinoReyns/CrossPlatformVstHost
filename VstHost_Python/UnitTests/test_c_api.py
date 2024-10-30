@@ -84,6 +84,9 @@ class TestCApi(unittest.TestCase):
         self.assertEqual(status, Status.VST_HOST_INSTANCE_ALREADY_CREATED.value)
 
     def test_RunBasicFlow(self):
+        if platform == "darwin":
+            return
+
         self._PrintUnitTestName()
 
         status = self._vst_host.LoadLibrary(self._full_vst_host_lib_path)

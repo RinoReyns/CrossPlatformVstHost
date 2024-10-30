@@ -1,14 +1,13 @@
 #include <chrono>
 #include <thread>
 #include <future>
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 #include "VstHostMacro.h"
 #include "AudioEndpointManager.h"
 
-#include "RtAudio.h"
-#include <iostream>
-#include <cstdlib>
-#include <cstring>
 typedef double MY_TYPE;
 #define FORMAT RTAUDIO_FLOAT64
 #undef max
@@ -18,7 +17,7 @@ AudioEndpointManager::AudioEndpointManager(uint8_t verbose) :
 {
 }
 
-int AudioEndpointManager::RunAudioCapture()
+int AudioEndpointManager::RunWasapiAudioCapture()
 {
     auto audio_capture_thread = std::async(std::launch::async,
         &AudioCapture::RecordAudioStream,
@@ -40,99 +39,116 @@ int AudioEndpointManager::RunAudioCapture()
     return audio_capture_thread.get();
 }
 
-int AudioEndpointManager::RunAudioRender()
+int AudioEndpointManager::RunWasapiAudioRender()
 {
     return audio_render_->RenderAudioStream();
 }
 
-
-unsigned int getDeviceIndex(std::vector<std::string> deviceNames, bool isInput = false)
+unsigned int AudioEndpointManager::GetDeviceIndex(bool isInput)
 {
-    unsigned int i;
+    unsigned int device_id;
     std::string keyHit;
     std::cout << '\n';
-    for (i = 0; i < deviceNames.size(); i++)
-        std::cout << "  Device #" << i << ": " << deviceNames[i] << '\n';
-    
+    std::vector<std::string> device_names = adac_->getDeviceNames();
+   
+    for (device_id = 0; device_id < device_names.size(); device_id++)
+    {
+        std::cout << "  Device #" << device_id << ": " << device_names[device_id] << '\n';
+    }
+        
     do {
         if (isInput)
+        {
             std::cout << "\nChoose an input device #: ";
+        }   
         else
+        {
             std::cout << "\nChoose an output device #: ";
-        std::cin >> i;
-    } while (i >= deviceNames.size());
+        }   
+        std::cin >> device_id;
+    } while (device_id >= device_names.size());
     std::getline(std::cin, keyHit);  // used to clear out stdin
-    return i;
+    return device_ids_[device_id];
 }
 
-double streamTimePrintIncrement = 1.0; // seconds
-double streamTimePrintTime = 1.0; // seconds
-
-int inout(void* outputBuffer, void* inputBuffer, unsigned int /*nBufferFrames*/,
-    double streamTime, RtAudioStreamStatus status, void* data)
+int AudioEndpointManager::AudioCallback(void* outputBuffer, void* inputBuffer, unsigned int /*nBufferFrames*/,
+    double /*streamTime*/, RtAudioStreamStatus status, void* data)
 {
-    // Since the number of input and output channels is equal, we can do
-    // a simple buffer copy operation here.
-    if (status) std::cout << "Stream over/underflow detected." << std::endl;
+    AudioEndpointManager* _this = static_cast<AudioEndpointManager*>(data);
 
-    if (streamTime >= streamTimePrintTime) {
-        std::cout << "streamTime = " << streamTime << std::endl;
-        streamTimePrintTime += streamTimePrintIncrement;
+    if (status)
+    {
+        LOG(WARNING) << "Stream over/underflow detected." << std::endl;
     }
 
-    unsigned int* bytes = (unsigned int*)data;
-    memcpy(outputBuffer, inputBuffer, *bytes);
-    return 0;
+    // here is the place for processing
+    memcpy(outputBuffer, inputBuffer, _this->buffer_bytes_);
+    return VST_ERROR_STATUS::SUCCESS;
 }
 
-int AudioEndpointManager::RunAudioEndpointHandler()
+int AudioEndpointManager::CloseRtAudioStream()
 {
-    RtAudio adac;
-    std::vector<unsigned int> deviceIds = adac.getDeviceIds();
-    if (deviceIds.size() < 1) {
-        std::cout << "\nNo audio devices found!\n";
-        exit(0);
+    if (adac_->isStreamOpen())
+    {
+        adac_->closeStream();
+    }  
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+int AudioEndpointManager::GetDeviceIds()
+{
+    device_ids_ = adac_->getDeviceIds();
+    if (device_ids_.size() < 1)
+    {
+        return VST_ERROR_STATUS::NO_AUDIO_DEVICES_ID_FOUND;
     }
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+/// @brief Rt Audio based endpoint handler. 
+/// @return VST_ERROR_STATUS status
+int AudioEndpointManager::RunRtAudioEndpointHandler()
+{
+    adac_.reset(new RtAudio());
+    RETURN_ERROR_IF_NOT_SUCCESS(this->GetDeviceIds());
 
     // Set the same number of channels for both input and output.
-    unsigned int bufferBytes, bufferFrames = 1024;
+    unsigned int bufferFrames = 1024;
     RtAudio::StreamParameters iParams, oParams;
     uint16_t channels = 2;
     iParams.nChannels = channels;
     oParams.nChannels = channels;
     unsigned int fs = 48000;
   
-    unsigned int iDevice = getDeviceIndex(adac.getDeviceNames(), true);
-    iParams.deviceId = deviceIds[iDevice];
-    unsigned int oDevice = getDeviceIndex(adac.getDeviceNames());
-    oParams.deviceId = deviceIds[oDevice];
+    iParams.deviceId = this->GetDeviceIndex(true);
+    oParams.deviceId = this->GetDeviceIndex();
     
     RtAudio::StreamOptions options;
     //options.flags |= RTAUDIO_NONINTERLEAVED;
 
-    bufferBytes = bufferFrames * channels * sizeof(MY_TYPE);
-    if (adac.openStream(&oParams, &iParams, FORMAT, fs, &bufferFrames, &inout, (void*)&bufferBytes, &options)) {
-        goto cleanup;
+    buffer_bytes_ = bufferFrames * channels * sizeof(MY_TYPE);
+
+    if (adac_->openStream(&oParams, &iParams, FORMAT, fs, &bufferFrames, &AudioCallback, this, &options))
+    {
+        this->CloseRtAudioStream();
     }
 
-    if (adac.isStreamOpen() == false) goto cleanup;
+    LOG(INFO) << "Stream latency = " << adac_->getStreamLatency() << " frames";
+    
+    if (adac_->startStream())
+    {
+        this->CloseRtAudioStream();
+    }
 
-    // Test RtAudio functionality for reporting latency.
-    std::cout << "\nStream latency = " << adac.getStreamLatency() << " frames" << std::endl;
-
-    if (adac.startStream()) goto cleanup;
-
+    LOG(INFO) << "Running ... press <enter> to quit (buffer frames = " << bufferFrames << ").";
     char input;
-    std::cout << "\nRunning ... press <enter> to quit (buffer frames = " << bufferFrames << ").\n";
     std::cin.get(input);
 
     // Stop the stream.
-    if (adac.isStreamRunning())
-        adac.stopStream();
+    if (adac_->isStreamRunning())
+    {
+        return adac_->stopStream();
+    }
 
-cleanup:
-    if (adac.isStreamOpen()) adac.closeStream();
-
-
-    return 0;
+    return VST_ERROR_STATUS::SUCCESS;
 }

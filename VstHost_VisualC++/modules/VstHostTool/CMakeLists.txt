@@ -21,7 +21,7 @@ if (NOT ${ANDROID_BUILD})
         target_include_directories(${target}Lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header)
         
         target_link_libraries (${target}
-                               PRIVATE ${target}Lib base sdk ArgParser Logger Common)
+                               PRIVATE ${target}Lib base sdk ArgParser Logger Common rtaudio)
     else()
         target_link_libraries (${target}Lib PUBLIC WaveIO AudioProcessing AudioHostLib
                                PRIVATE base sdk ArgParser Logger Common sdk_hosting)
