@@ -53,15 +53,10 @@ int VstHostTool::ParsArgs()
 
 int VstHostTool::EndpointProcessingPipeline()
 {
-
 #ifdef _WIN32
     std::unique_ptr<AudioEndpointManager> endpoint_manager(new AudioEndpointManager(arg_parser_->GetPluginVerbosity()));
-    endpoint_manager->RunAudioEndpointHandler();
+    return endpoint_manager->RunRtAudioEndpointHandler();
 #endif
-    // 1. Get Data From Mic 
-    // 2. Put In queue
-    // 3. Processing
-    // 4. Render
     return VST_ERROR_STATUS::NOT_IMPLEMENTED;
 }
 
