@@ -95,6 +95,8 @@ class TestCApi(unittest.TestCase):
         status = self._vst_host.CApiSetVerbosity(0)
         self.assertEqual(status, Status.SUCCESS.value)
 
+        print(os.listdir(self.dir_path))
+        print(os.path.exit(os.path.join(self.dir_path, self.vst_plugin_path).encode("ascii")))
         status = self._vst_host.CApiCreatePluginInstance(
             os.path.join(self.dir_path, self.vst_plugin_path).encode("ascii"),
             self._plugin_name)
