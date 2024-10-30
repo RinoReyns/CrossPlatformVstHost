@@ -96,7 +96,7 @@ class TestCApi(unittest.TestCase):
         self.assertEqual(status, Status.SUCCESS.value)
 
         print(os.listdir(self.dir_path))
-        print(os.path.exit(os.path.join(self.dir_path, self.vst_plugin_path).encode("ascii")))
+        print(os.path.exists(os.path.join(self.dir_path, self.vst_plugin_path).encode("ascii")))
         status = self._vst_host.CApiCreatePluginInstance(
             os.path.join(self.dir_path, self.vst_plugin_path).encode("ascii"),
             self._plugin_name)
