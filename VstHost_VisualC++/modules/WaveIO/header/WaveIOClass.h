@@ -23,7 +23,6 @@ public:
 
     int LoadWave(WaveDataContainer* data);
     int SaveWave(WaveDataContainer* data);
-
 };
 
 #endif // WAVE_IO_CLASS
