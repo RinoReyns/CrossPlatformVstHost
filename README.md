@@ -105,8 +105,8 @@ is why this repository was created. I know that it will take a lot of work but i
     ```VstHostTool.exe -vst_host_config config.json```
 
 ## Features list
-1. Platform Agnostic Features
-    - Implemented:
+1. **Platform Agnostic Features**
+    - **Implemented**:
       - [x] CMake based project
       - [x] Use submodules
       - [x] Arg Parser
@@ -115,27 +115,27 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] VST Host library in C++
       - [x] VST Host Offline Tool in C++
       - [x] Unit Test for library and offline tool in C++
-      - [x] CI for each configuration
+      - [x] CI for each configuration (Windows, Linux, MacOs, Android)
       - [x] VST Host Library with C api that allows to use it in e.g. Python
-      - [x] Basic python and android unit test for c api
+      - [x] Basic python and android unit test for C api
       - [x] Allow to use multiple plugins and configs for them
       - [x] Generate Documentation
       - [x] AudioProcessing Class that can wrap different non-vst algorithms
-      - [x] Clean up code in vst host lib
-      - [x] Cross-Platform Audio Endpoint Render-Capture
-    - TODO:
+      - [x] Cross-Platform Audio Endpoint Render-Capture with RtAudio (Validated only for Windows)
+    - **TODO** (ordered by priority):
+      - [ ] Implement simple Vst plugin that allows to process data in real-time (e.g. context buffering). Start from 
+      delay validation implemented in VST SDK. 
+      - [ ] Enable streaming processing (one frame in, one frame out)
+      - [ ] Integrate Open Vino to process audio with AI based Audio Algorithms
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Add more UT for python and Android
       - [ ] Integrate better wave reader
       - [ ] Build solution for ARM
       - [ ] Handle different audio formats e.g. sampling rate, bit depth etc.
       - [ ] Create and pass config for AudioProcessing Class
-      - [ ] Enable streaming processing (one frame in, one frame out) 
-      - [ ] Clean up Endpoint Manager Class
- 
+      - [ ] Validate RtAudio for different OSes
 
 1. Android
-
     - TODO:
       - [ ] Add endpoint reader
       - [ ] Add platform specific offline tool
