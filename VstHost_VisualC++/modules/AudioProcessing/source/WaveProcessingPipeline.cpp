@@ -6,13 +6,15 @@ WaveProcessingPipeline::WaveProcessingPipeline(uint8_t verbosity) :
     verbosity_(verbosity)
 {}
 
-int WaveProcessingPipeline::Init(config_type vst_host_config)
+int WaveProcessingPipeline::Init(nlohmann::json pipeline_config)
 {
     vst_host_.reset(new AudioProcessingVstHost());
     vst_host_->SetVerbosity(this->verbosity_);
-    int status = vst_host_->CreateMutliplePluginInstance(vst_host_config);
+    pipeline_config_ = pipeline_config;
+    vst_host_config_ = pipeline_config[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR];
+    int status = vst_host_->CreateMutliplePluginInstance(vst_host_config_);
     RETURN_ERROR_IF_NOT_SUCCESS(status);
-    vst_host_config_ = vst_host_config;
+  
     return status;
 }
 
@@ -44,6 +46,9 @@ int WaveProcessingPipeline::Run(std::string input_path, std::string output_path)
 
         status = vst_host_->BufferProcessing(&input_wave, &output_wave);
         RETURN_ERROR_IF_NOT_SUCCESS(status);
+        // TODO:
+        // Add option to run only model with OV
+        // Add option to enable/disable filtration and OV processing
 
         // Save wave file
         status = wave_io->SaveWave(&output_wave);

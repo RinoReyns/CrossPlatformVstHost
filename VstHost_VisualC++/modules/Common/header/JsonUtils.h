@@ -12,7 +12,7 @@ class JsonUtils
         static VST_ERROR_STATUS JsonFileToMap(std::string plugin_config_path, 
                                               config_type* prams_map,
                                               std::vector<std::string> expected_ids);
-        static bool CheckIfParamInDict(nlohmann::json dict, std::string parameter);
+        static bool CheckIfParamInNotDict(nlohmann::json dict, std::string parameter);
 };
 
 #endif //JSON_UTILS_H

@@ -145,7 +145,6 @@ AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::GetPluginParameters(std::string 
     return JsonUtils::DumpJson(plugin_config_json, plugin_config);
 }
 
-
 static void assignBusBuffers(
     int32_t inputs_number,
     int32_t outputs_number,
@@ -286,11 +285,7 @@ int AudioProcessingVstHost::CheckVstSdkCompatibility(std::string plugin_sdk_vers
     auto status = Utils::SplitString(plugin_sdk_version, ".", plugin_sdk_splited);
     RETURN_ERROR_IF_NOT_SUCCESS(status);
 
-    // NOTE:
-    // plugin_sdk_splited.at(0) - kVstVersionMajor
-    // plugin_sdk_splited.at(1) - kVstVersionMinor
-    // plugin_sdk_splited.at(2) - kVstVersionSub
-    if (kVstVersionMajor != plugin_sdk_splited.at(0) && kVstVersionMinor != plugin_sdk_splited.at(1))
+    if (kVstVersionMajor != plugin_sdk_splited.at(VST_VERSION_INDEXES::MAJOR) && kVstVersionMinor != plugin_sdk_splited.at(VST_VERSION_INDEXES::MINOR))
     {
         LOG(ERROR) << "VST Plugin has been build with unsupported SDK " << plugin_sdk_version;
     }

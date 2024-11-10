@@ -7,6 +7,8 @@
 
 constexpr auto PLUGINS_STRING = "plugin";
 constexpr auto CONFIG_STRING = "config";
+#define PROCESSING_CONFIG_PARAM_STR "processing_config"
+#define VST_HOST_CONFIG_PARAM_STR "vst_host"
 
 typedef std::map<std::string, std::map<std::string, std::string>> config_type;
 
@@ -57,4 +59,12 @@ namespace LogLevelType
         MAX_LOG_LEVEL_VALUE = DEBUG
     };
 }
+
+enum VST_VERSION_INDEXES
+{
+    MAJOR = 0,
+    MINOR = 1,
+    SUB = 2
+};
+
 #endif // ENUMS_H

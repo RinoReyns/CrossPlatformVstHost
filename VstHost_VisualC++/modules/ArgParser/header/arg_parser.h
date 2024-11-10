@@ -16,7 +16,7 @@ class ArgParser
         uint8_t GetPluginVerbosity();
         std::string GetOutputWavePath();
         bool GetDumpPluginParams();
-        config_type GetProcessingConfig();
+        nlohmann::json GetProcessingConfig();
         bool GetEnableAudioEndpoint();
         bool GetDumpToolConfigParam();
 

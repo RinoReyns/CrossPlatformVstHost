@@ -7,6 +7,7 @@ int WaveIOClass::LoadWave(WaveDataContainer* data)
     {
         return VST_ERROR_STATUS::PATH_NOT_EXISTS;
     }
+
     wave::File input_wave_file;
     if (input_wave_file.Open(data->file_path, wave::kIn))
     {
@@ -14,7 +15,6 @@ int WaveIOClass::LoadWave(WaveDataContainer* data)
     }
 
     std::vector<float> content;
-
     if (input_wave_file.Read(&content))
     {
 

@@ -9,7 +9,7 @@ FilterWrapper::~FilterWrapper()
 	if (bw_low_pass_filter_ != nullptr)
 	{
 		free_bw_low_pass(bw_low_pass_filter_);
-		LOG(INFO) << "bw_low_pass_filter released sucessfully." << std::endl;
+		LOG(DEBUG) << "bw_low_pass_filter released sucessfully." << std::endl;
 	}
 }
 
