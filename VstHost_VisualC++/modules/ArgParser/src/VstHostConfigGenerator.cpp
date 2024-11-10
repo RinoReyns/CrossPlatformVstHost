@@ -40,14 +40,13 @@ VST_ERROR_STATUS VstHostConfigGenerator::AddParametersFromList(
 {
     for (auto param_name : params_list)
     {
-        if (JsonUtils::CheckIfParamInNotDict(plugin_config_json, param_name))
+        if (JsonUtils::CheckIfParamNotInDict(plugin_config_json, param_name))
         {
             plugin_config_json[param_name] = { };
-        }
-
-        if (!JsonUtils::CheckIfParamInNotDict(sub_sections_params_, param_name))
-        {   
-            plugin_config_json[param_name] = sub_sections_params_.at(param_name);
+            if (!JsonUtils::CheckIfParamNotInDict(sub_sections_params_, param_name))
+            {
+                plugin_config_json[param_name] = sub_sections_params_.at(param_name);
+            }
         }
     }
     return VST_ERROR_STATUS::SUCCESS;

@@ -65,7 +65,7 @@ VST_ERROR_STATUS JsonUtils::JsonFileToMap(
 }
 
 /// @brief Returns "True" if parameters is not in dict, else returns "False".
-bool JsonUtils::CheckIfParamInNotDict(nlohmann::json dict, std::string parameter)
+bool JsonUtils::CheckIfParamNotInDict(nlohmann::json dict, std::string parameter)
 {
     return dict.find(parameter) == dict.end();
 }
