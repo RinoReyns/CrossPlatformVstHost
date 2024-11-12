@@ -25,6 +25,7 @@ const std::string REF_FILTRATED                     = UT_DATA_FOLDER + "sine_440
 const float FILTRATION_PRECISION                    = 1e-9;
 const int8_t MODULES_COUNT                          = 5;
 const int8_t DELAY_PARAMS_COUNT                     = 2;
-
+const std::string APP_CONFIG_PARAM                  = "-config";
+const std::string DUMP_APP_CONFIG_PARAM             = "-dump_app_config";
 
 #endif //UNIT_TESTS_COMMON_H

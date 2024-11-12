@@ -5,13 +5,14 @@
 #include "VstHostMacro.h"
 #include "VstHostConfigGenerator.h"
 
-#define DUMP_CMD_PARAM_STR "-dump_vst_host_config"
-#define VST_HOST_CMD_PARAM_STR "-vst_host_config"
+#define DUMP_CMD_PARAM_STR "-dump_app_config"
+#define VST_HOST_CMD_PARAM_STR "-config"
 #define DUMP_PLUGINS_CONFIGS "-dump_plugins_config"
+#define APP_NAME "VstHostTool"
 
 ArgParser::ArgParser()
 {
-    arg_parser_.reset(new argparse::ArgumentParser("audiohost"));
+    arg_parser_.reset(new argparse::ArgumentParser(APP_NAME));
 
     arg_parser_->add_argument("-verbosity")
         .help("Possible values:\n"
@@ -22,15 +23,15 @@ ArgParser::ArgParser()
         .default_value(0);
 
     arg_parser_->add_argument(VST_HOST_CMD_PARAM_STR)
-        .help("path to the application config run.");
+        .help("path to the application config needed to proper execution.");
 
     arg_parser_->add_argument(DUMP_CMD_PARAM_STR)
-        .help("allows to dump empty configuration file for VST Host Application that needs to be fill with parameters.\nThis parameter needes to be commbined with " + std::string(VST_HOST_CMD_PARAM_STR) + ".")
+        .help("allows to dump empty configuration file for VST Host Application that needs to be fill with parameters. This parameter needes to be commbined with " + std::string(VST_HOST_CMD_PARAM_STR) + ".")
         .implicit_value(true)
         .default_value(false);
 
     arg_parser_->add_argument(DUMP_PLUGINS_CONFIGS)
-        .help("allows to dump empty configuration for all plugins defined in VST Host Application config.\nThis parameter needes to be commbined with " + std::string(VST_HOST_CMD_PARAM_STR) + ".")
+        .help("allows to dump empty configuration for all plugins defined in VST Host Application config. This parameter needes to be commbined with " + std::string(VST_HOST_CMD_PARAM_STR) + ".")
         .implicit_value(true)
         .default_value(false);
 
@@ -46,7 +47,7 @@ int ArgParser::CheckInputArgsFormat(std::vector<std::string> args)
         if (arg.find('=') != std::string::npos)
         {
             LOG(INFO) << "VST Host Tool doesn't accept parameter definition with '='. "
-                "Please pass parameters in convetion without '=' e.g. '-vst_host_config config.json'.";
+                "Please pass parameters in convetion without '=' e.g." + std::string(VST_HOST_CMD_PARAM_STR) + "'-vst_host_config config.json'.";
             return VST_ERROR_STATUS::WRONG_PARAMETER_FORMAT;
         }
         std::cout << arg << std::endl;
@@ -92,12 +93,13 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         }
         return status;
     }
-    else if (dump_plugin_params_)
+    
+    if (dump_plugin_params_)
     {
         status = this->DumpVstHostConfig();
         RETURN_ERROR_IF_NOT_SUCCESS(status);
-
-        for(nlohmann::json params : main_config_["vst_host"]["processing_config"])
+        
+        for(nlohmann::json params : main_config_[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR])
         {
             for(auto single_param : params.items())
             {
@@ -110,12 +112,13 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         }
         return status;
     }
-    else if (!enable_audio_capture_)
+    
+    if (!enable_audio_capture_)
     {
         status = this->ValidateVstHostConfigParam();
         
         std::unique_ptr<VstHostConfigGenerator> config_generator(new VstHostConfigGenerator());
-        main_config_ = config_generator->ReadVstHostConfig(vst_host_config_);
+        main_config_ = config_generator->ReadAppConfig(vst_host_config_);
 
         // input_wave_path_
         status = CheckIfPathExists(main_config_["input_wave"]);
@@ -133,8 +136,6 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         return VST_ERROR_STATUS::VST_HOST_ERROR;
     }
     verbosity_ = static_cast<uint8_t>(arg_parser_->get<int>("-verbosity"));
-
-
     
     return status;
 }
@@ -175,10 +176,10 @@ int ArgParser::DumpVstHostConfig()
     std::unique_ptr<VstHostConfigGenerator> config_generator(new VstHostConfigGenerator());
     if (status != VST_ERROR_STATUS::SUCCESS)
     {
-        return config_generator->DumpEmptyVstHostConfig(vst_host_config_);
+        return config_generator->DumpEmptyAppConfig(vst_host_config_);
     }
  
-    status = config_generator->ReadAndDumpVstHostConfig(vst_host_config_);
+    status = config_generator->ReadAndDumpAppConfig(vst_host_config_);
     RETURN_ERROR_IF_NOT_SUCCESS(status);
     
     main_config_ = config_generator->GetConfigDict();
@@ -226,9 +227,9 @@ bool ArgParser::GetDumpPluginParams()
     return dump_plugin_params_;
 }
 
-config_type ArgParser::GetProcessingConfig()
+nlohmann::json ArgParser::GetProcessingConfig()
 {
-    return main_config_[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR];
+    return main_config_;
 }
 
 bool ArgParser::GetEnableAudioEndpoint()

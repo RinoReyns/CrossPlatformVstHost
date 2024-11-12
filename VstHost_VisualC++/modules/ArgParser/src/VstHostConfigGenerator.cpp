@@ -1,51 +1,28 @@
 #include "VstHostConfigGenerator.h"
 
-VST_ERROR_STATUS VstHostConfigGenerator::DumpEmptyVstHostConfig(
+VST_ERROR_STATUS VstHostConfigGenerator::DumpEmptyAppConfig(
     nlohmann::json plugin_config_json, 
     std::string config_path)
 {
-    AddParametersFromList(plugin_config_json, single_params_list);
-    AddParametersFromList(plugin_config_json, dict_params_list);
-   
-    if (JsonUtils::CheckIfParamInDict(plugin_config_json[VST_HOST_CONFIG_PARAM_STR], 
-        PROCESSING_CONFIG_PARAM_STR))
-    {
-        plugin_config_json[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR] = {};
-        plugin_config_json[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR]["plugin_1"] = {};
-        plugin_config_json[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR]["plugin_1"]["config"] = "";
-        plugin_config_json[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR]["plugin_1"]["plugin"] = "";
-    }
-
-    if (JsonUtils::CheckIfParamInDict(plugin_config_json["postprocessing"], "filter"))
-    {
-        plugin_config_json["postprocessing"]["filter"] = {};
-        plugin_config_json["postprocessing"]["filter"]["enable"] = false;
-    }
-
-    if (JsonUtils::CheckIfParamInDict(plugin_config_json["preprocessing"], "filter"))
-    {
-        plugin_config_json["preprocessing"]["filter"] = {};
-        plugin_config_json["preprocessing"]["filter"]["enable"] = false;
-    }
-
+    AddParametersFromList(plugin_config_json, main_config_sections_list_);
     plugin_config_json_ = plugin_config_json;
     return JsonUtils::DumpJson(plugin_config_json, config_path);
 }
 
-VST_ERROR_STATUS VstHostConfigGenerator::DumpEmptyVstHostConfig(std::string config_path)
+VST_ERROR_STATUS VstHostConfigGenerator::DumpEmptyAppConfig(std::string config_path)
 {
     nlohmann::json plugin_config_json;
-    return DumpEmptyVstHostConfig(plugin_config_json, config_path);
+    return DumpEmptyAppConfig(plugin_config_json, config_path);
 }
 
 
-VST_ERROR_STATUS VstHostConfigGenerator::ReadAndDumpVstHostConfig(std::string config_path)
+VST_ERROR_STATUS VstHostConfigGenerator::ReadAndDumpAppConfig(std::string config_path)
 {
-    nlohmann::json plugin_config_json = ReadVstHostConfig(config_path);
-    return DumpEmptyVstHostConfig(plugin_config_json, config_path);
+    nlohmann::json plugin_config_json = ReadAppConfig(config_path);
+    return DumpEmptyAppConfig(plugin_config_json, config_path);
 }
 
-nlohmann::json VstHostConfigGenerator::ReadVstHostConfig(std::string config_path)
+nlohmann::json VstHostConfigGenerator::ReadAppConfig(std::string config_path)
 {
     nlohmann::json plugin_config_json;
     RETURN_ERROR_IF_NOT_SUCCESS(JsonUtils::LoadJson(config_path, &plugin_config_json));
@@ -63,9 +40,13 @@ VST_ERROR_STATUS VstHostConfigGenerator::AddParametersFromList(
 {
     for (auto param_name : params_list)
     {
-        if (JsonUtils::CheckIfParamInDict(plugin_config_json, param_name))
+        if (JsonUtils::CheckIfParamNotInDict(plugin_config_json, param_name))
         {
             plugin_config_json[param_name] = { };
+            if (!JsonUtils::CheckIfParamNotInDict(sub_sections_params_, param_name))
+            {
+                plugin_config_json[param_name] = sub_sections_params_.at(param_name);
+            }
         }
     }
     return VST_ERROR_STATUS::SUCCESS;

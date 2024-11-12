@@ -5,6 +5,10 @@
 #include <string>
 #include "VstHostMacro.h"
 
+#define PROCESSING_CONFIG_PARAM_STR "processing_config"
+#define VST_HOST_CONFIG_PARAM_STR "vst_host"
+#define ENABLE_STRING "enable"
+
 constexpr auto PLUGINS_STRING = "plugin";
 constexpr auto CONFIG_STRING = "config";
 
@@ -42,8 +46,9 @@ enum VST_ERROR_STATUS
     MISSING_PARAMETER_VALUE = 27,
     NOT_IMPLEMENTED = 28,
     NO_AUDIO_DEVICES_ID_FOUND = 29,
+    BYPASS = 30,
 
-    MAX_STATUS_VALUE = NO_AUDIO_DEVICES_ID_FOUND
+    MAX_STATUS_VALUE = BYPASS
 };
 
 namespace LogLevelType
@@ -57,4 +62,12 @@ namespace LogLevelType
         MAX_LOG_LEVEL_VALUE = DEBUG
     };
 }
+
+enum VST_VERSION_INDEXES
+{
+    MAJOR = 0,
+    MINOR = 1,
+    SUB = 2
+};
+
 #endif // ENUMS_H

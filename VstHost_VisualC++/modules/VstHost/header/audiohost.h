@@ -38,8 +38,10 @@ class AudioProcessingVstHost
         int AUDIOHOSTLIB_EXPORT SetMutliplePluginParameters(const config_type processing_config);
         int AUDIOHOSTLIB_EXPORT GetPluginParameters(std::string plugin_id, const std::string& plugin_config);
         int AUDIOHOSTLIB_EXPORT GetMutliplePluginParameters(const config_type processing_config);
-        void AUDIOHOSTLIB_EXPORT Terminate();
         void AUDIOHOSTLIB_EXPORT SetVerbosity(uint8_t value);
+        int AUDIOHOSTLIB_EXPORT SetEnableProcessing(bool enable);
+        int AUDIOHOSTLIB_EXPORT GetEnableProcessing(bool* enable);
+        void AUDIOHOSTLIB_EXPORT Terminate();
 
         struct VstPluginParameters
         {
@@ -51,12 +53,14 @@ class AudioProcessingVstHost
 
     private:
         int CheckVstSdkCompatibility(std::string sdk_version);
+        int CheckIfProcessingEnabled();
 
         std::map <std::string, AudioProcessingVstHost::VstPluginParameters> vst_plugins_;
         Steinberg::Vst::ProcessContext processContext;
         Steinberg::Vst::ParameterChanges inputParameterChanges;
         Steinberg::Vst::HostProcessData processData;
         uint8_t verbose_         = 0;
+        bool enable_processing_  = true;
 };
 
 
