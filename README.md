@@ -98,11 +98,11 @@ is why this repository was created. I know that it will take a lot of work but i
      VstHostTool.exe --help
     ```
   1. Dump an empty configuration needed to run the tool:
-    ```VstHostTool.exe -dump_vst_host_config -vst_host_config config.json```
+    ```VstHostTool.exe -dump_app_config -config config.json```
   1. Dump an empty configuration for VST plugin/plugins that will be used be.
-    ```VstHostTool.exe -dump_plugins_config -vst_host_config config.json```
+    ```VstHostTool.exe -dump_plugins_config -config config.json```
   1. Run Audio Processing with Vst Plugin.
-    ```VstHostTool.exe -vst_host_config config.json```
+    ```VstHostTool.exe -config config.json```
 
 ## Features list
 1. **Platform Agnostic Features**
@@ -122,18 +122,21 @@ is why this repository was created. I know that it will take a lot of work but i
       - [x] Generate Documentation
       - [x] AudioProcessing Class that can wrap different non-vst algorithms
       - [x] Cross-Platform Audio Endpoint Render-Capture with RtAudio (Validated only for Windows)
-    - **TODO** (ordered by priority):
+      - [x] Create and pass config for AudioProcessing Class
+    - **TODO**:
       - [ ] Implement simple Vst plugin that allows to process data in real-time (e.g. context buffering). Start from 
       delay validation implemented in VST SDK. 
       - [ ] Enable streaming processing (one frame in, one frame out)
       - [ ] Integrate Open Vino to process audio with AI based Audio Algorithms
+	  - [ ] Enable Apple Silicon AI acceleration
       - [ ] Add more advanced python-based Vst Host Lib utilization
       - [ ] Add more UT for python and Android
       - [ ] Integrate better wave reader
       - [ ] Build solution for ARM
       - [ ] Handle different audio formats e.g. sampling rate, bit depth etc.
-      - [ ] Create and pass config for AudioProcessing Class
       - [ ] Validate RtAudio for different OSes
+      - [ ] Move *vst_host_config_* from *WaveProcessingPipeline* class to *AudioProcessingVstHost* class.
+      - [ ] Rename ** to *AudioProcessingTool*
 
 1. Android
     - TODO:

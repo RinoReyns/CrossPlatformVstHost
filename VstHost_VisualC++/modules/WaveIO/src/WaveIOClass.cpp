@@ -3,13 +3,13 @@
 
 int WaveIOClass::LoadWave(WaveDataContainer* data)
 {
-    if (data->file_path == "")
+    if (data->file_path_ == "")
     {
         return VST_ERROR_STATUS::PATH_NOT_EXISTS;
     }
 
     wave::File input_wave_file;
-    if (input_wave_file.Open(data->file_path, wave::kIn))
+    if (input_wave_file.Open(data->file_path_, wave::kIn))
     {
         return VST_ERROR_STATUS::OPEN_FILE_ERROR;
     }
@@ -33,13 +33,13 @@ int WaveIOClass::LoadWave(WaveDataContainer* data)
 
 int WaveIOClass::SaveWave(WaveDataContainer* data)
 {
-    if (data->file_path == "")
+    if (data->file_path_ == "")
     {
         return VST_ERROR_STATUS::PATH_NOT_EXISTS;
     }
 
     wave::File write_file;
-    if (write_file.Open(data->file_path, wave::kOut))
+    if (write_file.Open(data->file_path_, wave::kOut))
     {
         return VST_ERROR_STATUS::OPEN_FILE_ERROR;
     }

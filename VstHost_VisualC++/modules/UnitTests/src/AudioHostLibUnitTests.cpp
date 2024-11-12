@@ -105,19 +105,19 @@ namespace AudioHostLibUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         std::unique_ptr<WaveIOClass> wave_io(new WaveIOClass());
 
-        WaveDataContainer input_wave;
-        WaveDataContainer output_wave;
-        input_wave.file_path = INPUT_WAVE_PATH;
-        status = wave_io->LoadWave(&input_wave);
+        std::unique_ptr<WaveDataContainer> input_wave(new WaveDataContainer(INPUT_WAVE_PATH));
+        std::unique_ptr<WaveDataContainer> output_wave(new WaveDataContainer(""));
+
+        status = wave_io->LoadWave(input_wave.get());
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        status = vst_host_lib_->BufferProcessing(&input_wave, &output_wave);
+        status = vst_host_lib_->BufferProcessing(input_wave.get(), output_wave.get());
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
         std::vector<float> ref;
         status = LoadWave(REF_OUTPUT_DEFAULT_CONFIG, &ref);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(output_wave.data, ref);
+        EXPECT_EQ(output_wave->data, ref);
     }
 
     TEST_F(AudioHostLibTest, CapiProcessWaveFileWithSinglePluginAndDefaultPluginSettings)

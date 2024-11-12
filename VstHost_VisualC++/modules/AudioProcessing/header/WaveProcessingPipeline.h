@@ -3,7 +3,7 @@
 
 #include "easylogging++.h"
 #include "enums.h"
-#include "filter.h"
+#include "FilterWrapper.h"
 #include "audiohost.h"
 #include "JsonUtils.h"
 
@@ -18,11 +18,20 @@ public:
     int Run(std::string input_path, std::string output_path);
 
 private:
-    BWLowPass* bw_low_pass_filter_ = nullptr;
+    int CreateVstHost();
+    int ProcessingVstHost();
+    
+    int CreatePreprocessingModule();
+    int CreatePostprocessingModule();
+    int SwapInOutBuffers();
+
+private:
     uint8_t verbosity_ = 0;
     config_type vst_host_config_{};
     nlohmann::json pipeline_config_{};
     std::unique_ptr<AudioProcessingVstHost> vst_host_;
+    std::unique_ptr<WaveDataContainer> input_wave_;
+    std::unique_ptr<WaveDataContainer> output_wave_;
 };
 
 #endif //WAVE_PROCESSING_PIPELINE_H

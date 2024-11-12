@@ -17,6 +17,7 @@ AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::~AudioProcessingVstHost()
 
 int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::SetMutliplePluginParameters(const config_type processing_config)
 {
+    RETURN_IF_BYPASS(CheckIfProcessingEnabled());
     int status = VST_ERROR_STATUS::VST_HOST_ERROR;
     for (auto& [key, value] : processing_config)
     {
@@ -39,6 +40,24 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::SetMutliplePluginParameters(cons
     }
 
     return status;
+}
+AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetEnableProcessing(bool enable)
+{
+    enable_processing_ = enable;
+    if (!enable_processing_)
+    {
+        return VST_ERROR_STATUS::BYPASS;
+    }
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+int AudioProcessingVstHost::CheckIfProcessingEnabled()
+{
+    if (enable_processing_)
+    {
+        return VST_ERROR_STATUS::SUCCESS;
+    }
+    return VST_ERROR_STATUS::BYPASS;
 }
 
 AUDIOHOSTLIB_EXPORT int AudioProcessingVstHost::SetPluginParameters(std::string plugin_id, const std::string& plugin_config)
@@ -435,6 +454,18 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
     WaveDataContainer* input_data,
     WaveDataContainer* output_data)
 {
+    // Bypass
+    if (!enable_processing_)
+    {
+        output_data->sample_rate = input_data->sample_rate;
+        output_data->bits_per_sample = input_data->bits_per_sample;
+        output_data->channel_number = input_data->channel_number;
+        output_data->frame_number = input_data->frame_number;
+        output_data->data.resize(input_data->data.size(), 1);
+        output_data->data = input_data->data;
+        LOG(INFO) << "Vst Host Processing is bypassed.";
+        return VST_ERROR_STATUS::BYPASS;
+    }
 
     if (vst_plugins_.size() == 0)
     {
@@ -443,7 +474,6 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
 
     for (auto& [plugin_id, _] : vst_plugins_)
     {
-
         if (!vst_plugins_[plugin_id].plug_provider_)
         {
             LOG(ERROR) << "Plugin " + vst_plugins_[plugin_id].plugin_path_ + " was not initialized.";
