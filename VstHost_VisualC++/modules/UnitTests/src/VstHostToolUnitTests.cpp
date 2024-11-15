@@ -79,14 +79,15 @@ namespace VstHostToolUnitTest
         {
             RETURN_ERROR_IF_NULL(json_config);
             nlohmann::json json_config_ = *json_config;
+            json_config_["sampling_rate"] = PROCESSING_SAMPLING_RATE;
             json_config_["vst_host"]["enable"] = enbale_vst_host;
             json_config_["vst_host"]["processing_config"]["plugin_1"] = {};
             json_config_["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
             json_config_["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
             json_config_["input_wave"] = INPUT_WAVE_PATH;
             json_config_["output_wave"] = OUTPUT_WAVE_PATH;
-            *json_config = json_config_; 
-            
+            *json_config = json_config_;
+
             return VST_ERROR_STATUS::SUCCESS;
         }
     };
@@ -280,10 +281,9 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(json_config.size(), MODULES_COUNT);
 
         // Dump Second Time
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
+        status = PrepareJsonConfig(&json_config, true);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = DUMP_JSON_FILE_PATH;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
 
         arg_params = {
@@ -329,8 +329,11 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         EXPECT_EQ(json_config.size(), MODULES_COUNT);
 
-        // Dump Second Time
+        json_config["sampling_rate"] = PROCESSING_SAMPLING_RATE;
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
+        // Dump Second Time
         arg_params = {
             "OfflineToolsUnitTests.exe",
             APP_CONFIG_PARAM,
@@ -367,11 +370,9 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(json_config.size(), MODULES_COUNT);
 
         // Dump Second Time
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
-        json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
-        json_config["input_wave"] = INPUT_WAVE_PATH;
+        status = PrepareJsonConfig(&json_config, true);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config["output_wave"] = { };
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
 
         arg_params = {
@@ -405,16 +406,11 @@ namespace VstHostToolUnitTest
         status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
-        json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
+        status = PrepareJsonConfig(&json_config, true);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         json_config["vst_host"]["processing_config"]["plugin_2"] = {};
         json_config["vst_host"]["processing_config"]["plugin_2"]["config"] = CONFIG_FOR_ADELAY_PLUGIN_2;
         json_config["vst_host"]["processing_config"]["plugin_2"]["plugin"] = VST_PLUGIN_PATH;
-        json_config["input_wave"] = INPUT_WAVE_PATH;
-        json_config["output_wave"] = OUTPUT_WAVE_PATH;
-
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
@@ -461,15 +457,13 @@ namespace VstHostToolUnitTest
         status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
-        json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
+        status = PrepareJsonConfig(&json_config, true);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         json_config["vst_host"]["processing_config"]["plugin_2"] = {};
         json_config["vst_host"]["processing_config"]["plugin_2"]["config"] = "";
         json_config["vst_host"]["processing_config"]["plugin_2"]["plugin"] = VST_PLUGIN_PATH;
-        json_config["input_wave"] = INPUT_WAVE_PATH;
-        json_config["output_wave"] = OUTPUT_WAVE_PATH;
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
@@ -496,4 +490,10 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         EXPECT_EQ(output, ref);
     }
+// TODO:
+// Add test for only preprocessing
+// Add test for only postprocessing
+// Add test for pre and post processing
+// Add test for preprocessing + vst_host
+// Add test for postprocessing + vst_host
 }

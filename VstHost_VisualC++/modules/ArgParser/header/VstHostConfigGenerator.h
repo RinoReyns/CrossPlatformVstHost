@@ -29,7 +29,7 @@ private:
     {
         "input_wave",
         "output_wave",
-        "sampling_rate",
+        SAMPLING_RATE_PARAM_STR,
         PREPROCESSING,
         VST_HOST_CONFIG_PARAM_STR,
         POSTPROCESSING
@@ -37,6 +37,8 @@ private:
 
     const nlohmann::json sub_sections_params_
     {
+        {SAMPLING_RATE_PARAM_STR, 0},
+
         {PREPROCESSING,
             {
                 {"filter", 

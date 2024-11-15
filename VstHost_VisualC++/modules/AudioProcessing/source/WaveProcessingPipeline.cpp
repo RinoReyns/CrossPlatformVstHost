@@ -55,8 +55,14 @@ int WaveProcessingPipeline::CreatePreprocessingModules()
 
 int WaveProcessingPipeline::PreprocessingProcessing()
 {
-    RETURN_ERROR_IF_NOT_SUCCESS_OR_BYPASS(preprocessing_filter_wrapper_->Process(input_wave_->data, output_wave_->data));
-    return SwapInOutBuffers();
+    int status = preprocessing_filter_wrapper_->Process(input_wave_->data, output_wave_->data);
+    RETURN_ERROR_IF_NOT_SUCCESS_OR_BYPASS(status);
+    if (status == VST_ERROR_STATUS::SUCCESS)
+    {
+        status = SwapInOutBuffers();
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
+    }
+    return status;
 }
 
 int WaveProcessingPipeline::CreatePostprocessingModules()
