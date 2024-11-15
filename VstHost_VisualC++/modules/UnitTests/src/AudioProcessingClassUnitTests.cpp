@@ -83,6 +83,9 @@ namespace AudioProcessingWrapperClassUnitTest
         status = filter_wrapper_->Init(static_cast<size_t>(input_wave_file.sample_rate()));
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
+        status = filter_wrapper_->SetEnableProcessing(true);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
         status = filter_wrapper_->Process(content, output);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 #ifndef __APPLE__
