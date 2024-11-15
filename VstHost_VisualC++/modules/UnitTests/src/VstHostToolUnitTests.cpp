@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "gmock/gmock-matchers.h"
 
 #include <filesystem>
 
@@ -121,6 +122,41 @@ namespace VstHostToolUnitTest
             EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);    
 
             return status;
+        }
+
+        void AppProcessingWithOutputValidation(std::string ref_path, bool validate_for_macos=true, bool bit_exact=true)
+        {
+            std::vector<std::string> arg_params = {
+                "OfflineToolsUnitTests.exe",
+                APP_CONFIG_PARAM,
+                PROCESSING_CONFIG_PATH,
+            };
+
+            vst_host_tool_.reset(new VstHostTool());
+
+            int status = vst_host_tool_->PrepareArgs(arg_params);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+            status = vst_host_tool_->Run();
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+            std::vector<float> output;
+            status = LoadWave(OUTPUT_WAVE_PATH, &output);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+            std::vector<float> ref;
+            status = LoadWave(ref_path, &ref);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+            if (validate_for_macos)
+            {
+                if (bit_exact)
+                {
+                    EXPECT_EQ(output, ref);
+                }
+                else
+                {
+                    ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(FILTRATION_PRECISION), ref));
+                }
+            }
         }
 
     };
@@ -346,7 +382,6 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(output, ref);
     }
 
-
     TEST_F(VstHostToolTest, RunToolWithProcessingConfigWithOneEmptyConfig)
     {
         nlohmann::json json_config;
@@ -359,34 +394,45 @@ namespace VstHostToolUnitTest
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
+        AppProcessingWithOutputValidation(REF_OUTPUT_WITH_TWO_PLUGINS_2);
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPreprocessingOnly)
+    {
+        nlohmann::json json_config;
+        int status = FirstConfigPreparations(&json_config, false);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = false;
+
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifndef __APPLE__
+        AppProcessingWithOutputValidation(REF_FILTRATED, true, false);
+#else
+        AppProcessingWithOutputValidation(REF_FILTRATED, false);
+#endif //!__APPLE__
+    }
 
-        std::vector<std::string> arg_params = {
-                  "OfflineToolsUnitTests.exe",
-                  APP_CONFIG_PARAM,
-                  PROCESSING_CONFIG_PATH,
-        };
-
-        vst_host_tool_.reset(new VstHostTool());
-
-        status = vst_host_tool_->PrepareArgs(arg_params);
+    TEST_F(VstHostToolTest, RunToolWithPostprocessingOnly)
+    {
+        nlohmann::json json_config;
+        int status = FirstConfigPreparations(&json_config, false);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = false;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
 
-        std::vector<float> output;
-        status = LoadWave(OUTPUT_WAVE_PATH, &output);
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        std::vector<float> ref;
-        status = LoadWave(REF_OUTPUT_WITH_TWO_PLUGINS_2, &ref);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(output, ref);
+#ifndef __APPLE__
+        AppProcessingWithOutputValidation(REF_FILTRATED, true, false);
+#else
+        AppProcessingWithOutputValidation(REF_FILTRATED, false);
+#endif //!__APPLE__
+        
     }
 // TODO:
-// Add test for only preprocessing
-// Add test for only postprocessing
+// Prepare reference each test
 // Add test for pre and post processing
 // Add test for preprocessing + vst_host
 // Add test for postprocessing + vst_host

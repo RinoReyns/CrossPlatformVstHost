@@ -28,5 +28,7 @@ const int8_t DELAY_PARAMS_COUNT                     = 2;
 const std::string APP_CONFIG_PARAM                  = "-config";
 const std::string DUMP_APP_CONFIG_PARAM             = "-dump_app_config";
 const size_t PROCESSING_SAMPLING_RATE               = 44100;
+const std::string PREPROCESSING_STRING              = "preprocessing";
+const std::string POSTPROCESSING_STRING             = "postprocessing";
 
 #endif //UNIT_TESTS_COMMON_H
