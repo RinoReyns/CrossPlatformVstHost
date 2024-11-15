@@ -167,10 +167,7 @@ int ArgParser::ValidateVstHostConfigParam()
 int ArgParser::DumpVstHostConfig()
 {
     int status = this->ValidateVstHostConfigParam();
-    if (status == VST_ERROR_STATUS::MISSING_PARAMETER_VALUE)
-    {
-        return status;
-    }
+    RETURN_IF_MISSING_PARAMETER_VALUE(status);
 
     vst_host_config_ = arg_parser_->get<std::string>(VST_HOST_CMD_PARAM_STR);
     std::unique_ptr<VstHostConfigGenerator> config_generator(new VstHostConfigGenerator());

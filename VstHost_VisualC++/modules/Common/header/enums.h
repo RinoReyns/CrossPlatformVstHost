@@ -6,8 +6,11 @@
 #include "VstHostMacro.h"
 
 #define PROCESSING_CONFIG_PARAM_STR "processing_config"
+#define PREPROCESSING "preprocessing"
+#define POSTPROCESSING "postprocessing"
 #define VST_HOST_CONFIG_PARAM_STR "vst_host"
 #define ENABLE_STRING "enable"
+#define SAMPLING_RATE_PARAM_STR "sampling_rate"
 
 constexpr auto PLUGINS_STRING = "plugin";
 constexpr auto CONFIG_STRING = "config";
@@ -47,8 +50,10 @@ enum VST_ERROR_STATUS
     NOT_IMPLEMENTED = 28,
     NO_AUDIO_DEVICES_ID_FOUND = 29,
     BYPASS = 30,
+    UNSUPPORTED_SAMPLING_RATE = 31,
+    SIZE_MISSMATCH = 32,
 
-    MAX_STATUS_VALUE = BYPASS
+    MAX_STATUS_VALUE = SIZE_MISSMATCH
 };
 
 namespace LogLevelType

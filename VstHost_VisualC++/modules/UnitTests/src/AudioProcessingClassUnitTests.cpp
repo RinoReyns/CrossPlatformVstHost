@@ -80,10 +80,10 @@ namespace AudioProcessingWrapperClassUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         std::vector<float> output(content.size(), 1);
 
-        status = filter_wrapper_->Init(static_cast<float>(input_wave_file.sample_rate()));
+        status = filter_wrapper_->Init(static_cast<size_t>(input_wave_file.sample_rate()));
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        status = filter_wrapper_->ApplyBwLowPassFilter(content, output);
+        status = filter_wrapper_->Process(content, output);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 #ifndef __APPLE__
         std::vector<float> ref;

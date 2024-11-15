@@ -105,8 +105,8 @@ namespace AudioHostLibUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         std::unique_ptr<WaveIOClass> wave_io(new WaveIOClass());
 
-        std::unique_ptr<WaveDataContainer> input_wave(new WaveDataContainer(INPUT_WAVE_PATH));
-        std::unique_ptr<WaveDataContainer> output_wave(new WaveDataContainer(""));
+        std::unique_ptr<WaveDataContainer> input_wave(new WaveDataContainer(INPUT_WAVE_PATH, PROCESSING_SAMPLING_RATE));
+        std::unique_ptr<WaveDataContainer> output_wave(new WaveDataContainer("", PROCESSING_SAMPLING_RATE));
 
         status = wave_io->LoadWave(input_wave.get());
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
