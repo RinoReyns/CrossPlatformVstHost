@@ -26,6 +26,7 @@ class ArgParser
         int CheckInputArgsFormat(std::vector<std::string> args);
         int ValidateVstHostConfigParam();
         int DumpVstHostConfig();
+        int ValidateSamplingRate(float sampling_rate);
         
         std::unique_ptr<argparse::ArgumentParser> arg_parser_;
         std::string input_wave_path_    = "";

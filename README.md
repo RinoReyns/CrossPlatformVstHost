@@ -137,6 +137,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Validate RtAudio for different OSes
       - [ ] Move *vst_host_config_* from *WaveProcessingPipeline* class to *AudioProcessingVstHost* class.
       - [ ] Rename ** to *AudioProcessingTool*
+      - [ ] Create Baseclass for processing modules and extract common parameters
 
 1. Android
     - TODO:

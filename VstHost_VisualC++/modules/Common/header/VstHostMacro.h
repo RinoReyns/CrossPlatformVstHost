@@ -8,6 +8,7 @@
 #define RETURN_IF_AUDIO_CAPTURE_FAILED(X) if(FAILED(hr = (X))){ return VST_ERROR_STATUS::AUDIO_CAPTURE_ERROR; }
 #define RETURN_IF_AUDIO_RENDER_FAILED(X) if(FAILED(hr = (X))){ return VST_ERROR_STATUS::AUDIO_RENDER_ERROR; }
 #define RETURN_IF_BYPASS(value) {if(value == VST_ERROR_STATUS::BYPASS) return value;}
+#define RETURN_IF_MISSING_PARAMETER_VALUE(value) {if(value == VST_ERROR_STATUS::MISSING_PARAMETER_VALUE) return value;}
 
 #define CLOSE_HANDLE_IF(h) if(h != INVALID_HANDLE_VALUE){ CloseHandle(h); h = INVALID_HANDLE_VALUE; }
 #define IF_ERROR_RETURN(b) if(b == FALSE){ return b; }

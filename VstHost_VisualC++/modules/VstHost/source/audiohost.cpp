@@ -457,7 +457,7 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
     // Bypass
     if (!enable_processing_)
     {
-        output_data->sample_rate = input_data->sample_rate;
+        output_data->signal_sampling_rate_ = input_data->signal_sampling_rate_;
         output_data->bits_per_sample = input_data->bits_per_sample;
         output_data->channel_number = input_data->channel_number;
         output_data->frame_number = input_data->frame_number;
@@ -497,7 +497,7 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
             Steinberg::Vst::kOffline,
             Steinberg::Vst::kSample32,
             static_cast<Steinberg::int32>(input_data->frame_number),
-            static_cast<Steinberg::Vst::SampleRate>(input_data->sample_rate)
+            static_cast<Steinberg::Vst::SampleRate>(input_data->signal_sampling_rate_)
         };
 
         if (processor->setupProcessing(setup) != Steinberg::kResultOk)
@@ -544,7 +544,7 @@ int AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::BufferProcessing(
             return VST_ERROR_STATUS::PLUGIN_PROCESSING_FAILED;
         }
 
-        output_data->sample_rate = input_data->sample_rate;
+        output_data->signal_sampling_rate_ = input_data->signal_sampling_rate_;
         output_data->bits_per_sample = input_data->bits_per_sample;
         output_data->channel_number = input_data->channel_number;
 

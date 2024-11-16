@@ -20,9 +20,10 @@ public:
 private:
     int CreateVstHost();
     int ProcessingVstHost();
-    
-    int CreatePreprocessingModule();
-    int CreatePostprocessingModule();
+    int CreatePreprocessingModules();
+    int PreprocessingProcessing();
+    int CreatePostprocessingModules();
+    int PostprocessingProcessing();
     int SwapInOutBuffers();
 
 private:
@@ -32,6 +33,9 @@ private:
     std::unique_ptr<AudioProcessingVstHost> vst_host_;
     std::unique_ptr<WaveDataContainer> input_wave_;
     std::unique_ptr<WaveDataContainer> output_wave_;
+    std::unique_ptr<FilterWrapper> preprocessing_filter_wrapper_;
+    std::unique_ptr<FilterWrapper> postprocessing_filter_wrapper_;
+    size_t processing_sampling_rate_ = 0;
 };
 
 #endif //WAVE_PROCESSING_PIPELINE_H

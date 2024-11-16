@@ -29,26 +29,29 @@ private:
     {
         "input_wave",
         "output_wave",
-        "preprocessing",
-        "vst_host",
-        "postprocessing"
+        SAMPLING_RATE_PARAM_STR,
+        PREPROCESSING,
+        VST_HOST_CONFIG_PARAM_STR,
+        POSTPROCESSING
     };
 
     const nlohmann::json sub_sections_params_
     {
-        {"preprocessing", 
+        {SAMPLING_RATE_PARAM_STR, 0},
+
+        {PREPROCESSING,
             {
                 {"filter", 
                     {
-                        {"enable", false}
+                        {ENABLE_STRING, false}
                     }
                 }
             }
         },
 
-        {"vst_host", 
+        {VST_HOST_CONFIG_PARAM_STR,
             {
-                {"enable", false},
+                {ENABLE_STRING, false},
                 {"processing_config", 
                     {
                         {"plugin_1", 
@@ -62,11 +65,11 @@ private:
             }
         },
 
-        {"postprocessing", 
+        {POSTPROCESSING,
             {
                 {"filter",
                     {
-                        {"enable", false}
+                        {ENABLE_STRING, false}
                     }
                 }
             }

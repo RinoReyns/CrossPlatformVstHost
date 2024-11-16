@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "gmock/gmock-matchers.h"
 
 #include <filesystem>
 
@@ -79,16 +80,85 @@ namespace VstHostToolUnitTest
         {
             RETURN_ERROR_IF_NULL(json_config);
             nlohmann::json json_config_ = *json_config;
+            json_config_["sampling_rate"] = PROCESSING_SAMPLING_RATE;
             json_config_["vst_host"]["enable"] = enbale_vst_host;
             json_config_["vst_host"]["processing_config"]["plugin_1"] = {};
             json_config_["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
             json_config_["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
             json_config_["input_wave"] = INPUT_WAVE_PATH;
             json_config_["output_wave"] = OUTPUT_WAVE_PATH;
-            *json_config = json_config_; 
-            
+            *json_config = json_config_;
+
             return VST_ERROR_STATUS::SUCCESS;
         }
+
+        int DumpJsonAppConfig(std::string dump_path = PROCESSING_CONFIG_PATH)
+        {
+            std::vector<std::string> arg_params = {
+                "OfflineToolsUnitTests.exe",
+                DUMP_APP_CONFIG_PARAM,
+                APP_CONFIG_PARAM,
+                dump_path,
+            };
+
+            int status = vst_host_tool_->PrepareArgs(arg_params);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+            status = vst_host_tool_->Run();
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+            return status;
+        }
+
+        int FirstConfigPreparations(nlohmann::json* json_config, bool enable_vst_host=true)
+        {
+            int status = DumpJsonAppConfig();
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+            status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, json_config);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+            EXPECT_EQ(json_config->size(), MODULES_COUNT);
+
+            status = PrepareJsonConfig(json_config, enable_vst_host);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);    
+
+            return status;
+        }
+
+        void AppProcessingWithOutputValidation(std::string ref_path, bool validate_quality=true, bool bit_exact=true)
+        {
+            std::vector<std::string> arg_params = {
+                "OfflineToolsUnitTests.exe",
+                APP_CONFIG_PARAM,
+                PROCESSING_CONFIG_PATH,
+            };
+
+            vst_host_tool_.reset(new VstHostTool());
+
+            int status = vst_host_tool_->PrepareArgs(arg_params);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+            status = vst_host_tool_->Run();
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+            std::vector<float> output;
+            status = LoadWave(OUTPUT_WAVE_PATH, &output);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+            std::vector<float> ref;
+            status = LoadWave(ref_path, &ref);
+            EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+            if (validate_quality)
+            {
+                if (bit_exact)
+                {
+                    EXPECT_EQ(output, ref);
+                }
+                else
+                {
+                    ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(PRECISION_8_DECIMAL_PLACES), ref));
+                }
+            }
+        }
+
     };
 
     // TODO:
@@ -101,31 +171,13 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, ByPassProcessing)
     {
-        std::vector<std::string> arg_params = {
-           "OfflineToolsUnitTests.exe",
-           DUMP_APP_CONFIG_PARAM,
-           APP_CONFIG_PARAM,
-           PROCESSING_CONFIG_PATH,
-        };
-
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        // Dump Once
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
         nlohmann::json json_config;
-        status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
+        int status = FirstConfigPreparations(&json_config, false);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(json_config.size(), MODULES_COUNT);
 
-        // Dump Second Time
-        status = PrepareJsonConfig(&json_config, false);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
 
-        arg_params = {
+        std::vector<std::string> arg_params = {
             "OfflineToolsUnitTests.exe",
             APP_CONFIG_PARAM,
             PROCESSING_CONFIG_PATH,
@@ -149,31 +201,13 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, ProcessSignalWithSinglePlugin)
     {
-        std::vector<std::string> arg_params = {
-           "OfflineToolsUnitTests.exe",
-           DUMP_APP_CONFIG_PARAM,
-           APP_CONFIG_PARAM,
-           PROCESSING_CONFIG_PATH,
-        };
-
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        // Dump Once
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
         nlohmann::json json_config;
-        status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(json_config.size(), MODULES_COUNT);
-
-        // Dump Second Time
-        status = PrepareJsonConfig(&json_config, true);
+        int status = FirstConfigPreparations(&json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        arg_params = {
+        std::vector<std::string> arg_params = {
             "OfflineToolsUnitTests.exe",
             APP_CONFIG_PARAM,
             PROCESSING_CONFIG_PATH,
@@ -197,16 +231,7 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, DumpVstHostConfig)
     {
-        std::vector<std::string> arg_params = {
-            "OfflineToolsUnitTests.exe",
-            DUMP_APP_CONFIG_PARAM,
-            APP_CONFIG_PARAM,
-            DUMP_JSON_FILE_PATH,
-        };
-
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        status = vst_host_tool_->Run();
+        int status = DumpJsonAppConfig(DUMP_JSON_FILE_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
         nlohmann::json json_config;
@@ -218,36 +243,15 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, DumpVstHostConfigTwice)
     {
-        std::vector<std::string> arg_params = {
-            "OfflineToolsUnitTests.exe",
-            DUMP_APP_CONFIG_PARAM,
-            APP_CONFIG_PARAM,
-            DUMP_JSON_FILE_PATH,
-        };
-
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        // Dump Once
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
         nlohmann::json json_config;
-        status = JsonUtils::LoadJson(DUMP_JSON_FILE_PATH, &json_config);
+        int status = FirstConfigPreparations(&json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(json_config.size(), MODULES_COUNT);
-
-        // Dump Second Time
-        status = PrepareJsonConfig(&json_config, true);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
+        
         status = JsonUtils::DumpJson(json_config, DUMP_JSON_FILE_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         
         vst_host_tool_.reset(new VstHostTool());
-        status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        status = vst_host_tool_->Run();
+        status = DumpJsonAppConfig(DUMP_JSON_FILE_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
         json_config.clear();
@@ -260,33 +264,15 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, GetVstPluginConfig)
     {
-        std::vector<std::string> arg_params = {
-            "OfflineToolsUnitTests.exe",
-            DUMP_APP_CONFIG_PARAM,
-            APP_CONFIG_PARAM,
-            PROCESSING_CONFIG_PATH,
-        };
-
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        // Dump Once
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
         nlohmann::json json_config;
-        status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
+        int status = FirstConfigPreparations(&json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(json_config.size(), MODULES_COUNT);
-
-        // Dump Second Time
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
+        
         json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = DUMP_JSON_FILE_PATH;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        arg_params = {
+        std::vector<std::string> arg_params = {
             "OfflineToolsUnitTests.exe",
             APP_CONFIG_PARAM,
             PROCESSING_CONFIG_PATH,
@@ -310,18 +296,7 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, GetVstPluginConfigNegative)
     {
-        std::vector<std::string> arg_params = {
-            "OfflineToolsUnitTests.exe",
-            DUMP_APP_CONFIG_PARAM,
-            APP_CONFIG_PARAM,
-            PROCESSING_CONFIG_PATH,
-        };
-
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        // Dump Once
-        status = vst_host_tool_->Run();
+        int status = DumpJsonAppConfig();
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
         nlohmann::json json_config;
@@ -329,9 +304,12 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         EXPECT_EQ(json_config.size(), MODULES_COUNT);
 
-        // Dump Second Time
+        json_config["sampling_rate"] = PROCESSING_SAMPLING_RATE;
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        arg_params = {
+        // Dump Second Time
+        std::vector<std::string> arg_params = {
             "OfflineToolsUnitTests.exe",
             APP_CONFIG_PARAM,
             PROCESSING_CONFIG_PATH,
@@ -345,36 +323,17 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(status, VST_ERROR_STATUS::EMPTY_ARG);
     }
 
-
     TEST_F(VstHostToolTest, RunToolWithoutPassingOutputWavePath)
     {
-        std::vector<std::string> arg_params = {
-          "OfflineToolsUnitTests.exe",
-          DUMP_APP_CONFIG_PARAM,
-          APP_CONFIG_PARAM,
-          PROCESSING_CONFIG_PATH,
-        };
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        // Dump Once
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
         nlohmann::json json_config;
-        status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
+        int status = FirstConfigPreparations(&json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(json_config.size(), MODULES_COUNT);
-
-        // Dump Second Time
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
-        json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
-        json_config["input_wave"] = INPUT_WAVE_PATH;
+        
+        json_config["output_wave"] = { };
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        arg_params = {
+        std::vector<std::string> arg_params = {
             "OfflineToolsUnitTests.exe",
             APP_CONFIG_PARAM,
             PROCESSING_CONFIG_PATH,
@@ -389,36 +348,17 @@ namespace VstHostToolUnitTest
 
     TEST_F(VstHostToolTest, RunToolWithProcessingConfig)
     {
-        std::vector<std::string> arg_params = {
-        "OfflineToolsUnitTests.exe",
-        DUMP_APP_CONFIG_PARAM,
-        APP_CONFIG_PARAM,
-        PROCESSING_CONFIG_PATH,
-        };
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
         nlohmann::json json_config;
-        status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
+        int status = FirstConfigPreparations(&json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
-        json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
         json_config["vst_host"]["processing_config"]["plugin_2"] = {};
         json_config["vst_host"]["processing_config"]["plugin_2"]["config"] = CONFIG_FOR_ADELAY_PLUGIN_2;
         json_config["vst_host"]["processing_config"]["plugin_2"]["plugin"] = VST_PLUGIN_PATH;
-        json_config["input_wave"] = INPUT_WAVE_PATH;
-        json_config["output_wave"] = OUTPUT_WAVE_PATH;
-
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        arg_params = {
+        std::vector<std::string> arg_params = {
                   "OfflineToolsUnitTests.exe",
                   APP_CONFIG_PARAM,
                   PROCESSING_CONFIG_PATH,
@@ -442,58 +382,129 @@ namespace VstHostToolUnitTest
         EXPECT_EQ(output, ref);
     }
 
-
     TEST_F(VstHostToolTest, RunToolWithProcessingConfigWithOneEmptyConfig)
     {
-        std::vector<std::string> arg_params = {
-        "OfflineToolsUnitTests.exe",
-        DUMP_APP_CONFIG_PARAM,
-        APP_CONFIG_PARAM,
-        PROCESSING_CONFIG_PATH,
-        };
-        int status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
         nlohmann::json json_config;
-        status = JsonUtils::LoadJson(PROCESSING_CONFIG_PATH, &json_config);
+        int status = FirstConfigPreparations(&json_config);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        json_config["vst_host"]["enable"] = true;
-        json_config["vst_host"]["processing_config"]["plugin_1"] = {};
-        json_config["vst_host"]["processing_config"]["plugin_1"]["config"] = CONFIG_FOR_ADELAY_PLUGIN;
-        json_config["vst_host"]["processing_config"]["plugin_1"]["plugin"] = VST_PLUGIN_PATH;
         json_config["vst_host"]["processing_config"]["plugin_2"] = {};
         json_config["vst_host"]["processing_config"]["plugin_2"]["config"] = "";
         json_config["vst_host"]["processing_config"]["plugin_2"]["plugin"] = VST_PLUGIN_PATH;
-        json_config["input_wave"] = INPUT_WAVE_PATH;
-        json_config["output_wave"] = OUTPUT_WAVE_PATH;
-
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 
-        arg_params = {
-                  "OfflineToolsUnitTests.exe",
-                  APP_CONFIG_PARAM,
-                  PROCESSING_CONFIG_PATH,
-        };
-
-        vst_host_tool_.reset(new VstHostTool());
-
-        status = vst_host_tool_->PrepareArgs(arg_params);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        std::vector<float> output;
-        status = LoadWave(OUTPUT_WAVE_PATH, &output);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-
-        std::vector<float> ref;
-        status = LoadWave(REF_OUTPUT_WITH_TWO_PLUGINS_2, &ref);
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        EXPECT_EQ(output, ref);
+        AppProcessingWithOutputValidation(REF_OUTPUT_WITH_TWO_PLUGINS_2);
     }
+
+    TEST_F(VstHostToolTest, RunToolWithPreprocessingOnly)
+    {
+        nlohmann::json json_config;
+        std::string ref_file = REF_PRE_POST_PROC_ONLY;
+        int status = FirstConfigPreparations(&json_config, false);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = false;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //!__APPLE__
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPostprocessingOnly)
+    {
+        nlohmann::json json_config;
+        std::string ref_file = REF_PRE_POST_PROC_ONLY;
+        int status = FirstConfigPreparations(&json_config, false);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = false;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //_WIN32 
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPreAndPostprocessing)
+    {
+        nlohmann::json json_config;
+        int status = FirstConfigPreparations(&json_config, false);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_BOTH, true, false);
+#else
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_BOTH, false);
+#endif //_WIN32 
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPrePostVstHostProcessing)
+    {
+        nlohmann::json json_config;
+        bool enable_vst_host = true;
+        std::string ref_file = REF_PRE_POST_VST_HOST;
+        int status = FirstConfigPreparations(&json_config, enable_vst_host);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //_WIN32 
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPreVstHostProcessing)
+    {
+        nlohmann::json json_config;
+        bool enable_vst_host = true;
+        std::string ref_file = REF_PRE_VST_HOST;
+        int status = FirstConfigPreparations(&json_config, enable_vst_host);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = false;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //_WIN32 
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPostVstHostProcessing)
+    {
+        nlohmann::json json_config;
+        bool enable_vst_host = true;
+        std::string ref_file = REF_PRE_VST_HOST;
+        int status = FirstConfigPreparations(&json_config, enable_vst_host);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = false;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //_WIN32 
+    }
+
 }

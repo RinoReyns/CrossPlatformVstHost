@@ -50,6 +50,7 @@ class AudioProcessingVstHost
             std::string plugin_path_;
             std::string plugin_config_;
         };
+        const std::string module_name_ = VST_HOST_CONFIG_PARAM_STR;
 
     private:
         int CheckVstSdkCompatibility(std::string sdk_version);

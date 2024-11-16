@@ -9,12 +9,17 @@ class FilterWrapper
 {
 public:
     explicit FilterWrapper();
-    int Init(float sampling_rate);
-    int ApplyBwLowPassFilter(std::vector<float> input, std::vector<float>& output);
+    int Init(size_t sampling_rate);
+    int Process(std::vector<float> input, std::vector<float>& output);
+    int SetEnableProcessing(bool enable);
     ~FilterWrapper();
 
+public:
+    const std::string module_name_ = "filter";
+
 private:
-    BWLowPass* bw_low_pass_filter_;
+    BWLowPass* bw_low_pass_filter_ = nullptr;
+    bool enable_processing_        = false;
 };
 
 #endif //FILTER_WRAPPER_H

@@ -98,6 +98,8 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     {
         status = this->DumpVstHostConfig();
         RETURN_ERROR_IF_NOT_SUCCESS(status);
+        status = ValidateSamplingRate(main_config_[SAMPLING_RATE_PARAM_STR]);
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
         
         for(nlohmann::json params : main_config_[VST_HOST_CONFIG_PARAM_STR][PROCESSING_CONFIG_PARAM_STR])
         {
@@ -116,6 +118,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     if (!enable_audio_capture_)
     {
         status = this->ValidateVstHostConfigParam();
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
         
         std::unique_ptr<VstHostConfigGenerator> config_generator(new VstHostConfigGenerator());
         main_config_ = config_generator->ReadAppConfig(vst_host_config_);
@@ -126,6 +129,9 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
         input_wave_path_ = main_config_["input_wave"];
 
         status = CheckOutputWave();
+        RETURN_ERROR_IF_NOT_SUCCESS(status);
+
+        status = ValidateSamplingRate(main_config_[SAMPLING_RATE_PARAM_STR]);
         RETURN_ERROR_IF_NOT_SUCCESS(status);
     }
 
@@ -142,12 +148,21 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
 
 int ArgParser::CheckIfPathExists(std::string path)
 {
-    int status = VST_ERROR_STATUS::SUCCESS;
     if (!std::filesystem::exists(path))
     {
-        status = VST_ERROR_STATUS::PATH_NOT_EXISTS;
+       return VST_ERROR_STATUS::PATH_NOT_EXISTS;
     }
-    return status;
+    return VST_ERROR_STATUS::SUCCESS;
+}
+
+int ArgParser::ValidateSamplingRate(float sampling_rate)
+{
+    if (sampling_rate == NULL || sampling_rate <= 0)
+    {
+        LOG(ERROR) << "Unsupported sampling rate: " << sampling_rate << "Hz.";
+        return VST_ERROR_STATUS::UNSUPPORTED_SAMPLING_RATE;
+    }
+    return VST_ERROR_STATUS::SUCCESS;
 }
 
 int ArgParser::ValidateVstHostConfigParam()
@@ -167,10 +182,7 @@ int ArgParser::ValidateVstHostConfigParam()
 int ArgParser::DumpVstHostConfig()
 {
     int status = this->ValidateVstHostConfigParam();
-    if (status == VST_ERROR_STATUS::MISSING_PARAMETER_VALUE)
-    {
-        return status;
-    }
+    RETURN_IF_MISSING_PARAMETER_VALUE(status);
 
     vst_host_config_ = arg_parser_->get<std::string>(VST_HOST_CMD_PARAM_STR);
     std::unique_ptr<VstHostConfigGenerator> config_generator(new VstHostConfigGenerator());
