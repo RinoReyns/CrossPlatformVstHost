@@ -400,6 +400,7 @@ namespace VstHostToolUnitTest
     TEST_F(VstHostToolTest, RunToolWithPreprocessingOnly)
     {
         nlohmann::json json_config;
+        std::string ref_file = REF_PRE_POST_PROC_ONLY;
         int status = FirstConfigPreparations(&json_config, false);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
@@ -408,15 +409,16 @@ namespace VstHostToolUnitTest
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 #ifdef _WIN32 
-        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_ONLY, true, false);
+        AppProcessingWithOutputValidation(ref_file, true, false);
 #else
-        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, false);
+        AppProcessingWithOutputValidation(ref_file, false);
 #endif //!__APPLE__
     }
 
     TEST_F(VstHostToolTest, RunToolWithPostprocessingOnly)
     {
         nlohmann::json json_config;
+        std::string ref_file = REF_PRE_POST_PROC_ONLY;
         int status = FirstConfigPreparations(&json_config, false);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         json_config[PREPROCESSING_STRING]["filter"]["enable"] = false;
@@ -425,9 +427,9 @@ namespace VstHostToolUnitTest
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 #ifdef _WIN32 
-        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_ONLY, true, false);
+        AppProcessingWithOutputValidation(ref_file, true, false);
 #else
-        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, false);
+        AppProcessingWithOutputValidation(ref_file, false);
 #endif //_WIN32 
     }
 
