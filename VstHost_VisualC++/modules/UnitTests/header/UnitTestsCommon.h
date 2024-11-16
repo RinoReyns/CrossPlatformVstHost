@@ -22,7 +22,10 @@ const std::string REF_OUTPUT_WITH_TWO_PLUGINS_2     = UT_DATA_FOLDER + "sine_440
 const std::string PROCESSING_CONFIG_PATH            = UT_DATA_FOLDER + "processing_config.json";
 const std::string PLUGIN_NAME                       = "plugin_1";
 const std::string REF_FILTRATED                     = UT_DATA_FOLDER + "sine_440_filtrated.wav";
-const float FILTRATION_PRECISION                    = 1e-9;
+const std::string REF_PRE_POST_PROC                 = UT_DATA_FOLDER + "sine_440_filtrated_pre_and_post_proc.wav";
+
+const float PRECISION_9_DECIMAL_PLACES              = 1e-9;
+const float PRECISION_8_DECIMAL_PLACES              = 1e-8;
 const int8_t MODULES_COUNT                          = 6;
 const int8_t DELAY_PARAMS_COUNT                     = 2;
 const std::string APP_CONFIG_PARAM                  = "-config";

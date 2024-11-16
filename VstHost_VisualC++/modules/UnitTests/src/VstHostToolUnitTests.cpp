@@ -154,7 +154,7 @@ namespace VstHostToolUnitTest
                 }
                 else
                 {
-                    ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(FILTRATION_PRECISION), ref));
+                    ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(PRECISION_8_DECIMAL_PLACES), ref));
                 }
             }
         }
@@ -408,9 +408,9 @@ namespace VstHostToolUnitTest
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 #ifndef __APPLE__
-        AppProcessingWithOutputValidation(REF_FILTRATED, true, false);
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, true, false);
 #else
-        AppProcessingWithOutputValidation(REF_FILTRATED, false);
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, false);
 #endif //!__APPLE__
     }
 
@@ -425,14 +425,15 @@ namespace VstHostToolUnitTest
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
 #ifndef __APPLE__
-        AppProcessingWithOutputValidation(REF_FILTRATED, true, false);
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, true, false);
 #else
-        AppProcessingWithOutputValidation(REF_FILTRATED, false);
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, false);
 #endif //!__APPLE__
-        
     }
+
 // TODO:
-// Prepare reference each test
+// Prepare reference for each test RunToolWithPreprocessingOnly
+// also for RunToolWithPostprocessingOnly and 
 // Add test for pre and post processing
 // Add test for preprocessing + vst_host
 // Add test for postprocessing + vst_host

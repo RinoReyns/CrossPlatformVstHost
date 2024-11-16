@@ -92,7 +92,7 @@ namespace AudioProcessingWrapperClassUnitTest
         std::vector<float> ref;
         status = LoadWave(REF_FILTRATED, &ref);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-        ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(FILTRATION_PRECISION), ref));
+        ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(PRECISION_9_DECIMAL_PLACES), ref));
 #endif //!__APPLE__
     }
 
