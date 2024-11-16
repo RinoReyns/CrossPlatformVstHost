@@ -33,10 +33,10 @@ namespace VstHostToolUnitTest
 
         void CleanUpUtProducts()
         {
-         /*   if (std::filesystem::exists(OUTPUT_WAVE_PATH))
+            if (std::filesystem::exists(OUTPUT_WAVE_PATH))
             {
                 std::remove(OUTPUT_WAVE_PATH.c_str());
-            }*/
+            }
 
             if (std::filesystem::exists(DUMP_JSON_FILE_PATH))
             {
@@ -124,7 +124,7 @@ namespace VstHostToolUnitTest
             return status;
         }
 
-        void AppProcessingWithOutputValidation(std::string ref_path, bool validate_for_macos=true, bool bit_exact=true)
+        void AppProcessingWithOutputValidation(std::string ref_path, bool validate_quality=true, bool bit_exact=true)
         {
             std::vector<std::string> arg_params = {
                 "OfflineToolsUnitTests.exe",
@@ -146,7 +146,7 @@ namespace VstHostToolUnitTest
             std::vector<float> ref;
             status = LoadWave(ref_path, &ref);
             EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-            if (validate_for_macos)
+            if (validate_quality)
             {
                 if (bit_exact)
                 {
@@ -407,8 +407,8 @@ namespace VstHostToolUnitTest
 
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-#ifndef __APPLE__
-        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, true, false);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_ONLY, true, false);
 #else
         AppProcessingWithOutputValidation(REF_PRE_POST_PROC, false);
 #endif //!__APPLE__
@@ -424,17 +424,85 @@ namespace VstHostToolUnitTest
 
         status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
-#ifndef __APPLE__
-        AppProcessingWithOutputValidation(REF_PRE_POST_PROC, true, false);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_ONLY, true, false);
 #else
         AppProcessingWithOutputValidation(REF_PRE_POST_PROC, false);
-#endif //!__APPLE__
+#endif //_WIN32 
     }
 
-// TODO:
-// Prepare reference for each test RunToolWithPreprocessingOnly
-// also for RunToolWithPostprocessingOnly and 
-// Add test for pre and post processing
-// Add test for preprocessing + vst_host
-// Add test for postprocessing + vst_host
+    TEST_F(VstHostToolTest, RunToolWithPreAndPostprocessing)
+    {
+        nlohmann::json json_config;
+        int status = FirstConfigPreparations(&json_config, false);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_BOTH, true, false);
+#else
+        AppProcessingWithOutputValidation(REF_PRE_POST_PROC_BOTH, false);
+#endif //_WIN32 
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPrePostVstHostProcessing)
+    {
+        nlohmann::json json_config;
+        bool enable_vst_host = true;
+        std::string ref_file = REF_PRE_POST_VST_HOST;
+        int status = FirstConfigPreparations(&json_config, enable_vst_host);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //_WIN32 
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPreVstHostProcessing)
+    {
+        nlohmann::json json_config;
+        bool enable_vst_host = true;
+        std::string ref_file = REF_PRE_VST_HOST;
+        int status = FirstConfigPreparations(&json_config, enable_vst_host);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = true;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = false;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //_WIN32 
+    }
+
+    TEST_F(VstHostToolTest, RunToolWithPostVstHostProcessing)
+    {
+        nlohmann::json json_config;
+        bool enable_vst_host = true;
+        std::string ref_file = REF_PRE_VST_HOST;
+        int status = FirstConfigPreparations(&json_config, enable_vst_host);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        json_config[PREPROCESSING_STRING]["filter"]["enable"] = false;
+        json_config[POSTPROCESSING_STRING]["filter"]["enable"] = true;
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+#ifdef _WIN32 
+        AppProcessingWithOutputValidation(ref_file, true, false);
+#else
+        AppProcessingWithOutputValidation(ref_file, false);
+#endif //_WIN32 
+    }
+
 }
