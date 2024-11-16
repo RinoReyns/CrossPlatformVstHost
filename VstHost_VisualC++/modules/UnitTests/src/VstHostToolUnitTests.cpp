@@ -33,10 +33,10 @@ namespace VstHostToolUnitTest
 
         void CleanUpUtProducts()
         {
-            if (std::filesystem::exists(OUTPUT_WAVE_PATH))
+         /*   if (std::filesystem::exists(OUTPUT_WAVE_PATH))
             {
                 std::remove(OUTPUT_WAVE_PATH.c_str());
-            }
+            }*/
 
             if (std::filesystem::exists(DUMP_JSON_FILE_PATH))
             {
