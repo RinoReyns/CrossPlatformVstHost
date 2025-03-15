@@ -507,4 +507,31 @@ namespace VstHostToolUnitTest
 #endif //_WIN32 
     }
 
+#ifdef __linux__
+    TEST_F(VstHostToolTest, RunToolWithEndpointProcessingPipeline)
+    {
+        nlohmann::json json_config;
+        bool enable_vst_host = true;
+        int status = FirstConfigPreparations(&json_config, enable_vst_host);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+        status = JsonUtils::DumpJson(json_config, PROCESSING_CONFIG_PATH);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+
+        std::vector<std::string> arg_params = {
+            "OfflineToolsUnitTests.exe",
+            APP_CONFIG_PARAM,
+            PROCESSING_CONFIG_PATH,
+            "-enable_audio_capture",
+        };
+
+        vst_host_tool_.reset(new VstHostTool());
+
+        status = vst_host_tool_->PrepareArgs(arg_params);
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        status = vst_host_tool_->Run();
+        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+    }
+#endif __linux__
+
 }
