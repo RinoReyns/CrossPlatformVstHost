@@ -291,7 +291,6 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           cmake: 3.30.5
-          ndk: 26.3.11579264
           working-directory: ${{github.workspace}}/VstHost_Android
           script: |
             ls -la ${{github.workspace}}/VstHost_Android/app/src/main/assets/
