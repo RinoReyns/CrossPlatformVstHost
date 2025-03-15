@@ -30,7 +30,7 @@ is why this repository was created. I know that it will take a lot of work but i
     cd ..
     cmake --build build --config Release -j 8
     ```
-2. Mac OS
+2. Mac OS (Intel)
     ```
     git submodule update --init --recursive
     pip install -r VstHost_Python/requirements.txt
@@ -41,8 +41,17 @@ is why this repository was created. I know that it will take a lot of work but i
     cd ..
     cmake --build build --config Release -j 8 --resolve-package-references on
     ```
-
-3. Android
+3. Mac OS (ARM)
+   ```
+   git submodule update --init --recursive
+   pip install -r VstHost_Python/requirements.txt
+   brew install doxygen
+   arch -arm64 brew install cmake
+   mkdir build
+   cd build
+   
+   ```
+4. Android
     ```
     NOTE:
     Following instruction is made for Linux enviroment. However, steps for any OS should be similar.
