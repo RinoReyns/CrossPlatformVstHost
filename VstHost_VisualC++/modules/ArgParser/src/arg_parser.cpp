@@ -8,6 +8,7 @@
 #define DUMP_CMD_PARAM_STR "-dump_app_config"
 #define VST_HOST_CMD_PARAM_STR "-config"
 #define DUMP_PLUGINS_CONFIGS "-dump_plugins_config"
+#define ENABLE_AUDIO_CAPTURE "-enable_audio_capture"
 #define APP_NAME "VstHostTool"
 
 ArgParser::ArgParser()
@@ -35,7 +36,7 @@ ArgParser::ArgParser()
         .implicit_value(true)
         .default_value(false);
 
-    arg_parser_->add_argument("-enable_audio_capture")
+    arg_parser_->add_argument(ENABLE_AUDIO_CAPTURE)
         .default_value(false)
         .implicit_value(true);
 }
@@ -82,7 +83,7 @@ int ArgParser::ParsParameters(std::vector<std::string> args)
     int status = VST_ERROR_STATUS::SUCCESS;
     dump_tool_config_ = arg_parser_->get<bool>(DUMP_CMD_PARAM_STR);
     dump_plugin_params_ = arg_parser_->get<bool>(DUMP_PLUGINS_CONFIGS);
-    enable_audio_capture_ = arg_parser_->get<bool>("-enable_audio_capture");
+    enable_audio_capture_ = arg_parser_->get<bool>(ENABLE_AUDIO_CAPTURE);
 
     if (dump_tool_config_)
     {
