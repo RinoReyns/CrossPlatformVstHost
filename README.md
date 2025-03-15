@@ -4,6 +4,8 @@
     <img alt="ViewCount" src="https://views.whatilearened.today/views/github/CrossPlatformVstHost/github-clone-count-badge.svg">
 </p>
 
+[![Build Vst Host](https://github.com/RinoReyns/CrossPlatformVstHost/actions/workflows/vst_host_ci.yml/badge.svg?branch=main)](https://github.com/RinoReyns/CrossPlatformVstHost/actions/workflows/vst_host_ci.yml)
+
 # Cross-Platform Vst Host
 
 ## General Idea
