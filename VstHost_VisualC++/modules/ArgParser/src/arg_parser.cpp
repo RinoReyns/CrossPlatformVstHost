@@ -157,7 +157,7 @@ int ArgParser::CheckIfPathExists(std::string path)
 
 int ArgParser::ValidateSamplingRate(float sampling_rate)
 {
-    if (sampling_rate == NULL || sampling_rate <= 0)
+    if (sampling_rate == 0 || sampling_rate <= 0)
     {
         LOG(ERROR) << "Unsupported sampling rate: " << sampling_rate << "Hz.";
         return VST_ERROR_STATUS::UNSUPPORTED_SAMPLING_RATE;
