@@ -42,15 +42,21 @@ is why this repository was created. I know that it will take a lot of work but i
     cmake --build build --config Release -j 8 --resolve-package-references on
     ```
 3. Mac OS (ARM)
-   ```
-   git submodule update --init --recursive
-   pip install -r VstHost_Python/requirements.txt
-   brew install doxygen
-   arch -arm64 brew install cmake
-   mkdir build
-   cd build
-   
-   ```
+
+    First you have to install Xcode or Command Line Tools for Xcode. If you see following or similar error `XCode 9 or newer is required`, please run command below which should help based on [stackoverflow thread](https://stackoverflow.com/questions/41380900/cmake-error-no-cmake-c-compiler-could-be-found-using-xcode-and-glfw).
+
+    > sudo xcode-select --reset
+
+
+    ```
+    git submodule update --init --recursive
+    pip install -r VstHost_Python/requirements.txt
+    brew install doxygen
+    arch -arm64 brew install cmake
+    mkdir build
+    cd build 
+    ```
+  
 4. Android
     ```
     NOTE:
