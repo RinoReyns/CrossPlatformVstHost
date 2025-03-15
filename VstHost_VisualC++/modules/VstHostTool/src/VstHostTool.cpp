@@ -83,12 +83,10 @@ int VstHostTool::Run()
 
     LOG(INFO) << "------------------------------ Audio Host Started ------------------------------";
 
-#ifdef _WIN32
     if (arg_parser_->GetEnableAudioEndpoint())
     {
         return this->EndpointProcessingPipeline();
     }
-#endif
     if (!arg_parser_->GetDumpToolConfigParam() || arg_parser_->GetDumpPluginParams())
     {
         status = this->OfflineProcessingPipeline();
