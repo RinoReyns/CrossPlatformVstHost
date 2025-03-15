@@ -287,10 +287,10 @@ jobs:
       - name: Run Instrumentation Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 28
+          api-level: 30
           arch: x86_64
           profile: Nexus 6
-          cmake: 3.25.0
+          cmake: 3.30.5
           working-directory: ${{github.workspace}}/VstHost_Android
           script: |
             ls -la ${{github.workspace}}/VstHost_Android/app/src/main/assets/
