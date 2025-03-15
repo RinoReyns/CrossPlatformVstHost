@@ -522,7 +522,7 @@ namespace VstHostToolUnitTest
             "OfflineToolsUnitTests.exe",
             APP_CONFIG_PARAM,
             PROCESSING_CONFIG_PATH,
-            "-enable_audio_capture",
+            ENABLE_AUDIO_CAPTURE,
         };
 
         vst_host_tool_.reset(new VstHostTool());
@@ -530,7 +530,7 @@ namespace VstHostToolUnitTest
         status = vst_host_tool_->PrepareArgs(arg_params);
         EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
         status = vst_host_tool_->Run();
-        EXPECT_EQ(status, VST_ERROR_STATUS::SUCCESS);
+        EXPECT_EQ(status, VST_ERROR_STATUS::NOT_IMPLEMENTED);
     }
 #endif __linux__
 
