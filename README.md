@@ -30,7 +30,7 @@ is why this repository was created. I know that it will take a lot of work but i
     cd ..
     cmake --build build --config Release -j 8
     ```
-2. Mac OS
+2. Mac OS (Intel)
     ```
     git submodule update --init --recursive
     pip install -r VstHost_Python/requirements.txt
@@ -41,8 +41,23 @@ is why this repository was created. I know that it will take a lot of work but i
     cd ..
     cmake --build build --config Release -j 8 --resolve-package-references on
     ```
+3. Mac OS (ARM)
+   #### Note: Currently it doesn't compile successfully due to the missing implementation in VST SDK.
 
-3. Android
+   As a first step you have to install Xcode or/and Command Line Tools for Xcode. If you see following or similar error `XCode 9 or newer is required`, please run command below which should help with the issue based on [stackoverflow thread](https://stackoverflow.com/questions/41380900/cmake-error-no-cmake-c-compiler-could-be-found-using-xcode-and-glfw).
+   > sudo xcode-select --reset
+   ```
+   arch -arm64 brew install cmake
+   brew install doxygen
+   git submodule update --init --recursive
+   pip install -r VstHost_Python/requirements.txt
+   mkdir build
+   cd build
+   cmake ../VstHost_VisualC++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=gcc -DBUILD_GMOCK=1
+   cd ..
+   cmake --build build --config Release -j 8 --resolve-package-references on
+   ```
+4. Android
     ```
     NOTE:
     Following instruction is made for Linux enviroment. However, steps for any OS should be similar.
@@ -99,11 +114,11 @@ is why this repository was created. I know that it will take a lot of work but i
     ```
      VstHostTool.exe --help
     ```
-  1. Dump an empty configuration needed to run the tool:
+  2. Dump an empty configuration needed to run the tool:
     ```VstHostTool.exe -dump_app_config -config config.json```
-  1. Dump an empty configuration for VST plugin/plugins that will be used be.
+  3. Dump an empty configuration for VST plugin/plugins that will be used be.
     ```VstHostTool.exe -dump_plugins_config -config config.json```
-  1. Run Audio Processing with Vst Plugin.
+  4. Run Audio Processing with Vst Plugin.
     ```VstHostTool.exe -config config.json```
 
 ## Features list
@@ -138,7 +153,7 @@ is why this repository was created. I know that it will take a lot of work but i
       - [ ] Handle different audio formats e.g. sampling rate, bit depth etc.
       - [ ] Validate RtAudio for different OSes
       - [ ] Move *vst_host_config_* from *WaveProcessingPipeline* class to *AudioProcessingVstHost* class.
-      - [ ] Rename ** to *AudioProcessingTool*
+      - [ ] Rename *VstHostTool* to *AudioProcessingTool*
       - [ ] Create Baseclass for processing modules and extract common parameters
 
 1. Android
@@ -162,13 +177,14 @@ VST is a trademark held by Steinberg Media Technologies, GMBH.
 
 ## License
 This project is licensed under the terms of the GNU GPLv3 license. Moreover, it is a derivative work of the original 
-VST 3 SDK. However, I don't not redistribute any of the original source code.
+VST 3 SDK. However, I don't redistribute any of the original source code.
 
 ## Useful links
 1. [How to read data from audio endpoint (Windows, Linux, MacOS)?](https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/cognitive-services/Speech-Service/how-to-select-audio-input-devices.md)
-1. [Audio Capture on Windows](https://graphics.stanford.edu/~mdfisher/Code/Engine/AudioCapture.cpp)
-1. [Treat warnings as errors on linux](https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code)
-1. [More info about treating warnings as errors](https://www.foonathan.net/2018/10/cmake-warnings/)
-1. [How to build c++ code for Android?](https://stackoverflow.com/questions/67729247/build-cmake-library-without-android-studio-by-command-line-or-gui/67729248#67729248)
-1. [How to use c++ .so on Android?](https://github.com/android/ndk-samples/tree/master/hello-libs)
-1. [Rendering an audio stream on windows](https://docs.microsoft.com/en-us/windows/win32/coreaudio/rendering-a-stream)
+2. [Audio Capture on Windows](https://graphics.stanford.edu/~mdfisher/Code/Engine/AudioCapture.cpp)
+3. [Treat warnings as errors on linux](https://stackoverflow.com/questions/3378560/how-to-disable-gcc-warnings-for-a-few-lines-of-code)
+4. [More info about treating warnings as errors](https://www.foonathan.net/2018/10/cmake-warnings/)
+5. [How to build c++ code for Android?](https://stackoverflow.com/questions/67729247/build-cmake-library-without-android-studio-by-command-line-or-gui/67729248#67729248)
+6. [How to use c++ .so on Android?](https://github.com/android/ndk-samples/tree/master/hello-libs)
+7. [Rendering an audio stream on windows](https://docs.microsoft.com/en-us/windows/win32/coreaudio/rendering-a-stream)
+8. [XCode Dependencies Installation](https://stackoverflow.com/questions/41380900/cmake-error-no-cmake-c-compiler-could-be-found-using-xcode-and-glfw)

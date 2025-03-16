@@ -12,6 +12,7 @@ include_directories(${SDK_ROOT})
 if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "11.15" CACHE STRING "macOS deployment target")
     message(STATUS "[CrossPlatformVstHost] macOS Deployment Target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
+
 endif()
 
 SET(ANDROID_BUILD False CACHE BOOL "Determin if build is dedicated for andorid.")
