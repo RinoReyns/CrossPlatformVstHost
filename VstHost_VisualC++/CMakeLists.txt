@@ -12,7 +12,6 @@ include_directories(${SDK_ROOT})
 if(APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "11.15" CACHE STRING "macOS deployment target")
     message(STATUS "[CrossPlatformVstHost] macOS Deployment Target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
-    set(CMAKE_OSX_ARCHITECTURES "x86_64;amr64" CACHE STRING "") # for universal
 
 endif()
 
