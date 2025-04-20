@@ -110,7 +110,7 @@ jobs:
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests
           ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests
           cd ${{github.workspace}}
-      
+
       - name: Generate a code coverage report
         uses: threeal/gcovr-action@main
         with:
@@ -152,13 +152,15 @@ jobs:
     uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-latest
-      build-type: ${{ env.BUILD_TYPE }}
-   
+      # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
+      build-type: Release
+
   build_mac_os_intel:
     uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-13
-      build-type: ${{ env.BUILD_TYPE }}
+      # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
+      build-type: Release
 
   build_android_configuration:
 
@@ -174,12 +176,12 @@ jobs:
         with:
           ndk-version: r26d
           add-to-path: false
-      
+
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.13
         with:
-            cmake-version: '3.30.x'
-      
+          cmake-version: '3.30.x'
+
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -189,7 +191,7 @@ jobs:
       - name: Install Audio Drivers
         run: |
           sudo apt-get install libasound2-dev
-      
+
       - name: Use cmake
         run: cmake --version
 
@@ -238,7 +240,7 @@ jobs:
            cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440_output_ref.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/
            cd VstHost_Android
            chmod +x gradlew
-           
+
       - name: Run Instrumentation Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
