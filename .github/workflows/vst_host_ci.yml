@@ -149,12 +149,12 @@ jobs:
       #     path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
 
   build_mac_os_latest:
-    uses: ${{github.workspace}}/.github/workflows/build_mac_os.yml
+    uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-latest
    
   build_mac_os_intel:
-    uses: ${{github.workspace}}/.github/workflows/build_mac_os.yml
+    uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-13
 
