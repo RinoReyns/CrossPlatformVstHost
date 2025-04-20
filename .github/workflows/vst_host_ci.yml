@@ -150,7 +150,7 @@ jobs:
 
   build_mac_os_configuration:
 
-    runs-on: macos-latest
+    runs-on: [macos-latest, macos-13]
 
     steps:
       - uses: actions/checkout@v4
