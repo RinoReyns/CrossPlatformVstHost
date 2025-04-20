@@ -42,7 +42,6 @@ is why this repository was created. I know that it will take a lot of work but i
     cmake --build build --config Release -j 8 --resolve-package-references on
     ```
 3. Mac OS (ARM)
-   #### Note: Currently it doesn't compile successfully due to the missing implementation in VST SDK.
 
    As a first step you have to install Xcode or/and Command Line Tools for Xcode. If you see following or similar error `XCode 9 or newer is required`, please run command below which should help with the issue based on [stackoverflow thread](https://stackoverflow.com/questions/41380900/cmake-error-no-cmake-c-compiler-could-be-found-using-xcode-and-glfw).
    > sudo xcode-select --reset
