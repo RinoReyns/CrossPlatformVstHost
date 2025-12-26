@@ -14,9 +14,6 @@ env:
 jobs:
 
   build_windows_configuration:
-    permissions:
-      contents: read
-      pull-requests: write
 
     runs-on: windows-latest
     steps:
@@ -72,9 +69,6 @@ jobs:
       #     path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
 
   build_linux_configuration:
-    permissions:
-      contents: read
-      pull-requests: write
 
     runs-on: ubuntu-latest
 
@@ -169,9 +163,6 @@ jobs:
       build-type: Release
 
   build_android_configuration:
-    permissions:
-      contents: read
-      pull-requests: write
 
     runs-on: ubuntu-latest
 
