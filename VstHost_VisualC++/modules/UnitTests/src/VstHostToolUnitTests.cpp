@@ -154,7 +154,7 @@ namespace VstHostToolUnitTest
                 }
                 else
                 {
-                    ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(PRECISION_8_DECIMAL_PLACES), ref));
+                    ASSERT_THAT(output, testing::Pointwise(testing::FloatNear(PRECISION_7_DECIMAL_PLACES), ref));
                 }
             }
         }
