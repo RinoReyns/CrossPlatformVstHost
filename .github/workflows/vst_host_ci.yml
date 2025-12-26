@@ -158,7 +158,7 @@ jobs:
   build_mac_os_intel:
     uses: ./.github/workflows/build_mac_os.yml
     with:
-      run-platform: macos-13
+      run-platform: macos-15-intel
       # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
       build-type: Release
 
