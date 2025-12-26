@@ -187,7 +187,7 @@ jobs:
           add-to-path: false
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.13
+        uses: jwlawson/actions-setup-cmake@v2.0
         with:
           cmake-version: '3.30.x'
 
