@@ -31,6 +31,7 @@ const float PRECISION_9_DECIMAL_PLACES              = 1e-9;
 const float PRECISION_8_DECIMAL_PLACES              = 1e-8;
 const float PRECISION_7_DECIMAL_PLACES              = 1e-7;
 const float PRECISION_5_DECIMAL_PLACES              = 1e-5;
+const float PRECISION_4_DECIMAL_PLACES              = 1e-4;
 const int8_t MODULES_COUNT                          = 6;
 const int8_t DELAY_PARAMS_COUNT                     = 2;
 const std::string APP_CONFIG_PARAM                  = "-config";
