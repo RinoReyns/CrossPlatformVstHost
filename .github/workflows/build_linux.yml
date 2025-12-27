@@ -77,7 +77,7 @@ jobs:
 
       
       - name: Dependency Check
-        uses: dependency-check/Dependency-Check_Action@2.0.2
+        uses: dependency-check/Dependency-Check_Action@main
         with:
           path: '.'
           format: 'HTML'
