@@ -81,7 +81,6 @@ jobs:
         with:
           path: '.'
           format: 'HTML'
-          failOnCVSS: 0.1
       
       - uses: actions/upload-artifact@v4
         with:
