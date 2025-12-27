@@ -5,7 +5,7 @@ elseif (UNIX AND !${ANDROID_BUILD})
     add_compile_options(-Werror -Wextra)
 elseif(LINUX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer") 
-
+	set(ENV{ASAN_OPTIONS} "detect_leaks=1:leak_check_at_exit=1:halt_on_error=0")
     find_program(GCOV_PATH gcov)
     if(NOT GCOV_PATH)
 	 message(${GCOV_PATH})
