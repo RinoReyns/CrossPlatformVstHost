@@ -1,5 +1,6 @@
 if(SMTG_LINUX)
     message("[WARNING] Audio Endpoint Manager for Linux is not implemented.")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer")
 elseif(SMTG_WIN)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../external_modules/RtAudio/rtaudio/)

@@ -1,5 +1,6 @@
 if(SMTG_LINUX)
     message("[WARNING] Audio Capture for Linux is not implemented.")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer")
 elseif(SMTG_WIN)
     set(target AudioCapture)
 
