@@ -106,7 +106,7 @@ jobs:
       - name: Clang Tidy
         run: |
           sudo apt install -y clang-tidy
-          clang-tidy $(find . -name '*.cpp') -- -Iinclude
+          find . -name '*.cpp' | grep -Ev '^./VstHost_Visual\+\+/vst3sdk/|^./VstHost_Visual\+\+/external_modules/' | xargs clang-tidy -- -Iinclude
 
       - name: Clean Up After Build
         run: |
