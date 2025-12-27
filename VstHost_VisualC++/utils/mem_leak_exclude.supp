@@ -1,2 +1,2 @@
-leak:createBuffers
-leak:setActive
+leak:Steinberg::Vst::HostProcessData::createBuffers
+leak:Steinberg::Vst::ADelayProcessor::setActive
