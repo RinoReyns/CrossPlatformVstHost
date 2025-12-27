@@ -79,7 +79,7 @@ jobs:
 #          coveralls-send: true
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      
+#
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
       

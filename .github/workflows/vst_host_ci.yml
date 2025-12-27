@@ -18,52 +18,52 @@ jobs:
       contents: read
       pull-requests: write
 
-#    runs-on: windows-latest
-#    steps:
-#      - uses: actions/checkout@v6
-#        with:
-#          submodules: recursive
-#
-#      - name: Install Python Dependencies
-#        run: |
-#          python --version
-#          python -m pip install --upgrade pip
-#          pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
-#          pip install coveralls
-#
-#      - name: Configure CMake
-#        run: |
-#          mkdir build
-#          cd build
-#          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=1
-#          cd ..
-#
-#      - name: Build C++ Code
-#        run: |
-#          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 8
-#
-#      - name: Run C++ Unit Tests
-#        run: |
-#          cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
-#          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests.exe
-#          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests.exe
-#
-#      - name: Run Python Unit Tests
-#        run: |
-#          cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}\VstHost_Python\UnitTests\
-#          cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/AudioHostLib.dll ${{github.workspace}}\VstHost_Python\UnitTests\
-#          cd ${{github.workspace}}/VstHost_Python
-#
-#          python -m unittest discover UnitTests "test_*.py"
-#          cd ${{github.workspace}}
-#
-#      - name: Clean Up After Build
-#        run: |
-#          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests.exe
-#          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests.exe
-#          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3
-#          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/VstHost.log
-#          rm -r -fo ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Python Dependencies
+        run: |
+          python --version
+          python -m pip install --upgrade pip
+          pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
+          pip install coveralls
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_GMOCK=1
+          cd ..
+
+      - name: Build C++ Code
+        run: |
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j 8
+
+      - name: Run C++ Unit Tests
+        run: |
+          cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
+          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests.exe
+          ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests.exe
+
+      - name: Run Python Unit Tests
+        run: |
+          cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3 ${{github.workspace}}\VstHost_Python\UnitTests\
+          cp ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/AudioHostLib.dll ${{github.workspace}}\VstHost_Python\UnitTests\
+          cd ${{github.workspace}}/VstHost_Python
+
+          python -m unittest discover UnitTests "test_*.py"
+          cd ${{github.workspace}}
+
+      - name: Clean Up After Build
+        run: |
+          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/ApiUnitTests.exe
+          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/OfflineToolsUnitTests.exe
+          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/adelay.vst3
+          rm ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/VstHost.log
+          rm -r -fo ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/data
 
       # - name: Archive Build Artifacts
       #   uses: actions/upload-artifact@v1
