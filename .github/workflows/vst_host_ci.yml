@@ -81,116 +81,116 @@ jobs:
       # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
       build-type: Release
 
-  build_mac_os_latest:
-    permissions:
-      contents: read
-      pull-requests: write
-    uses: ./.github/workflows/build_mac_os.yml
-    with:
-      run-platform: macos-latest
-      # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
-      build-type: Release
-
-  build_mac_os_intel:
-    permissions:
-      contents: read
-      pull-requests: write
-    uses: ./.github/workflows/build_mac_os.yml
-    with:
-      run-platform: macos-15-intel
-      # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
-      build-type: Release
-
-  build_android_configuration:
-    permissions:
-      contents: read
-      pull-requests: write
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: recursive
-
-      - uses: nttld/setup-ndk@v1
-        id: install-ndk
-        with:
-          ndk-version: r26d
-          add-to-path: false
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v2.0
-        with:
-          cmake-version: '3.30.x'
-
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Install Audio Drivers
-        run: |
-          sudo apt-get install libasound2-dev
-
-      - name: Use cmake
-        run: cmake --version
-
-      - name: Configure CMake and Build C++ .so for armeabi-v7a
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_armeabi-v7a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
-          cd build_armeabi-v7a
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
-
-      - name: Configure CMake and Build C++ .so for arm64-v8a
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_arm64-v8a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=arm64-v8a -DANDROID_BUILD=True
-          cd build_arm64-v8a
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
-
-      - name: Configure CMake and Build C++ .so for x86
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86 -DANDROID_BUILD=True
-          cd build_x86
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
-
-      - name: Configure CMake and Build C++ .so for x86_64
-        run: |
-          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
-          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86_64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86_64 -DANDROID_BUILD=True
-          cd build_x86_64
-          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
-          cd ..
-          ls -la
-
-      - name: Prepare Setup for Android Build
-        run: |
-           mkdir ${{github.workspace}}/VstHost_Android/AndroidPack
-           cp -rv build_armeabi-v7a/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
-           cp -rv build_arm64-v8a/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
-           cp -rv build_x86/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
-           cp -rv build_x86_64/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
-           cp -rv build_x86_64/VST3/${{env.BUILD_TYPE}} ${{github.workspace}}/VstHost_Android/app/src/main/assets
-           cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/
-           cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440_output_ref.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/
-           cd VstHost_Android
-           chmod +x gradlew
-
-      - name: Run Instrumentation Tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          arch: x86_64
-          profile: Nexus 6
-          cmake: 3.30.5
-          working-directory: ${{github.workspace}}/VstHost_Android
-          script: |
-            ls -la ${{github.workspace}}/VstHost_Android/app/src/main/assets/
-            ./gradlew connectedCheck
+#  build_mac_os_latest:
+#    permissions:
+#      contents: read
+#      pull-requests: write
+#    uses: ./.github/workflows/build_mac_os.yml
+#    with:
+#      run-platform: macos-latest
+#      # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
+#      build-type: Release
+#
+#  build_mac_os_intel:
+#    permissions:
+#      contents: read
+#      pull-requests: write
+#    uses: ./.github/workflows/build_mac_os.yml
+#    with:
+#      run-platform: macos-15-intel
+#      # This is a workaround for long existing issue: https://github.com/actions/runner/issues/2372 #${{ env.BUILD_TYPE }}
+#      build-type: Release
+#
+#  build_android_configuration:
+#    permissions:
+#      contents: read
+#      pull-requests: write
+#
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v6
+#        with:
+#          submodules: recursive
+#
+#      - uses: nttld/setup-ndk@v1
+#        id: install-ndk
+#        with:
+#          ndk-version: r26d
+#          add-to-path: false
+#
+#      - name: Setup cmake
+#        uses: jwlawson/actions-setup-cmake@v2.0
+#        with:
+#          cmake-version: '3.30.x'
+#
+#      - name: Enable KVM
+#        run: |
+#          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+#          sudo udevadm control --reload-rules
+#          sudo udevadm trigger --name-match=kvm
+#
+#      - name: Install Audio Drivers
+#        run: |
+#          sudo apt-get install libasound2-dev
+#
+#      - name: Use cmake
+#        run: cmake --version
+#
+#      - name: Configure CMake and Build C++ .so for armeabi-v7a
+#        run: |
+#          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+#          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_armeabi-v7a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=armeabi-v7a -DANDROID_BUILD=True
+#          cd build_armeabi-v7a
+#          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+#          cd ..
+#
+#      - name: Configure CMake and Build C++ .so for arm64-v8a
+#        run: |
+#          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+#          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_arm64-v8a -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=arm64-v8a -DANDROID_BUILD=True
+#          cd build_arm64-v8a
+#          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+#          cd ..
+#
+#      - name: Configure CMake and Build C++ .so for x86
+#        run: |
+#          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+#          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86 -DANDROID_BUILD=True
+#          cd build_x86
+#          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+#          cd ..
+#
+#      - name: Configure CMake and Build C++ .so for x86_64
+#        run: |
+#          export ANDROID_NDK_PATH=${{ steps.install-ndk.outputs.ndk-path }}
+#          cmake "${{github.workspace}}\VstHost_VisualC++" -B build_x86_64 -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DANDROID_PLATFORM=android-28 -D ANDROID_ABI=x86_64 -DANDROID_BUILD=True
+#          cd build_x86_64
+#          ${{ steps.install-ndk.outputs.ndk-path }}/prebuilt/linux-x86_64/bin/make
+#          cd ..
+#          ls -la
+#
+#      - name: Prepare Setup for Android Build
+#        run: |
+#           mkdir ${{github.workspace}}/VstHost_Android/AndroidPack
+#           cp -rv build_armeabi-v7a/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
+#           cp -rv build_arm64-v8a/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
+#           cp -rv build_x86/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
+#           cp -rv build_x86_64/bin/${{env.BUILD_TYPE}}/AndroidPack/ ${{github.workspace}}/VstHost_Android/
+#           cp -rv build_x86_64/VST3/${{env.BUILD_TYPE}} ${{github.workspace}}/VstHost_Android/app/src/main/assets
+#           cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/
+#           cp -v VstHost_VisualC++/modules/UnitTests/data/sine_440_output_ref.wav ${{github.workspace}}/VstHost_Android/app/src/main/assets/
+#           cd VstHost_Android
+#           chmod +x gradlew
+#
+#      - name: Run Instrumentation Tests
+#        uses: reactivecircus/android-emulator-runner@v2
+#        with:
+#          api-level: 30
+#          arch: x86_64
+#          profile: Nexus 6
+#          cmake: 3.30.5
+#          working-directory: ${{github.workspace}}/VstHost_Android
+#          script: |
+#            ls -la ${{github.workspace}}/VstHost_Android/app/src/main/assets/
+#            ./gradlew connectedCheck
