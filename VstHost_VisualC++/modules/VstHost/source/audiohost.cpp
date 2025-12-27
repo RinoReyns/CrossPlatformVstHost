@@ -8,7 +8,10 @@
 #include "Utils.h"
 #include "VstHostMacro.h"
 
+#ifndef EASYLOGGINGPP_H
+#include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
+#endif
 
 AUDIOHOSTLIB_EXPORT AudioProcessingVstHost::~AudioProcessingVstHost()
 {

@@ -63,6 +63,19 @@ if (NOT ${ANDROID_BUILD})
                            COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/../../lib/${SUFFIX_CONFIG_TYPE}/libAudioHostLib.so
                                                             ${PROJECT_BINARY_DIR}/../../bin/${SUFFIX_CONFIG_TYPE}/                                          
         )
+        
+		#if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+		
+    	#	target_compile_options(${target} PRIVATE
+        #				-fsanitize=address
+        #				-fsanitize=undefined
+        #				-fno-omit-frame-pointer
+        #				-fsanitize-ignorelist=${CMAKE_CURRENT_LIST_DIR}/../../utils/mem_leak_exclude.txt)
+
+    	#	target_link_options(${target} PRIVATE
+        # 				-fsanitize=address
+        #				-fsanitize=undefined)
+    	#endif()
 
         add_custom_command(TARGET ${target_offline_tools} POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_BINARY_DIR}/../../VST3/${SUFFIX_CONFIG_TYPE}/adelay.vst3 

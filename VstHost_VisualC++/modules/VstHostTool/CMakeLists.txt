@@ -11,8 +11,8 @@ if (NOT ${ANDROID_BUILD})
     set(SOURCES
         src/main.cpp
     )
-    
-    add_library(${target}Lib ${LIB_SOURCE})
+
+	add_library(${target}Lib ${LIB_SOURCE})
     add_executable(${target} ${SOURCES})
 
     if(SMTG_WIN)

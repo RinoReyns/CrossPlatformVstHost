@@ -12,7 +12,6 @@ set (AudioProcessing_src
      source/WaveProcessingPipeline.cpp
      )
 
-
 add_library(${target} ${AudioProcessing_src} ${AudioProcessing_headers})
 target_include_directories(${target} 
                             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/filter-c 

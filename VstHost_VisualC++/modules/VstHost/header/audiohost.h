@@ -6,7 +6,7 @@
 #include "processdata.h"
 #include "plugprovider.h"
 #include "enums.h"
-#include "easylogging++.h"
+
 #include "WaveIOClass.h"
 
 #ifdef _WIN32

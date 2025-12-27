@@ -24,7 +24,6 @@ elseif(SMTG_LINUX)
     )
     set(audiohost_PLATFORM_LIBS)
     set(APP_PROPERTIES)
-    
 
 elseif(SMTG_WIN)
     set(audiohost_sources

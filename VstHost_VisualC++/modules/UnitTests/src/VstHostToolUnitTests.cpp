@@ -10,6 +10,11 @@
 #include "json.hpp"
 #include "JsonUtils.h"
 
+#ifdef _MSC_VER
+#include "easylogging++.h"
+INITIALIZE_EASYLOGGINGPP
+#endif
+
 namespace VstHostToolUnitTest
 {
     class VstHostToolTest : public testing::Test
@@ -532,6 +537,6 @@ namespace VstHostToolUnitTest
         status = vst_host_tool_->Run();
         EXPECT_EQ(status, VST_ERROR_STATUS::NOT_IMPLEMENTED);
     }
-#endif __linux__
+#endif //__linux__
 
 }

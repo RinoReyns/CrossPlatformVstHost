@@ -1,11 +1,8 @@
 #include "VstHostTool.h"
-#include "easylogging++.h"
 
 #ifdef _WIN32
 #include "AudioEndpointManager.h"
 #endif
-
-INITIALIZE_EASYLOGGINGPP
 
 // TODO:
 // Integrate better wave reader - check https://github.com/adamstark/AudioFile
