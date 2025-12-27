@@ -4,11 +4,6 @@
 #include <memory>
 #include "arg_parser.h"
 #include "WaveProcessingPipeline.h"
-#include "easylogging++.h"
-
-#ifndef EASYLOGGINGPP_H
-#include "easylogging++.h"
-#endif
 
 class VstHostTool
 {

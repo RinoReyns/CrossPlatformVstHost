@@ -8,7 +8,6 @@
 #include "enums.h"
 
 
-
 namespace AudioProcessingWrapperClassUnitTest
 {
     class AudioProcessingWrapperTest : public testing::Test

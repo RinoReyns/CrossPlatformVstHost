@@ -1,5 +1,7 @@
 #include "VstHostTool.h"
 #include <memory>
+#include "easylogging++.h"
+INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char* argv[])  // GCOVR_EXCL_START
 {   
