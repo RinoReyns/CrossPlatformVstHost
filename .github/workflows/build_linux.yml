@@ -57,7 +57,7 @@ jobs:
         run: |
           sed -i 's/\r$//' VstHost_VisualC++/utils/mem_leak_exclude.supp
           cat -A VstHost_VisualC++/utils/mem_leak_exclude.supp
-          export ASAN_OPTIONS=detect_leaks=1:leak_check_at_exit=1:suppressions=${{github.workspace}}/VstHost_VisualC++/utils/mem_leak_exclude.supp
+          export ASAN_OPTIONS=detect_leaks=1:leak_check_at_exit=1:suppressions=VstHost_VisualC++/utils/mem_leak_exclude.supp
           cd ${{github.workspace}}/build/bin/${{ inputs.build-type }}
           ${{github.workspace}}/build/bin/${{ inputs.build-type }}/ApiUnitTests
           ${{github.workspace}}/build/bin/${{ inputs.build-type }}/OfflineToolsUnitTests
