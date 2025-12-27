@@ -97,10 +97,10 @@ jobs:
           python -m unittest discover UnitTests "test_*.py"
           cd ${{github.workspace}}
 
-      - name: ScanCode
-        run: |
-          pip install scancode-toolkit
-          scancode -clpeui --json scan.json .
+      #- name: ScanCode
+      #  run: |
+      #    pip install scancode-toolkit
+      #    scancode -clpeui --json scan.json .
 
       - name: Clang Tidy
         run: |
