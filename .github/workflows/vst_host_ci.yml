@@ -20,7 +20,7 @@ jobs:
 
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -155,6 +155,9 @@ jobs:
       #     path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
 
   build_mac_os_latest:
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-latest
@@ -162,6 +165,9 @@ jobs:
       build-type: Release
 
   build_mac_os_intel:
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-15-intel
@@ -176,7 +182,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -187,7 +193,7 @@ jobs:
           add-to-path: false
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.13
+        uses: jwlawson/actions-setup-cmake@v2.0
         with:
           cmake-version: '3.30.x'
 
