@@ -26,32 +26,32 @@ jobs:
         with:
           submodules: recursive
 
-#      - name: Install Python Dependencies
-#        run: |
-#          python --version
-#          python -m pip install --upgrade pip
-#          pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
-#          sudo apt-get install libsndfile1-dev
-#          sudo apt-get install libasound2-dev
-#
-#      - name: Install Doxygen
-#        run: |
-#          sudo apt-get install -y doxygen
-#
-#      - name: Install Gcovr
-#        run: |
-#          sudo apt-get install -y gcovr
-#
-#      - name: Configure CMake
-#        run: |
-#          mkdir build
-#          cd build
-#          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} -DBUILD_GMOCK=1
-#          cd ..
-#
-#      - name: Build C++ Code
-#        run: |
-#          cmake --build ${{github.workspace}}/build --config ${{ inputs.build-type }} -j 8
+      - name: Install Python Dependencies
+        run: |
+          python --version
+          python -m pip install --upgrade pip
+          pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
+          sudo apt-get install libsndfile1-dev
+          sudo apt-get install libasound2-dev
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get install -y doxygen
+
+      - name: Install Gcovr
+        run: |
+          sudo apt-get install -y gcovr
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} -DBUILD_GMOCK=1
+          cd ..
+
+      - name: Build C++ Code
+        run: |
+          cmake --build ${{github.workspace}}/build --config ${{ inputs.build-type }} -j 8 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 #
 #      - name: Run C++ Unit Tests
 #        run: |
@@ -107,7 +107,7 @@ jobs:
         run: |
           sudo apt-get install -y clang-tidy
           files_list=$( find . -name '*.cpp' | grep -Ev '^./VstHost_VisualC\+\+/vst3sdk/|^./VstHost_VisualC\+\+/modules/Common/json/|^./VstHost_VisualC\+\+/external_modules/')
-          clang-tidy $files_list -- -Iinclude
+          clang-tidy $files_list -- -Iinclude -p=${{github.workspace}}/build
 
       - name: Clean Up After Build
         run: |
