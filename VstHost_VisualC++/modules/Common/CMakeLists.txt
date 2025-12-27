@@ -15,10 +15,6 @@ set (Common_src
      src/Utils.cpp
      )
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer")
-endif()
-
 add_library(${target} ${Common_src} ${Common_headers})
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header 
                            ${CMAKE_CURRENT_SOURCE_DIR}/json/single_include/nlohmann)

@@ -1,6 +1,5 @@
 if(SMTG_LINUX)
     message("[WARNING] Audio Endpoint Manager for Linux is not implemented.")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer")
 elseif(SMTG_WIN)
     set(target AudioEndpointBase)
 

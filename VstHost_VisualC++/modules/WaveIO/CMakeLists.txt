@@ -17,10 +17,6 @@ set (WaveIO_src
      src/WaveIOClass.cpp
      )
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer")
-endif()
-
 add_library(${target} ${WaveIO_src} ${WaveIO_headers})
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/header)
 target_compile_features(${target} PUBLIC cxx_std_17)

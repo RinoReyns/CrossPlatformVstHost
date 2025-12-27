@@ -24,7 +24,6 @@ elseif(SMTG_LINUX)
     )
     set(audiohost_PLATFORM_LIBS)
     set(APP_PROPERTIES)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer")
 
 elseif(SMTG_WIN)
     set(audiohost_sources
