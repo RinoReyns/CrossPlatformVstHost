@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.6.0)
+cmake_minimum_required (VERSION 3.11.0)
 
 #-------------------------------------------------------------------------------
 # Includes
@@ -27,7 +27,8 @@ endif()
 project(VstHost C CXX)
 smtg_setup_platform_toolset()
 
-SET(vstsdk_VERSION 3.7.7)
+SET(vstsdk_VERSION 3.7.14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer")
 set(SMTG_CREATE_MODULE_INFO OFF CACHE BOOL "" FORCE)
 set(SDK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/vst3sdk")
 set(SDK_IDE_LIBS_FOLDER FOLDER "Libraries")
