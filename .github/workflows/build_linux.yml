@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} -DBUILD_GMOCK=1
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} -DBUILD_GMOCK=1 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           cd ..
 
       - name: Build C++ Code
