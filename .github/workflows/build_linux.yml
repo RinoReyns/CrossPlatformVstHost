@@ -30,7 +30,6 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: cpp
-          version: latest
 
       - name: Install Python Dependencies
         run: |
@@ -85,7 +84,7 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: "cpp"
-          paths: CrossPlatformVstHost/
+          paths: VstHost_VisualC++/
       
       - name: Dependency Check
         uses: dependency-check/Dependency-Check_Action@1.1.0
