@@ -7,6 +7,10 @@
 #include <filesystem>
 #include "enums.h"
 
+#ifdef _MSC_VER
+#include "easylogging++.h"
+INITIALIZE_EASYLOGGINGPP
+#endif
 
 namespace AudioProcessingWrapperClassUnitTest
 {
