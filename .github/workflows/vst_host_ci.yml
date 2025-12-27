@@ -155,6 +155,9 @@ jobs:
       #     path: ${{ github.workspace }}/build/bin/${{env.BUILD_TYPE}}
 
   build_mac_os_latest:
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-latest
