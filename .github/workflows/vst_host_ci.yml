@@ -165,6 +165,9 @@ jobs:
       build-type: Release
 
   build_mac_os_intel:
+    permissions:
+      contents: read
+      pull-requests: write
     uses: ./.github/workflows/build_mac_os.yml
     with:
       run-platform: macos-15-intel
