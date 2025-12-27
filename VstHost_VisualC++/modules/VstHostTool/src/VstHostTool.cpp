@@ -5,7 +5,6 @@
 #include "AudioEndpointManager.h"
 #endif
 
-INITIALIZE_EASYLOGGINGPP
 
 // TODO:
 // Integrate better wave reader - check https://github.com/adamstark/AudioFile
