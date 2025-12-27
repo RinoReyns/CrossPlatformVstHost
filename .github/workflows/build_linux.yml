@@ -1,0 +1,97 @@
+---
+
+name: Linux Build
+
+on:
+  workflow_call:
+    inputs:
+      run-platform:
+        required: true
+        type: string
+      build-type:
+        required: true
+        type: string
+
+jobs:
+  triage:
+    permissions:
+      contents: read
+      pull-requests: write
+
+    runs-on: ${{ inputs.run-platform }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Python Dependencies
+        run: |
+          python --version
+          python -m pip install --upgrade pip
+          pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
+          sudo apt-get install libsndfile1-dev
+          sudo apt-get install libasound2-dev
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get install -y doxygen
+
+      - name: Install Gcovr
+        run: |
+          sudo apt-get install -y gcovr
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} -DBUILD_GMOCK=1
+          cd ..
+
+      - name: Build C++ Code
+        run: |
+          cmake --build ${{github.workspace}}/build --config ${{ inputs.build-type }} -j 8
+
+      - name: Run C++ Unit Tests
+        run: |
+          cd ${{github.workspace}}/build/bin/${{ inputs.build-type }}
+          ${{github.workspace}}/build/bin/${{ inputs.build-type }}/ApiUnitTests
+          ${{github.workspace}}/build/bin/${{ inputs.build-type }}/OfflineToolsUnitTests
+          cd ${{github.workspace}}
+
+      - name: Generate a code coverage report
+        uses: threeal/gcovr-action@main
+        with:
+          root: ${{github.workspace}}
+          excludes: |
+            .*googletest*
+            .*argparser.hpp*
+            .*json.hpp*
+            .*vst3sdk*
+            .*rtaudio*
+          fail-under-line: 80
+          coveralls-send: true
+          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+      - name: Run Python Unit Tests
+        run: |
+          cp -fr ${{github.workspace}}/build/bin/${{ inputs.build-type }}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
+          cp ${{github.workspace}}/build/bin/${{ inputs.build-type }}/libAudioHostLib.so ${{github.workspace}}/VstHost_Python/UnitTests/
+          python --version
+          cd ${{github.workspace}}/VstHost_Python
+          python -m unittest discover UnitTests "test_*.py"
+          cd ${{github.workspace}}
+
+      - name: Clean Up After Build
+        run: |
+          rm ${{github.workspace}}/build/bin/${{ inputs.build-type }}/ApiUnitTests
+          rm ${{github.workspace}}/build/bin/${{ inputs.build-type }}/OfflineToolsUnitTests
+          rm -fr ${{github.workspace}}/build/bin/${{ inputs.build-type }}/adelay.vst3
+          rm ${{github.workspace}}/build/bin/${{ inputs.build-type }}/VstHost.log
+          rm -fr ${{github.workspace}}/build/bin/${{ inputs.build-type }}/data
+
+      # - name: Archive Build Artifacts
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: linux_x64
+      #     path: ${{ github.workspace }}/build/bin/${{ inputs.build-type }}
