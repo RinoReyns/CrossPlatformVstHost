@@ -25,3 +25,4 @@ private:
 };
 
 #endif // VST_HOST_TOOL
+
