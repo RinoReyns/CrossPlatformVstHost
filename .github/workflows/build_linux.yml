@@ -17,6 +17,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      security-events: read
 
     runs-on: ${{ inputs.run-platform }}
 
@@ -81,19 +82,22 @@ jobs:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "cpp"
+          paths: CrossPlatformVstHost/
       
       - name: Dependency Check
-        uses: dependency-check/Dependency-Check_Action@main
+        uses: dependency-check/Dependency-Check_Action@1.1.0
         with:
-          path: .
+          path: '.'
           format: 'HTML'
           out: 'reports'   
       
       - uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
-          path: reports          
+          path: ${{github.workspace}}/reports
       
       - name: Run Python Unit Tests
         run: |

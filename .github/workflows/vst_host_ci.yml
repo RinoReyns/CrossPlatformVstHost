@@ -75,6 +75,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      security-events: read
     uses: ./.github/workflows/build_linux.yml
     with:
       run-platform: ubuntu-latest
