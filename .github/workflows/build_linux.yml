@@ -60,7 +60,7 @@ jobs:
           ${{github.workspace}}/build/bin/${{ inputs.build-type }}/OfflineToolsUnitTests
           cd ${{github.workspace}}
 
-      - name: Generate a code coverage report
+      - name: Code Coverage Report
         uses: threeal/gcovr-action@main
         with:
           root: ${{github.workspace}}
@@ -106,7 +106,7 @@ jobs:
       - name: Clang Tidy
         run: |
           sudo apt install -y clang-tidy
-          clang-tidy **/*.cpp -- -Iinclude
+          clang-tidy $(find . -name '*.cpp') -- -Iinclude
 
       - name: Clean Up After Build
         run: |
