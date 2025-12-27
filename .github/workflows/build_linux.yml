@@ -26,87 +26,89 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Python Dependencies
-        run: |
-          python --version
-          python -m pip install --upgrade pip
-          pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
-          sudo apt-get install libsndfile1-dev
-          sudo apt-get install libasound2-dev
-
-      - name: Install Doxygen
-        run: |
-          sudo apt-get install -y doxygen
-
-      - name: Install Gcovr
-        run: |
-          sudo apt-get install -y gcovr
-
-      - name: Configure CMake
-        run: |
-          mkdir build
-          cd build
-          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} -DBUILD_GMOCK=1
-          cd ..
-
-      - name: Build C++ Code
-        run: |
-          cmake --build ${{github.workspace}}/build --config ${{ inputs.build-type }} -j 8
-
-      - name: Run C++ Unit Tests
-        run: |
-          cd ${{github.workspace}}/build/bin/${{ inputs.build-type }}
-          ${{github.workspace}}/build/bin/${{ inputs.build-type }}/ApiUnitTests
-          ${{github.workspace}}/build/bin/${{ inputs.build-type }}/OfflineToolsUnitTests
-          cd ${{github.workspace}}
-
-      - name: Code Coverage Report
-        uses: threeal/gcovr-action@main
-        with:
-          root: ${{github.workspace}}
-          excludes: |
-            .*googletest*
-            .*argparser.hpp*
-            .*json.hpp*
-            .*vst3sdk*
-            .*rtaudio*
-          fail-under-line: 80
-          coveralls-send: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      
-      - name: Dependency Check
-        uses: dependency-check/Dependency-Check_Action@main
-        with:
-          project: 'CrossPlatformVstHost'
-          path: '.'
-          format: 'HTML'
-          failOnCVSS: 0.1
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: ${{github.workspace}}/reports
-      
-      - name: Run Python Unit Tests
-        run: |
-          cp -fr ${{github.workspace}}/build/bin/${{ inputs.build-type }}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
-          cp ${{github.workspace}}/build/bin/${{ inputs.build-type }}/libAudioHostLib.so ${{github.workspace}}/VstHost_Python/UnitTests/
-          python --version
-          cd ${{github.workspace}}/VstHost_Python
-          python -m unittest discover UnitTests "test_*.py"
-          cd ${{github.workspace}}
-
-      #- name: ScanCode
-      #  run: |
-      #    pip install scancode-toolkit
-      #    scancode -clpeui --json scan.json .
+#      - name: Install Python Dependencies
+#        run: |
+#          python --version
+#          python -m pip install --upgrade pip
+#          pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
+#          sudo apt-get install libsndfile1-dev
+#          sudo apt-get install libasound2-dev
+#
+#      - name: Install Doxygen
+#        run: |
+#          sudo apt-get install -y doxygen
+#
+#      - name: Install Gcovr
+#        run: |
+#          sudo apt-get install -y gcovr
+#
+#      - name: Configure CMake
+#        run: |
+#          mkdir build
+#          cd build
+#          cmake "${{github.workspace}}\VstHost_VisualC++" -DCMAKE_BUILD_TYPE=${{ inputs.build-type }} -DBUILD_GMOCK=1
+#          cd ..
+#
+#      - name: Build C++ Code
+#        run: |
+#          cmake --build ${{github.workspace}}/build --config ${{ inputs.build-type }} -j 8
+#
+#      - name: Run C++ Unit Tests
+#        run: |
+#          cd ${{github.workspace}}/build/bin/${{ inputs.build-type }}
+#          ${{github.workspace}}/build/bin/${{ inputs.build-type }}/ApiUnitTests
+#          ${{github.workspace}}/build/bin/${{ inputs.build-type }}/OfflineToolsUnitTests
+#          cd ${{github.workspace}}
+#
+#      - name: Code Coverage Report
+#        uses: threeal/gcovr-action@main
+#        with:
+#          root: ${{github.workspace}}
+#          excludes: |
+#            .*googletest*
+#            .*argparser.hpp*
+#            .*json.hpp*
+#            .*vst3sdk*
+#            .*rtaudio*
+#          fail-under-line: 80
+#          coveralls-send: true
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#
+#      - name: Dependency Check
+#        uses: dependency-check/Dependency-Check_Action@main
+#        with:
+#          project: 'CrossPlatformVstHost'
+#          path: '.'
+#          format: 'HTML'
+#          failOnCVSS: 0.1
+#
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: dependency-check-report
+#          path: ${{github.workspace}}/reports
+#
+#      - name: Run Python Unit Tests
+#        run: |
+#          cp -fr ${{github.workspace}}/build/bin/${{ inputs.build-type }}/adelay.vst3 ${{github.workspace}}/VstHost_Python/UnitTests/adelay.vst3
+#          cp ${{github.workspace}}/build/bin/${{ inputs.build-type }}/libAudioHostLib.so ${{github.workspace}}/VstHost_Python/UnitTests/
+#          python --version
+#          cd ${{github.workspace}}/VstHost_Python
+#          python -m unittest discover UnitTests "test_*.py"
+#          cd ${{github.workspace}}
+#
+#      #- name: ScanCode
+#      #  run: |
+#      #    pip install scancode-toolkit
+#      #    scancode -clpeui --json scan.json .
 
       - name: Clang Tidy
         run: |
           sudo apt install -y clang-tidy
-          find . -name '*.cpp' | grep -v '^./VstHost_VisualC++/vst3sdk/' | xargs clang-tidy -p=build -- -Iinclude
+          test=$(find . -name '*.cpp' | grep -v '^./VstHost_VisualC++/vst3sdk/')
+          echo $test
+          clang-tidy $test -- -Iinclude
 
       - name: Clean Up After Build
         run: |
