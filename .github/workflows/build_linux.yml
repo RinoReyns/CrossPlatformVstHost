@@ -31,6 +31,7 @@ jobs:
           python --version
           python -m pip install --upgrade pip
           pip install -r ${{github.workspace}}/VstHost_Python/requirements.txt
+          sudo apt-get update
           sudo apt-get install libsndfile1-dev
           sudo apt-get install libasound2-dev
 
